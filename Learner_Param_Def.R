@@ -11,15 +11,14 @@ load("omlTaskIds.RData")
 #knn.params = unique(knn.params)
 #knn.params$mlr.lrn.name = "classif.kknn"
 
-ps = makeParamSet(
+svm.ps = makeParamSet(
   makeDiscreteParam("kernel", values = c("linear", "polynomial", "radial")),
   makeNumericParam("cost", lower = -10, upper = 10, trafo = function(x) 2^x),
   makeNumericParam("gamma", lower = -10, upper = 10, trafo = function(x) 2^x, requires = quote(kernel == "radial")),
-  makeIntegerParam("degree", lower = 2, upper = 5, requires = quote(kernel == "polynomial")),
-  makeNumericParam("predict.threshold", lower = 0, upper = 1)
+  makeIntegerParam("degree", lower = 2, upper = 5, requires = quote(kernel == "polynomial"))
 )
 
-des = generateRandomDesign(100, ps)
+svm.des = generateRandomDesign(100, ps)
 
 
 des$mlr.lrn.name = "classif.svm"
