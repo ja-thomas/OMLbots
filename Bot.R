@@ -47,11 +47,3 @@ summarizeExperiments(reg=reg)
 
 
 
-
-
-
-
-
-
-
-

@@ -10,9 +10,3 @@ getParamSet(makeLearner("classif.svm"))
 svm.params = makeParamSet(makeIntegerParam("degree", lower = 2L, upper = 4L),
   makeNumericParam("gamma", lower = 2^-10, upper = 2^10))
 
-
-
-
-
-
-
