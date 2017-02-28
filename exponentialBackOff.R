@@ -17,7 +17,7 @@ exponentialBackOff = function(jobs, registry, start.resources = NULL, max.resour
     for (i in seq_len(nrow(resourceTable)))
       submitJobs(resourceTable[i, job.id], resources = list(walltime = resourceTable[i, walltime],
         memory = resourceTable[i, memory], ntasks = start.resources$ntasks))
-    
+    waitForJobs() 
     memory.exceeded = grepLogs(pattern = "slurmstepd: Exceeded step memory limit at some point.")$job.id
     time.exceeded = grepLogs(pattern = "slumstepd: [\\*]{3} JOB .+ DUE TO TIME LIMIT [\\*]{3}")$job.id
     
