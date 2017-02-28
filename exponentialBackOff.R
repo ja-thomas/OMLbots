@@ -12,12 +12,13 @@ exponentialBackOff = function(jobs, registry, start.resources = NULL, max.resour
       submitJobs(resourceTable[i, job.id], resources = list(walltime = resourceTable[i, walltime],
         memory = resourceTable[i, memory], ntasks = start.resources$ntasks))
     waitForJobs() 
-    memory.exceeded = grepLogs(pattern = "slurmstepd: Exceeded step memory limit at some point.")$job.id
-    time.exceeded = grepLogs(pattern = "slumstepd: [\\*]{3} JOB .+ DUE TO TIME LIMIT [\\*]{3}")$job.id
+    memory.exceeded = grepLogs(pattern = "slurmstepd: Exceeded step memory limit at some point.", reg = registry)$job.id
+    time.exceeded = grepLogs(pattern = "DUE TO TIME LIMIT", reg = registry)$job.id
     
     # Drop successful jobs and increase walltime and memory for expired jobs
-    resourceTable[job.id %in% memory.exceeded | (job.id %in% time.exceed & walltime < max.resources$walltime)]
-    resourceTable[job.id %in% time.exceeded | (job.id %in% memory.exceed & memory < max.resources$memory)]
+    resourceTable = resourceTable[job.id %in% c(memory.exceeded, time.exceeded)]
+    resourceTable = resourceTable[job.id %in% memory.exceeded | (job.id %in% time.exceeded & walltime < max.resources$walltime)]
+    resourceTable = resourceTable[job.id %in% time.exceeded | (job.id %in% memory.exceeded & memory < max.resources$memory)]
     resourceTable[job.id %in% memory.exceeded, memory := min(max.resources$memory, 2 * memory)]
     resourceTable[job.id %in% time.exceeded, walltime := min(max.resources$walltime, 2 * walltime)]
     
