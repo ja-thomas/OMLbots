@@ -1,3 +1,8 @@
+# Gradually increase the maximum walltime and memory requirements
+# @param jobs job numbers
+# @param registry used batchtools registry
+# @param start.resources starting resources, if not specified use the default resources
+# @param max.resources maximum allowed resources. This should be a list with slots walltime and memory.
 exponentialBackOff = function(jobs, registry, start.resources = NULL, max.resources) {
   
   if (is.null(start.resources))

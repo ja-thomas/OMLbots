@@ -1,3 +1,4 @@
+# List of mlr learner and parameter set pairs
 lrn.ps.sets = list(
   list(
     lrn = makeLearner("classif.svm", predict.type = "prob"),

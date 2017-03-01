@@ -1,3 +1,10 @@
+# This evaluates all configurations of a single Learner + Task
+# @param lrn Learner
+# @param task OMLTask
+# @param par data.frame of configurations to evaluate
+# @param min.resources minimal used resources
+# @param max.resources maximum allowed resources for a single evaluation
+# @param upload should the run be uploaded
 evalConfigurations = function(lrn, task, par, min.resources, max.resources, upload) {
   
   reg = makeExperimentRegistry(file.dir = NA, packages = c("mlr"))
