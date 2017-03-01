@@ -1,0 +1,17 @@
+Package: OMLbot2
+Title: Bot to run experiments on OpenML 
+Version: 0.0.0.9000
+Authors@R: person("Janek", "Thomas", email = "janek.thomas@stat.uni-muenchen.de", role = c("aut", "cre"))
+Description: Run more or less random experiments on 'OpenML'. Sampling procedure can be customized. 
+Depends: R (>= 3.3.2)
+License: GPL-2
+Encoding: UTF-8
+LazyData: true
+Depends:
+  mlr (>= 2.11),
+  ParamHelpers (>= 1.8),
+  OpenML (>= 1.2),
+  batchtools (>= 0.9.2),
+  BBmisc (>= 1.10),
+  dplyr (>= 0.5.0)
+  
