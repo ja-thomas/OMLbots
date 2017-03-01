@@ -8,9 +8,9 @@
 evalConfigurations = function(lrn, task, par, min.resources, max.resources, upload) {
   
   reg = makeExperimentRegistry(file.dir = NA, packages = c("mlr"))
-  addProblem(name = as.character(task), data = task)
+  addProblem(name = task$name, data = task$id)
   
-  addAlgorithm("lrnwrapper", fun = function(job, data, instance, mlr.lrn = lrn, should.upload = upload, ...) {
+  addAlgorithm(lrn$short.name, fun = function(job, data, instance, mlr.lrn = lrn, should.upload = upload, ...) {
     data = getOMLTask(data)
     mlr.par.set = list(...)
     mlr.par.set = mlr.par.set[!vlapply(mlr.par.set, is.na)]
@@ -23,7 +23,9 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources, uplo
     return(TRUE)
   })
   
-  addExperiments(algo.designs = list(lrnwrapper = par), reg = reg)
+  design = list(par)
+  names(design) = lrn$short.name
+  addExperiments(algo.designs = design, reg = reg)
   
   if (!is.null(max.resources))
     exponentialBackOff(jobs = 1:nrow(par), registry = reg, start.resources = min.resources, max.resources = max.resources)

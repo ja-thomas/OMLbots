@@ -7,7 +7,7 @@ sampleRandomTask = function() {
     filter(estimation.procedure == "10-fold Crossvalidation", 
       format == "ARFF", status == "active", number.of.missing.values == 0) %>% 
     sample_n(1) %>% 
-    select(task.id)
+    select(task.id, name)
   
-  return(task$task.id)
+  return(list(id = task$task.id, name = task$name))
 }

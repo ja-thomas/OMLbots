@@ -15,7 +15,7 @@ runBot = function(batch.size, sample.learner.fun = sampleRandomLearner,
   lrn = sample.learner.fun(lrn.ps.sets)
   print(sprintf("Selected learner: %s", lrn$lrn$short.name))
   task = sample.task.fun()
-  print(sprintf("Selected OML task: %s", task))
+  print(sprintf("Selected OML task: %s (id %s)", task$name, task$id))
   par = sample.configuration.fun(batch.size, lrn$ps)
   print("Selected configurations:")
   print(par)
