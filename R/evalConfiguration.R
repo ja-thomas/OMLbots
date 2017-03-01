@@ -10,7 +10,7 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources) {
     mlr.par.set = mlr.par.set[!vlapply(mlr.par.set, is.na)]
     mlr.lrn = setHyperPars(mlr.lrn, par.vals = mlr.par.set)
     res = runTaskMlr(data, mlr.lrn)
-    uploadOMLRun(res, confirm.upload = FALSE, tags = "bot", verbosity = 1)
+    uploadOMLRun(res, confirm.upload = FALSE, tags = "mlrRandomBotV1", verbosity = 1)
     return(TRUE)
   })
   
