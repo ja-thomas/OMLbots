@@ -12,12 +12,12 @@ runBot = function(batch.size, sample.learner.fun = sampleRandomLearner,
   sample.task.fun = sampleSimpleTask, sample.configuration.fun = sampleRandomConfiguration, 
   min.resources = NULL, max.resources = NULL, lrn.ps.sets, upload = TRUE) {
   
-  lrn = sample.learner.fun(lrn.ps.sets)
-  print(sprintf("Selected learner: %s", lrn$lrn$short.name))
   task = sample.task.fun()
   print(sprintf("Selected OML task: %s (id %s)", task$name, task$id))
-  par = sample.configuration.fun(batch.size, lrn$ps)
+  lrn = sample.learner.fun(lrn.ps.sets)
+  print(sprintf("Selected learner: %s", lrn$learner$short.name))
+  par = sample.configuration.fun(batch.size, lrn$param.set)
   print("Selected configurations:")
   print(par)
-  evalConfigurations(lrn$lrn, task, par, min.resources, max.resources, upload = upload)
+  evalConfigurations(lrn$learner, task = task, par, min.resources, max.resources, upload = upload)
 }
