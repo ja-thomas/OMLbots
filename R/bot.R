@@ -10,7 +10,7 @@
 # @param upload should the run be uploaded to OpenML
 runBot = function(batch.size, sample.learner.fun = sampleRandomLearner, 
   sample.task.fun = sampleSimpleTask, sample.configuration.fun = sampleRandomConfiguration, 
-  min.resources = NULL, max.resources = NULL, lrn.ps.sets, upload = TRUE) {
+  min.resources = NULL, max.resources = NULL, lrn.ps.sets = simple.lrn.par.set, upload = FALSE) {
   
   task = sample.task.fun()
   print(sprintf("Selected OML task: %s (id %s)", task$name, task$id))

@@ -1,7 +1,7 @@
 library(devtools)
 load_all()
 
-runBot(batch.size = 1, lrn.ps.sets = lrn.ps.sets, upload = FALSE)
+runBot(1)
 
 system.time(overview <- getMlrRandomBotOverview("mlrRandomBotV1"))
 print(overview)

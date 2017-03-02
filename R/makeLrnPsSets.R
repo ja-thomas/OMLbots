@@ -20,7 +20,7 @@ makeLrnPsSets = function(learner, param.set, lrn.ps.sets = NULL,
   if(is.null(lrn.ps.sets)){
     lrn.ps.sets = list()
     lrn.ps.sets[[id]] = ls
-    attr(lrn.ps.sets, "class") <- "LrnPsSet"
+    attr(lrn.ps.sets, "class") = "LrnPsSet"
   } else {
     assertClass(lrn.ps.sets, "LrnPsSet")
     
@@ -34,18 +34,8 @@ makeLrnPsSets = function(learner, param.set, lrn.ps.sets = NULL,
   return(lrn.ps.sets)
 }
 
-
-# Define some learner-param sets
-learner = makeLearner("classif.svm", predict.type = "prob")
-param.set = makeParamSet(
-  makeDiscreteParam("kernel", values = c("linear", "polynomial", "radial")),
-  makeNumericParam("cost", lower = -10, upper = 10, trafo = function(x) 2^x),
-  makeNumericParam("gamma", lower = -10, upper = 10, trafo = function(x) 2^x, requires = quote(kernel == "radial")),
-  makeIntegerParam("degree", lower = 2, upper = 5, requires = quote(kernel == "polynomial")))
-lrn.ps.sets = makeLrnPsSets(learner = learner, param.set = param.set)
-
-learner = makeLearner("classif.kknn", predict.type = "prob")
-param.set = makeParamSet(
-  makeIntegerParam("k", lower = 1, upper = 30))
-lrn.ps.sets = makeLrnPsSets(learner = learner, param.set = param.set, lrn.ps.sets)  
-
+print.LrnPsSet = function(x, ...) {
+  lrns = vcapply(x, function(l) l$learner$short.name)
+  lrns = paste(lrns, collapse = ", ")
+  print(sprintf("%i learner/parameter combinations containing: %s", length(x), lrns))
+}
