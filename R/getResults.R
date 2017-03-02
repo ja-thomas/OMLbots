@@ -1,8 +1,9 @@
 # @param tag Name of the tag of the benchmark study
+# @return [\code{data.frame}] Table with number of experiments for each learner and each task 
 getMlrRandomBotOverview = function(tag = "mlrRandomBotV1") {
   runs = listOMLRuns(tag = tag)
-  runs$task.id
-  overview = table(runs$task.id, sapply(runs$run.id, getOMLRunLearner))
+  learnerNames = sapply(runs$run.id, function(x) getOMLRun(x)$flow.name)
+  as.data.frame.matrix(table(runs$task.id, learnerNames))
 }
 
 # @param tag Name of the tag of the benchmark study
@@ -10,7 +11,7 @@ getMlrRandomBotResults = function(tag) {
   runs = listOMLRuns(tag = tag)
   perf = t(sapply(runs$run.id, getOMLRunResult))
   perf = cbind(runs$run.id, perf)
-  colnames(perf) = c("id", getOMLRunResult(runs$run.id[1], names = TRUE))
+  colnames(perf) = c("id", getOMLRunResult(runs$run.id[1], run.names = TRUE))
   perf
 }
 
@@ -35,17 +36,9 @@ getMlrRandomBotHyperpars = function(tag) {
 }
 
 # Helpers
-getOMLRunResult = function(run.id, names = FALSE) {
+getOMLRunResult = function(run.id, run.names = FALSE) {
   results = getOMLRun(run.id)$output.data$evaluations
-  if (names == TRUE) {
-    results = results[is.na(results$fold), c("name")]
-  } else {
-    results = results[is.na(results$fold), c("value")]
-  }
-}
-
-getOMLRunLearner = function(run.id) {
-  getOMLRun(run.id)$flow.name
+  results[is.na(results$fold), ifelse(run.names, "name", "value")]
 }
 
 getOMLRunHypPars = function(run.id) {
