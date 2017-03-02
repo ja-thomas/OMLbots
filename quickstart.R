@@ -9,7 +9,7 @@ print(overview)
 results = getMlrRandomBotResults(tag = "mlrRandomBotV1")
 print(results)
 
-hypPars = getMlrRandomBotHyperpars(tag = "mlrRandomBotV1")
+system.time(hypPars <- getMlrRandomBotHyperpars(tag = "mlrRandomBotV1"))
 print(hypPars)
 
 metaFeatures = getMetaFeatures(tag = "study_14")
