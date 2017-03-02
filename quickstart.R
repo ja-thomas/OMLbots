@@ -4,10 +4,13 @@ load_all()
 runBot(batch.size = 1, lrn.ps.sets = lrn.ps.sets, upload = FALSE)
 
 system.time(overview <- getMlrRandomBotOverview("mlrRandomBotV1"))
-overview
+print(overview)
 
 results = getMlrRandomBotResults(tag = "mlrRandomBotV1")
-results
+print(results)
 
 hypPars = getMlrRandomBotHyperpars(tag = "mlrRandomBotV1")
-hypPars
+print(hypPars)
+
+metaFeatures = getMetaFeatures(tag = "study_14")
+print(head(metaFeatures))
