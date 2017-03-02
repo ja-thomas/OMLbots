@@ -1,15 +1,15 @@
 # Simple learner param set
 simple.lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.rpart", predict.type = "prob"), 
   param.set = makeParamSet(
-    makeNumericParam("cp", lower = 0, upper = 1),
-    makeIntegerParam("maxdepth", lower = 1, upper = 30),
-    makeIntegerParam("minbucket", lower = 1, upper = 60),
-    makeIntegerParam("minsplit", lower = 1, upper = 60)))
+    makeNumericParam("cp", lower = 0, upper = 1, default = 0.01),
+    makeIntegerParam("maxdepth", lower = 1, upper = 30, default = 30),
+    makeIntegerParam("minbucket", lower = 1, upper = 60, default = 1),
+    makeIntegerParam("minsplit", lower = 1, upper = 60, default = 20)))
 
 simple.lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.glmnet", predict.type = "prob"),
   param.set = makeParamSet(
-    makeNumericParam("alpha", lower = 0, upper = 1),
-    makeNumericVectorParam("lambda", len = 1L, lower = -10, upper = 10, trafo = function(x) 2^x)), 
+    makeNumericParam("alpha", lower = 0, upper = 1, default = 1),
+    makeNumericVectorParam("lambda", len = 1L, lower = -10, upper = 10, default = 0 ,trafo = function(x) 2^x)), 
   lrn.ps.sets = simple.lrn.par.set)  
 
 # increase to a general param set

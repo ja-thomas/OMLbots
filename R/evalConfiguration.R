@@ -11,13 +11,17 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources, uplo
   reg = makeExperimentRegistry(file.dir = NA, packages = c("mlr", "OpenML"))
   addProblem(name = task$name, data = task$task)
   
-  addAlgorithm(lrn$short.name, fun = function(job, data, instance, mlr.lrn = lrn, should.upload = upload, ...) {
+  addAlgorithm(lrn$short.name, fun = function(job, data, instance, mlr.lrn = lrn, 
+    should.upload = upload, add.tags = attr(par, "additional.tags"), ...) {
     mlr.par.set = list(...)
     mlr.par.set = mlr.par.set[!vlapply(mlr.par.set, is.na)]
     mlr.lrn = setHyperPars(mlr.lrn, par.vals = mlr.par.set)
     res = runTaskMlr(data, mlr.lrn)
-    if (should.upload)
-      uploadOMLRun(res, confirm.upload = FALSE, tags = "mlrRandomBotV1", verbosity = 1)
+    if (should.upload) {
+      tags = paste0("mlrRandomBotV1", c("", add.tags))
+      uploadOMLRun(res, confirm.upload = FALSE, tags = tags, verbosity = 1)
+    }
+      
     print(res)
     
     return(TRUE)

@@ -14,5 +14,6 @@ sampleDefaultConfiguration = function(size, par.set) {
     warning("For the default Configuration only one configuration is generated")
   des = generateDesignOfDefaults(par.set, trafo = TRUE)
   des = BBmisc::convertDataFrameCols(des, factors.as.char = TRUE)
+  attr(des, "additional.tags") = "defaultRun"
   return(des)
 }

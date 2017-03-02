@@ -3,6 +3,8 @@ load_all()
 
 runBot(1)
 
+runBot(1, sample.configuration.fun = sampleDefaultConfiguration, upload = TRUE)
+
 system.time(overview <- getMlrRandomBotOverview("mlrRandomBotV1"))
 print(overview)
 
