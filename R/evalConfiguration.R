@@ -7,11 +7,11 @@
 # @param upload should the run be uploaded
 evalConfigurations = function(lrn, task, par, min.resources, max.resources, upload) {
   
-  reg = makeExperimentRegistry(file.dir = NA, packages = c("mlr"))
-  addProblem(name = task$name, data = task$id)
+  task$task = getOMLTask(task$id)
+  reg = makeExperimentRegistry(file.dir = NA, packages = c("mlr", "OpenML"))
+  addProblem(name = task$name, data = task$task)
   
   addAlgorithm(lrn$short.name, fun = function(job, data, instance, mlr.lrn = lrn, should.upload = upload, ...) {
-    data = getOMLTask(data)
     mlr.par.set = list(...)
     mlr.par.set = mlr.par.set[!vlapply(mlr.par.set, is.na)]
     mlr.lrn = setHyperPars(mlr.lrn, par.vals = mlr.par.set)
