@@ -1,9 +1,8 @@
 # @param tag Name of the tag of the benchmark study
 # @return [\code{data.frame}] Table with number of experiments for each learner and each task 
 getMlrRandomBotOverview = function(tag = "mlrRandomBotV1") {
-  runs = listOMLRuns(tag = tag)
-  learnerNames = sapply(runs$run.id, function(x) getOMLRun(x)$flow.name)
-  as.data.frame.matrix(table(runs$task.id, learnerNames))
+  df <- listOMLRunEvaluations(tag = tag)
+  return(table(df$flow.name, df$data.name))
 }
 
 # @param tag Name of the tag of the benchmark study
@@ -16,23 +15,25 @@ getMlrRandomBotResults = function(tag) {
 }
 
 # @param tag Name of the tag of the benchmark study
+# @return [\code{data.frame}] Table with runid, hyperparameter name & value.
 getMlrRandomBotHyperpars = function(tag) {
   runs = listOMLRuns(tag = tag)
-  hypPars = sapply(runs$run.id, getOMLRunHypPars)
-  colnames(hypPars) = runs$run.id
-  learners = unlist(hypPars[1,])
-  learnersUnique = unique(learners)
-  hypPars_learners = list()
-  for (i in learnersUnique) {
-    hypPars_list = list()
-    for (j in which(hypPars[1,] == i)) {
-      hypPars_list[[j]] = lapply(hypPars[2, ][[j]], `[[`, 2)
-    }
-    dfs = lapply(hypPars_list, data.frame, stringsAsFactors = FALSE)
-  hypPars_learners[[i]] = rbind.fill(dfs)
-  hypPars_learners[[i]] = cbind(id = runs$run.id[hypPars[1,] == i], hypPars_learners[[i]])
+  
+  df = data.frame(RunId = integer(),
+    Hyp.par.name = character(),
+    Hyp.par.value = character())
+  
+  for (i in runs$run.id){
+    hyp.pars = getOMLRunParList(getOMLRun(i))
+    
+    temp.df = data.frame(RunId = i,
+      Hyp.par.name = vcapply(hyp.pars, function(x) x$name),
+      Hyp.par.value = vcapply(hyp.pars, function(x) x$value))
+    
+    df = rbind(df, temp.df)
   }
-  hypPars_learners
+  
+  return(df)
 }
 
 # Helpers
