@@ -5,13 +5,13 @@ runBot(1)
 
 runBot(1, sample.configuration.fun = sampleDefaultConfiguration, upload = TRUE)
 
-system.time(overview <- getMlrRandomBotOverview("mlrRandomBotV1"))
+overview = getMlrRandomBotOverview()
 print(overview)
 
-results = getMlrRandomBotResults(tag = "mlrRandomBotV1")
+results = getMlrRandomBotResults()
 print(results)
 
-system.time(hypPars <- getMlrRandomBotHyperpars(tag = "mlrRandomBotV1"))
+hypPars = getMlrRandomBotHyperpars()
 print(hypPars)
 
 metaFeatures = getMetaFeatures(tag = "study_14")

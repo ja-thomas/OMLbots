@@ -7,25 +7,29 @@ getMlrRandomBotOverview = function(tag = "mlrRandomBotV1") {
 
 # @param tag Name of the tag of the benchmark study.
 # @return [\code{data.frame}] Table with run.id, task.id, flow.id, flow.name, measure values.
-getMlrRandomBotResults = function(tag) {
+getMlrRandomBotResults = function(tag = "mlrRandomBotV1") {
   df = listOMLRunEvaluations(tag = tag)
   drops = c("setup.id", "data.name", "upload.time")
-  df[, !(names(df) %in% drops)]
+  df = df[, !(colnames(df) %in% drops)]
+  df = df[, !grepl("array", colnames(df))]
+  tidyr::gather(df, key = "measure.name", value = "measure.value", -run.id, -task.id, -flow.id, -flow.name)
 }
 
 # @param tag Name of the tag of the benchmark study.
 # @return [\code{data.frame}] Table with run.id, hyperparameter name & value.
-getMlrRandomBotHyperpars = function(tag) {
+getMlrRandomBotHyperpars = function(tag = "mlrRandomBotV1") {
   runs = listOMLRuns(tag = tag)
-  df = data.frame(run.id = integer(), Hyp.par.name = character(), Hyp.par.value = character())
-  for (i in runs$run.id){
-    hyp.pars = getOMLRunParList(getOMLRun(i))
-    temp.df = data.frame(run.id = i,
-      Hyp.par.name = vcapply(hyp.pars, function(x) x$name),
-      Hyp.par.value = vcapply(hyp.pars, function(x) x$value))
-    df = rbind(df, temp.df)
-  }
-  return(df)
+  res = lapply(runs$run.id, function(x){
+    pars = getOMLRunParList(getOMLRun(x))
+    #FIXME: Just kill me now...
+    pars = data.frame(do.call(rbind, lapply(pars, function(p) do.call(cbind, p))))
+    pars$run.id = x
+    pars
+  })
+  res = do.call(rbind, res)
+  res %>% 
+    mutate(hyperpar.name = name, hyperpar.value = value) %>% 
+    select(run.id, hyperpar.name, hyperpar.value)
 }
 
 # @param tag Name of the tag of the benchmark datasets.
