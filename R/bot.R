@@ -9,7 +9,7 @@
 # @param lrn.ps.sets of available learners with matching parameter sets
 # @param upload should the run be uploaded to OpenML
 runBot = function(batch.size, sample.learner.fun = sampleRandomLearner, 
-  sample.task.fun = sampleRandomTask, sample.configuration.fun = sampleRandomConfiguration, 
+  sample.task.fun = sampleSimpleTask, sample.configuration.fun = sampleRandomConfiguration, 
   min.resources = NULL, max.resources = NULL, lrn.ps.sets, upload = TRUE) {
   
   lrn = sample.learner.fun(lrn.ps.sets)
