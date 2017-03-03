@@ -13,7 +13,7 @@ getMlrRandomBotResults = function(tag = "mlrRandomBotV1") {
   df = df[, !(colnames(df) %in% drops)]
   df = df[, !grepl("array", colnames(df))]
   tidyr::gather(df, key = "measure.name", value = "measure.value", -run.id, -task.id, -setup.id, -flow.id, -flow.name, -data.name)
-} 
+}
 
 # @param tag Name of the tag of the benchmark study.
 # @return [\code{data.frame}] Table with run.id, hyperparameter name & value.
