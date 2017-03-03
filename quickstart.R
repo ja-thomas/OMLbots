@@ -1,7 +1,7 @@
 library(devtools)
 load_all()
 
-runBot(1)
+runBot(1,path = "test")
 
 runBot(1, sample.configuration.fun = sampleDefaultConfiguration, upload = TRUE)
 
