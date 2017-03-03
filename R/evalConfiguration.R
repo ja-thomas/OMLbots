@@ -5,10 +5,10 @@
 # @param min.resources minimal used resources
 # @param max.resources maximum allowed resources for a single evaluation
 # @param upload should the run be uploaded
-evalConfigurations = function(lrn, task, par, min.resources, max.resources, upload) {
+evalConfigurations = function(lrn, task, par, min.resources, max.resources, upload, path) {
   
   task$task = getOMLTask(task$id)
-  reg = makeExperimentRegistry(file.dir = NA, packages = c("mlr", "OpenML"))
+  reg = makeExperimentRegistry(file.dir = path, packages = c("mlr", "OpenML"))
   addProblem(name = task$name, data = task$task)
   
   addAlgorithm(lrn$short.name, fun = function(job, data, instance, mlr.lrn = lrn, 
