@@ -1,5 +1,10 @@
 library(ggplot2)
 library(tidyr)
+library(shiny)
+library(shinydashboard)
+library(shinyjs)
+library(shinyBS)
+library(DT)
 
 server = function(input, output) {
   
