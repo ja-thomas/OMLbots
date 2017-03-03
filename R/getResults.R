@@ -9,7 +9,7 @@ getMlrRandomBotOverview = function(tag = "mlrRandomBotV1") {
 # @return [\code{data.frame}] Table with run.id, task.id, flow.id, flow.name, measure values.
 getMlrRandomBotResults = function(tag = "mlrRandomBotV1") {
   df = listOMLRunEvaluations(tag = tag)
-  drops = c("setup.id", "data.name", "upload.time")
+  drops = c("upload.time")
   df = df[, !(colnames(df) %in% drops)]
   df = df[, !grepl("array", colnames(df))]
   tidyr::gather(df, key = "measure.name", value = "measure.value", -run.id, -task.id, -flow.id, -flow.name)
