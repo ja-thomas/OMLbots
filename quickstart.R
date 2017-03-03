@@ -11,8 +11,8 @@ print(overview)
 results = getMlrRandomBotResults()
 print(results)
 
-hypPars = getMlrRandomBotHyperpars()
-print(hypPars)
+hyperpars = getMlrRandomBotHyperpars()
+print(hyperpars)
 
 metaFeatures = getMetaFeatures(tag = "study_14")
 print(head(metaFeatures))
