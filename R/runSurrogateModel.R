@@ -33,12 +33,15 @@ makeRandomTable = function(task.id.filter, flow.id, lrn.ps.sets, n){
       rnd.ps = generateRandomDesign(n, i$param.set)
     }
   }
+
+  if(!exists("rnd.ps")){
+    stop(paste("No learner in lrn.ps.sets with id:", sub("mlr.", "", learner.name)))
+  }
   
   rnd.table = meta.table[meta.table$task.id == task.id.filter,][rep(1,n), ]
   rnd.table = cbind(rnd.table, rnd.ps) 
   rnd.table = rnd.table %>% select(., -data.id, -name) 
 
-  #tbd: cast hyperpars and set data.type (maybe match order of bot.table)
   return(rnd.table)
 }
 
