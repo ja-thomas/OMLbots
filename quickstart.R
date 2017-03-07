@@ -31,7 +31,5 @@ plot(x$k, x$pred.measure.value)
 plot(x$k, x$pred.time)
 plot(x$pred.measure.value, x$pred.time)  
 
-plot(jitter(pred.data$pred.measure.value), jitter(pred.data$pred.time))
-
 #create pareto-front 
 #pick random points from pareto-front for validation runs to check results
