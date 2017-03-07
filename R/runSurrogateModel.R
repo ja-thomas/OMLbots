@@ -13,9 +13,13 @@ makeBotTable = function(measure.name, learner.name, tbl.results, tbl.hypPars, tb
     filter(., measure.name == measure.name.filter & learner.name == learner.name.fiter) %>%
     inner_join(., tbl.metaFeatures, by = "task.id") %>%
     inner_join(., tbl.hypPars, by = "run.id") %>%
-    select(., -measure.name, -flow.name, -flow.id, -run.id, -data.id, -name) %>%
+    select(., -measure.name, -flow.name, -flow.id, -run.id, -data.id, -name,
+      -setup.id, -data.name, -upload.time, -flow.version, -learner.name) %>%
     spread(., key = hyperpar.name, value = hyperpar.value, convert = TRUE)
-  bot.table$user.time = tbl.results[tbl.results$measure.name == "usercpu.time.millis" & tbl.results$flow.id == flow.id.filter, "measure.value"]
+  bot.table$user.time = tbl.results[tbl.results$measure.name == "usercpu.time.millis" & tbl.results$learner.name == learner.name.fiter, "measure.value"]
+  bot.table$measure.value = as.numeric(bot.table$measure.value)
+  bot.table$user.time = as.numeric(bot.table$user.time)
+  bot.table = convertDataFrameCols(bot.table, chars.as.factor = TRUE)
   
   return(bot.table)
 }
@@ -68,7 +72,7 @@ makeMeasureTimePrediction = function(measure.name, learner.name, task.id, lrn.pa
   
   #predict new table for measure & runtime
   pred.data = makeRandomTable(task.id, learner.name, lrn.par.set, n, tbl.metaFeatures)
-  mlr.pred.measure = predict(mlr.mod.measure, newdata = predqay.data)
+  mlr.pred.measure = predict(mlr.mod.measure, newdata = pred.data)
   mlr.pred.time = predict(mlr.mod.time, newdata = pred.data)
   pred.data$pred.measure.value = mlr.pred.measure$data$response
   pred.data$pred.time = mlr.pred.time$data$response

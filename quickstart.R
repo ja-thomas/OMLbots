@@ -19,7 +19,7 @@ print(head(tbl.metaFeatures))
 
 # surrogate function stuff
 x <- makeMeasureTimePrediction(measure.name = "area.under.roc.curve",
-  learner.name = "mlr.classif.rpart",
+  learner.name = "mlr.classif.kknn",
   task.id = 3950, 
   lrn.par.set = lrn.par.set,
   n = 2000,
