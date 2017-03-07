@@ -8,9 +8,11 @@
 # @param max.resources maximum resources allowed for each evaluation (list with elements walltime and memory)
 # @param lrn.ps.sets of available learners with matching parameter sets
 # @param upload should the run be uploaded to OpenML
+# @param path where should the registry be created, defaults to tempdir()
 runBot = function(batch.size, sample.learner.fun = sampleRandomLearner, 
   sample.task.fun = sampleSimpleTask, sample.configuration.fun = sampleRandomConfiguration, 
-  min.resources = NULL, max.resources = NULL, lrn.ps.sets = simple.lrn.par.set, upload = FALSE) {
+  min.resources = NULL, max.resources = NULL, lrn.ps.sets = simple.lrn.par.set, upload = FALSE,
+  path = NA) {
   
   task = sample.task.fun()
   print(sprintf("Selected OML task: %s (id %s)", task$name, task$id))
@@ -19,5 +21,6 @@ runBot = function(batch.size, sample.learner.fun = sampleRandomLearner,
   par = sample.configuration.fun(batch.size, lrn$param.set)
   print("Selected configurations:")
   print(par)
-  evalConfigurations(lrn$learner, task = task, par, min.resources, max.resources, upload = upload)
+  evalConfigurations(lrn$learner, task = task, par, min.resources, max.resources, 
+    upload = upload, path = path)
 }
