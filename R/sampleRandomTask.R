@@ -3,7 +3,7 @@
 sampleRandomTask = function() {
   
   tasks = listOMLTasks(number.of.classes = 2L, number.of.missing.values = 0, 
-    data.tag = "study_14", estimation.procedure == "10-fold Crossvalidation")
+    data.tag = "study_14", estimation.procedure = "10-fold Crossvalidation")
   print(sprintf("Found %i available OML tasks", nrow(tasks)))
   task = tasks %>% 
     filter(format == "ARFF", status == "active") %>% 
@@ -23,6 +23,6 @@ sampleSimpleTask = function() {
     filter(format == "ARFF", status == "active") %>% 
     sample_n(1) %>% 
     select(task.id, name)
-  return(list(id = task$task.id, name = task$name))
   
+  return(list(id = task$task.id, name = task$name))
 }

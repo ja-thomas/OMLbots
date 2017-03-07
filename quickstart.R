@@ -8,11 +8,30 @@ runBot(1, sample.configuration.fun = sampleDefaultConfiguration, upload = TRUE)
 overview = getMlrRandomBotOverview()
 print(overview)
 
-results = getMlrRandomBotResults()
-print(results)
+tbl.results = getMlrRandomBotResults()
+print(tbl.results)
 
-hyperpars = getMlrRandomBotHyperpars()
-print(hyperpars)
+tbl.hypPars = getMlrRandomBotHyperpars()
+print(tbl.hypPars)
 
-metaFeatures = getMetaFeatures(tag = "study_14")
-print(head(metaFeatures))
+tbl.metaFeatures = getMetaFeatures(tag = "study_14")
+print(head(tbl.metaFeatures))
+
+# surrogate function stuff
+x <- makeMeasureTimePrediction(measure.name = "area.under.roc.curve",
+  learner.name = "mlr.classif.rpart",
+  task.id = 3950, 
+  lrn.par.set = lrn.par.set,
+  n = 2000,
+  tbl.results = tbl.results,
+  tbl.hypPars = tbl.hypPars,
+  tbl.metaFeatures = tbl.metaFeatures)
+
+plot(x$k, x$pred.measure.value)
+plot(x$k, x$pred.time)
+plot(x$pred.measure.value, x$pred.time)  
+
+plot(jitter(pred.data$pred.measure.value), jitter(pred.data$pred.time))
+
+#create pareto-front 
+#pick random points from pareto-front for validation runs to check results
