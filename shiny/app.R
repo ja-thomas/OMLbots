@@ -29,7 +29,7 @@ server = function(input, output) {
   })
 
   output$learnerTable = DT::renderDataTable({
-    hyperparTable()
+    hyperparValues()
   })
   
   hyperparTable = reactive({
@@ -66,14 +66,13 @@ server = function(input, output) {
     
     d = hyperparValues()
     feature = input$hyp
-    
-    #if (length(feature) == 1L) {
-    # if (feature %in% numericFeatures()) {
-    summary.plot = ggplot(data = d, aes(x = as.numeric(d[,feature]))) + 
-      geom_histogram(aes(y = ..density..), colour = barlines, fill = barfill, stat = "bin", bins = input$summary.vis.hist.nbins) + xlab(feature) +
-      geom_vline(aes(xintercept = quantile(as.numeric(d[,feature]), 0.05)), color = "blue", size = 0.5, linetype = "dashed") +
-      geom_vline(aes(xintercept = quantile(as.numeric(d[,feature]), 0.95)), color = "blue", size = 0.5, linetype = "dashed") +
-      geom_vline(aes(xintercept = quantile(as.numeric(d[,feature]), 0.5)), color = "blue", size = 1, linetype = "dashed")
+
+    summary.plot = ggplot(d, aes(x = as.numeric(as.character(d[, feature])))) + geom_histogram(colour = barlines, fill = barfill, stat = "bin", bins = input$summary.vis.hist.nbins)     
+    #summary.plot = ggplot(data = d, aes(x = as.numeric(as.character(d[,feature])))) #+ 
+      #geom_histogram(colour = barlines, fill = barfill, stat = "bin", bins = input$summary.vis.hist.nbins) + xlab(feature) #+
+      #geom_vline(aes(xintercept = quantile(as.numeric(d[,feature]), 0.05)), color = "blue", size = 0.5, linetype = "dashed") +
+      #geom_vline(aes(xintercept = quantile(as.numeric(d[,feature]), 0.95)), color = "blue", size = 0.5, linetype = "dashed") +
+      #geom_vline(aes(xintercept = quantile(as.numeric(d[,feature]), 0.5)), color = "blue", size = 1, linetype = "dashed")
     #summary.plot = addPlotTheme(summary.plot)
     summary.plot
     #     if (density == "Yes")
