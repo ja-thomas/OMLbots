@@ -6,7 +6,7 @@
 # @param max.resources maximum allowed resources for a single evaluation
 # @param upload should the run be uploaded
 evalConfigurations = function(lrn, task, par, min.resources, max.resources, 
-  upload, path) {
+  upload, path, extra.tag) {
   
   attr(par, "additional.tags") = c(attr(par, "additional.tags"), paste0("sciBenchV", packageDescription("rscimark")$Version))
   task$task = getOMLTask(task$id)
@@ -31,7 +31,7 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
     res = runTaskMlr(data, mlr.lrn, scimark.vector = sci.bench)
     print(res)
     if (should.upload) {
-      tags = c("mlrRandomBot", "botV1", add.tags)
+      tags = c("mlrRandomBot", extra.tag, add.tags)
       uploadOMLRun(res, confirm.upload = FALSE, tags = tags, verbosity = 1)
     }
       
