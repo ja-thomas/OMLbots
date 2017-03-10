@@ -1,7 +1,10 @@
 library(devtools)
 load_all()
 
-runBot(1,path = "test")
+for(i in 1:10){
+  unlink("./test", recursive = TRUE)
+  runBot(10, path = "test", upload = TRUE)
+}
 
 runBot(1, sample.configuration.fun = sampleDefaultConfiguration, upload = TRUE)
 

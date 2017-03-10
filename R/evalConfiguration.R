@@ -13,6 +13,7 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
   reg = makeExperimentRegistry(file.dir = path, 
     packages = c("mlr", "OpenML"),
     namespaces = "rscimark")
+  reg$cluster.functions = makeClusterFunctionsSocket(1)
   
   addProblem(name = task$name, data = task$task)
   
