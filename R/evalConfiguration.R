@@ -31,7 +31,7 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
     res = runTaskMlr(data, mlr.lrn, scimark.vector = sci.bench)
     print(res)
     if (should.upload) {
-      tags = c("mlrRandomBotV1", add.tags)
+      tags = c("mlrRandomBot", "botV1", add.tags)
       uploadOMLRun(res, confirm.upload = FALSE, tags = tags, verbosity = 1)
     }
       

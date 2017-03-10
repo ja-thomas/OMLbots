@@ -1,6 +1,6 @@
 # @param tag Name of the tag of the benchmark study.
 # @return [\code{data.frame}] Table with number of experiments for each learner and each task. 
-getMlrRandomBotOverview = function(tag = "mlrRandomBotV1") {
+getMlrRandomBotOverview = function(tag = "mlrRandomBot") {
   df = listOMLRunEvaluations(tag = tag) %>% 
     mutate(flow.version = c(stri_match_last(flow.name, regex = "[[:digit:]]+\\.*[[:digit:]]*")),
       learner.name = stri_replace_last(flow.name, replacement = "", regex = "[([:digit:]]+\\.*[[:digit:]*)]"))
@@ -10,9 +10,9 @@ getMlrRandomBotOverview = function(tag = "mlrRandomBotV1") {
 
 # @param tag Name of the tag of the benchmark study.
 # @return [\code{data.frame}] Table with run.id, task.id, flow.id, flow.name, measure values.
-getMlrRandomBotResults = function(tag = "mlrRandomBotV1") {
+getMlrRandomBotResults = function(tag = "mlrRandomBot") {
   df = listOMLRunEvaluations(tag = tag) %>%
-    gather(., key = "measure.name", value = "measure.value", -(run.id:upload.time)) %>%
+    gather(., key = "measure.name", value = "measure.value", -(run.id:upload.time), na.rm = TRUE) %>%
     mutate(flow.version = c(stri_match_last(flow.name, regex = "[[:digit:]]+\\.*[[:digit:]]*")),
       learner.name = stri_replace_last(flow.name, replacement = "", regex = "[([:digit:]]+\\.*[[:digit:]*)]"))
 
@@ -21,7 +21,7 @@ getMlrRandomBotResults = function(tag = "mlrRandomBotV1") {
 
 # @param tag Name of the tag of the benchmark study.
 # @return [\code{data.frame}] Table with run.id, hyperparameter name & value.
-getMlrRandomBotHyperpars = function(tag = "mlrRandomBotV1") {
+getMlrRandomBotHyperpars = function(tag = "mlrRandomBot") {
   runs = listOMLRuns(tag = tag)
   res = lapply(runs$run.id, function(x){
     pars = getOMLRunParList(getOMLRun(x))
