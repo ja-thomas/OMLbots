@@ -8,6 +8,7 @@
 evalConfigurations = function(lrn, task, par, min.resources, max.resources, 
   upload, path) {
   
+  attr(par, "additional.tags") = c(attr(par, "additional.tags"), paste0("sciBenchV", packageDescription("rscimark")$Version))
   task$task = getOMLTask(task$id)
   reg = makeExperimentRegistry(file.dir = path, 
     packages = c("mlr", "OpenML"),
@@ -21,7 +22,6 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
     # FIXME: Check if there is any value in running this every time.
     #  If not, then run when creating registry.
     sci.bench = rscimark::rscimark()
-    sci.vers = packageDescription("rscimark")$Version
     print(sci.bench)
     
     # Run mlr
@@ -31,7 +31,7 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
     res = runTaskMlr(data, mlr.lrn, scimark.vector = sci.bench)
     print(res)
     if (should.upload) {
-      tags = paste0("mlrRandomBotV1", sci.vers, c("", add.tags))
+      tags = c("mlrRandomBotV1", add.tags)
       uploadOMLRun(res, confirm.upload = FALSE, tags = tags, verbosity = 1)
     }
       
