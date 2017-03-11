@@ -1,4 +1,3 @@
-# To-Do: Add a tag for these learners
 reference1.lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.randomForest", predict.type = "prob"), 
   param.set = makeParamSet(
     makeIntegerParam("ntree", lower = 2000, upper = 2000, default = 2000)
@@ -35,3 +34,4 @@ print(overview)
 
 tbl.results = getMlrRandomBotResults("reference")
 print(tbl.results)
+tbl.results
