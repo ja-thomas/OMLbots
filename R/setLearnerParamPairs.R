@@ -38,4 +38,12 @@ lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.xgboost", predict.typ
     makeNumericParam("colsample_bylevel", lower = 0, upper = 1, requires = quote(booster == "gbtree")),
     makeNumericParam("lambda", lower = -10, upper = 10, trafo = function(x) 2^x),
     makeNumericParam("alpha", lower = -10, upper = 10, trafo = function(x) 2^x)),
-    lrn.ps.sets = lrn.par.set)
+  lrn.ps.sets = lrn.par.set)
+
+lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.ranger", predict.type = "prob"), 
+  ranger = makeParamSet(
+    makeIntegerParam("num.trees", lower = 1, upper = 2000),
+    makeLogicalParam("replace"),
+    makeNumericParam("sample.fraction", lower = 0.1, upper = 1),
+    makeIntegerParam("mtry", lower = 1, upper = 5)),
+  lrn.ps.sets = lrn.par.set)
