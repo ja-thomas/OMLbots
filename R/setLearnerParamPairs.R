@@ -25,3 +25,17 @@ lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.kknn", predict.type =
   param.set = makeParamSet(
     makeIntegerParam("k", lower = 1, upper = 30)),
   lrn.ps.sets = lrn.par.set)
+
+lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.xgboost", predict.type = "prob"), 
+  param.set = makeParamSet(
+    makeIntegerParam("nrounds", lower = 1, upper = 5000), 
+    makeNumericParam("eta", lower = -10, upper = 0, trafo = function(x) 2^x),
+    makeNumericParam("subsample",lower = 0.1, upper = 1),
+    makeDiscreteParam("booster", values = c("gbtree", "gblinear")),
+    makeNumericParam("max_depth", lower = 1, upper = 15, requires = quote(booster == "gbtree")),
+    makeNumericParam("min_child_weight", lower = 0, upper = 7, requires = quote(booster == "gbtree"), trafo = function(x) 2^x),
+    makeNumericParam("colsample_bytree", lower = 0, upper = 1, requires = quote(booster == "gbtree")),
+    makeNumericParam("colsample_bylevel", lower = 0, upper = 1, requires = quote(booster == "gbtree")),
+    makeNumericParam("lambda", lower = -10, upper = 10, trafo = function(x) 2^x),
+    makeNumericParam("alpha", lower = -10, upper = 10, trafo = function(x) 2^x)),
+    lrn.ps.sets = lrn.par.set)

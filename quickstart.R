@@ -5,13 +5,13 @@ runBot(1,path = "test")
 
 runBot(1, sample.configuration.fun = sampleDefaultConfiguration, upload = TRUE)
 
-overview = getMlrRandomBotOverview()
+overview = getMlrRandomBotOverview("botV1")
 print(overview)
 
-tbl.results = getMlrRandomBotResults()
+tbl.results = getMlrRandomBotResults("botV1")
 print(tbl.results)
 
-tbl.hypPars = getMlrRandomBotHyperpars()
+tbl.hypPars = getMlrRandomBotHyperpars("botV1")
 print(tbl.hypPars)
 
 tbl.metaFeatures = getMetaFeatures(tag = "study_14")
