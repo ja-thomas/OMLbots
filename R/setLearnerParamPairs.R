@@ -41,7 +41,7 @@ lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.xgboost", predict.typ
   lrn.ps.sets = lrn.par.set)
 
 lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.ranger", predict.type = "prob"), 
-  ranger = makeParamSet(
+  param.set = makeParamSet(
     makeIntegerParam("num.trees", lower = 1, upper = 2000),
     makeLogicalParam("replace"),
     makeNumericParam("sample.fraction", lower = 0.1, upper = 1),
