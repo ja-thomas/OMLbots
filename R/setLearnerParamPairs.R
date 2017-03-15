@@ -10,7 +10,7 @@ simple.lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.glmnet", predi
   param.set = makeParamSet(
     makeNumericParam("alpha", lower = 0, upper = 1, default = 1),
     makeNumericVectorParam("lambda", len = 1L, lower = -10, upper = 10, default = 0 ,trafo = function(x) 2^x)), 
-  lrn.ps.sets = simple.lrn.par.set)  
+  lrn.ps.sets = simple.lrn.par.set)
 
 # increase to a general param set
 lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.svm", predict.type = "prob"), 
@@ -32,7 +32,7 @@ lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.xgboost", predict.typ
     makeNumericParam("eta", lower = -10, upper = 0, trafo = function(x) 2^x),
     makeNumericParam("subsample",lower = 0.1, upper = 1),
     makeDiscreteParam("booster", values = c("gbtree", "gblinear")),
-    makeNumericParam("max_depth", lower = 1, upper = 15, requires = quote(booster == "gbtree")),
+    makeIntegerParam("max_depth", lower = 1, upper = 15, requires = quote(booster == "gbtree")),
     makeNumericParam("min_child_weight", lower = 0, upper = 7, requires = quote(booster == "gbtree"), trafo = function(x) 2^x),
     makeNumericParam("colsample_bytree", lower = 0, upper = 1, requires = quote(booster == "gbtree")),
     makeNumericParam("colsample_bylevel", lower = 0, upper = 1, requires = quote(booster == "gbtree")),
