@@ -32,9 +32,8 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
       mlr.par.set$mtry = ceiling(p * mlr.par.set$mtry)
     }
     if (getLearnerPackages(lrn) == "xgboost") {
-      data$input$data.set$data
       target.column = which(colnames(data$input$data.set$data) == data$input$data.set$target.features)
-      data$input$data.set$data = data.frame(conv2num(data$input$data.set$data[, -target.column]), data$input$data.set$data[, target.column])
+      data$input$data.set$data = data.frame(convToNum(data$input$data.set$data[, -target.column]), data$input$data.set$data[, target.column])
       colnames(data$input$data.set$data)[ncol(data$input$data.set$data)] = data$input$data.set$target.features
       mlr.par.set$nthread = 1
     }
@@ -57,4 +56,13 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
     exponentialBackOff(jobs = 1:nrow(par), registry = reg, start.resources = min.resources, max.resources = max.resources)
   else
     submitJobs()
+}
+
+# Conversion from factor to numeric for xgboost
+convToNum = function(data) {
+  char_i = names(Filter(function(x) x=="factor", sapply(data, class)))
+  for (i in char_i) {
+    data[, i] = as.numeric(ordered(data[, i]))
+  }
+  return(data)
 }
