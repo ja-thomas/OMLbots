@@ -27,6 +27,17 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
     # Run mlr
     mlr.par.set = list(...)
     mlr.par.set = mlr.par.set[!vlapply(mlr.par.set, is.na)]
+    if (getLearnerPackages(lrn) == "ranger") {
+      p = ncol(data$input$data.set$data) - 1
+      mlr.par.set$mtry = ceiling(p * mlr.par.set$mtry)
+    }
+    if (getLearnerPackages(lrn) == "xgboost") {
+      data$input$data.set$data
+      target.column = which(colnames(data$input$data.set$data) == data$input$data.set$target.features)
+      data$input$data.set$data = data.frame(conv2num(data$input$data.set$data[, -target.column]), data$input$data.set$data[, target.column])
+      colnames(data$input$data.set$data)[ncol(data$input$data.set$data)] = data$input$data.set$target.features
+      mlr.par.set$nthread = 1
+    }
     mlr.lrn = setHyperPars(mlr.lrn, par.vals = mlr.par.set)
     res = runTaskMlr(data, mlr.lrn, scimark.vector = sci.bench)
     print(res)

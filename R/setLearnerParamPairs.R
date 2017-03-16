@@ -45,5 +45,5 @@ lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.ranger", predict.type
     makeIntegerParam("num.trees", lower = 1, upper = 2000),
     makeLogicalParam("replace"),
     makeNumericParam("sample.fraction", lower = 0.1, upper = 1),
-    makeIntegerParam("mtry", lower = 1, upper = 5)),
+    makeNumericParam("mtry", lower = 0, upper = 1)),
   lrn.ps.sets = lrn.par.set)
