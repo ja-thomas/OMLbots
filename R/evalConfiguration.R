@@ -17,7 +17,7 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
   addProblem(name = task$name, data = task$task)
   
   addAlgorithm(lrn$short.name, fun = function(job, data, instance, mlr.lrn = lrn, 
-    should.upload = upload, add.tags = attr(par, "additional.tags"), extra.tag = extra.tag, ...) {
+    should.upload = upload, add.tags = attr(par, "additional.tags"), ...) {
     
     # FIXME: Check if there is any value in running this every time.
     #  If not, then run when creating registry.
