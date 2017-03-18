@@ -1,8 +1,8 @@
 library(devtools)
 load_all()
 
-for(i in 1:10){
-  runBot(100, path = "test", upload = TRUE)
+for(i in 1:3){
+  runBot(10, path = "test", upload = TRUE)
 }
 
 runBot(1, sample.configuration.fun = sampleDefaultConfiguration, upload = TRUE)

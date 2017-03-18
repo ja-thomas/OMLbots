@@ -15,12 +15,25 @@ runBot = function(batch.size, sample.learner.fun = sampleRandomLearner,
   path = NA, extra.tag = "botV1") {
   
   task = sample.task.fun()
+  task$task = getOMLTask(task$id)
   print(sprintf("Selected OML task: %s (id %s)", task$name, task$id))
+  
   lrn = sample.learner.fun(lrn.ps.sets)
   print(sprintf("Selected learner: %s", lrn$learner$short.name))
+  
   par = sample.configuration.fun(batch.size, lrn$param.set)
+  attr(par, "additional.tags") = c(attr(par, "additional.tags"), paste0("sciBenchV", packageDescription("rscimark")$Version))
+  attr(par, "additional.tags") = c(attr(par, "additional.tags"), extra.tag)
   print("Selected configurations:")
   print(par)
+  
+  if (getLearnerPackages(lrn$learner) == "ranger") {
+    p = ncol(task$task$input$data.set$data) - 1
+    par$mtry = ceiling(p * par$mtry)
+  }
+
   evalConfigurations(lrn$learner, task = task, par, min.resources, max.resources, 
-    upload = upload, path = path, extra.tag = extra.tag)
+    upload = upload, path = path)
 }
+
+
