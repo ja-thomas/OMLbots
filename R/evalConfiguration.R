@@ -10,9 +10,13 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
   
   attr(par, "additional.tags") = c(attr(par, "additional.tags"), paste0("sciBenchV", packageDescription("rscimark")$Version))
   task$task = getOMLTask(task$id)
-  reg = makeExperimentRegistry(file.dir = path, 
-    packages = c("mlr", "OpenML", "BBmisc"),
-    namespaces = "rscimark")
+  if(!dir.exists(path)){
+    reg = makeExperimentRegistry(file.dir = path, 
+      packages = c("mlr", "OpenML", "BBmisc"),
+      namespaces = "rscimark")
+  } else {
+    reg = loadRegistry(file.dir = path)
+  }
   
   addProblem(name = task$name, data = task$task)
   
@@ -55,6 +59,7 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
   if (!is.null(max.resources))
     exponentialBackOff(jobs = 1:nrow(par), registry = reg, start.resources = min.resources, max.resources = max.resources)
   else
+    reg$cluster.functions = makeClusterFunctionsSocket(3)
     submitJobs()
 }
 
