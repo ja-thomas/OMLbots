@@ -42,9 +42,7 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
   addExperiments(algo.designs = design, reg = reg)
   
   if (!is.null(max.resources)){
-    reg$cluster.functions = 
-makeClusterFunctionsSlurm("slurm_lmulrz.tmpl", 
-clusters = "serial")
+    reg$cluster.functions = makeClusterFunctionsSlurm("slurm_lmulrz.tmpl", clusters = "serial")
   #  exponentialBackOff(jobs = 1:nrow(par), registry = reg, 
 #start.resources = min.resources, max.resources = max.resources)    
   submitJobs(resources = max.resources)

@@ -2,11 +2,8 @@ library(devtools)
 load_all()
 
 # On LRZ
-# Interactiv
-runBot(2, path = "/naslx/projects/ua341/di49ruw/test", upload = TRUE)
-
-# In parallel mode
-max.resources = list(walltime = 1000, memory = 1000, ncpus = 2, ntasks = 2)
+# Serial cluster
+max.resources = list(walltime = 1000, memory = 1000)
 runBot(20, path = "/naslx/projects/ua341/di49ruw/test", upload = TRUE, max.resources = max.resources)
 
 for(i in 1:3){

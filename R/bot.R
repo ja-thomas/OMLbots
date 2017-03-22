@@ -31,9 +31,22 @@ runBot = function(batch.size, sample.learner.fun = sampleRandomLearner,
     p = ncol(task$task$input$data.set$data) - 1
     par$mtry = ceiling(p * par$mtry)
   }
+  
+  if (getLearnerPackages(lrn$learner) == "xgboost") {
+    target.column = which(colnames(task$task$input$data.set$data) == task$task$input$data.set$target.features)
+    task$task$input$data.set$data = data.frame(convToNum(task$task$input$data.set$data[, -target.column]), task$task$input$data.set$data[, target.column])
+    colnames(task$task$input$data.set$data)[ncol(task$task$input$data.set$data)] = task$task$input$data.set$target.features
+  }
 
   evalConfigurations(lrn$learner, task = task, par, min.resources, max.resources, 
     upload = upload, path = path)
 }
 
-
+# Conversion from factor to numeric for xgboost
+convToNum = function(data) {
+  char_i = names(Filter(function(x) x=="factor", sapply(data, class)))
+  for (i in char_i) {
+    data[,i] = as.numeric(ordered(data[, i]))
+  }
+  return(data)
+}
