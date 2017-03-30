@@ -1,6 +1,6 @@
-reference1.lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.randomForest", predict.type = "prob"), 
+reference1.lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.ranger", predict.type = "prob"), 
   param.set = makeParamSet(
-    makeIntegerParam("ntree", lower = 2000, upper = 2000, default = 2000)
+    makeIntegerParam("num.trees", lower = 2000, upper = 2000, default = 2000)
     )
 )
 

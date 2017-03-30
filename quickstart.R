@@ -3,17 +3,43 @@ load_all()
 
 # On LRZ
 # Serial cluster
-max.resources = list(walltime = 1000, memory = 1000)
-runBot(20, path = "/naslx/projects/ua341/di49ruw/test", upload = TRUE, max.resources = max.resources)
+setOMLConfig(apikey = "34ebc7dff3057d8e224e5beac53aea0e")
+max.resources = list(walltime = 10000, memory = 2000)
 
+for(i in 1:1000) {
+  try(runBot(100, path = paste0("/naslx/projects/ua341/di49ruw/test", i), 
+    sample.learner.fun = sampleRandomLearner, sample.task.fun = sampleRandomTask, 
+    sample.configuration.fun = sampleRandomConfiguration, max.resources = max.resources,  
+    lrn.ps.sets = lrn.par.set, upload = TRUE, extra.tag = "botV1"))
+}
+# Locally
 for(i in 1:3){
   runBot(10, path = "test", upload = TRUE)
 }
 
-runBot(1, sample.configuration.fun = sampleDefaultConfiguration, upload = TRUE)
-
 overview = getMlrRandomBotOverview("botV1")
 print(overview)
+# Geht nicht bei zu großen Ergebnissen; stattdessen mit limit und listOMLRuns 
+tag = "mlrRandomBot"
+numRuns = 30000
+results = do.call("rbind", 
+  lapply(0:floor(numRuns/10000), function(i) {
+    return(listOMLRuns(tag = tag, limit = 10000, offset = (10000 * i) + 1))
+  })
+)
+table(results$flow.id, results$task.id)
+
+res = do.call("rbind", 
+  lapply(0:floor(nrow(results)/100), function(i) {
+    return(listOMLRunEvaluations(run.id = results$run.id[((100*i)+1):(100*(i+1))]))
+  })
+)
+# dauert ewig
+df = res %>% 
+  mutate(flow.version = c(stri_match_last(flow.name, regex = "[[:digit:]]+\\.*[[:digit:]]*")),
+      learner.name = stri_replace_last(flow.name, replacement = "", regex = "[([:digit:]]+\\.*[[:digit:]*)]"))
+as.data.frame.matrix(table(df$learner.name, df$data.name))
+
 
 tbl.results = getMlrRandomBotResults("botV1")
 print(tbl.results)

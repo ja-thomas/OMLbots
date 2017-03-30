@@ -13,6 +13,7 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
     reg = makeExperimentRegistry(file.dir = path, 
       packages = c("mlr", "OpenML", "BBmisc"),
       namespaces = "rscimark")
+      #conf.file = ".batchtools.conf.R")
   } else {
     reg = loadRegistry(file.dir = path)
   }
@@ -43,14 +44,12 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources,
   
   if (!is.null(max.resources)){
     reg$cluster.functions = makeClusterFunctionsSlurm("slurm_lmulrz.tmpl", clusters = "serial")
-  #  exponentialBackOff(jobs = 1:nrow(par), registry = reg, 
-#start.resources = min.resources, max.resources = max.resources)    
-  submitJobs(resources = max.resources)
+    # exponentialBackOff(jobs = 1:nrow(par), registry = reg, start.resources = min.resources, max.resources = max.resources)    
+    submitJobs(resources = max.resources)
   } else {
-#    reg$cluster.functions = makeClusterFunctionsSocket(3)
+    reg$cluster.functions = makeClusterFunctionsSocket(3)
     submitJobs()    
   }
-  
   waitForJobs(reg = reg)
   unlink(path, recursive = TRUE)
 }
