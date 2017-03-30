@@ -10,8 +10,8 @@ reference2.lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.featureles
   )
 )
 
-tasks = listOMLTasks(number.of.classes = 2L, number.of.instances = c(100L, 500L), 
-  number.of.features = c(3L, 20L), number.of.missing.values = 0, estimation.procedure = "33% Holdout set")
+tasks = listOMLTasks(number.of.classes = 2L, number.of.missing.values = 0, 
+  data.tag = "study_14", estimation.procedure = "10-fold Crossvalidation")
 
 for (i in seq_along(tasks)) {
   fixed.task = function() list(id = tasks$task.id[i], name = tasks$name[i])
