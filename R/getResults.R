@@ -10,7 +10,9 @@ getMlrRandomBotOverview = function(tag = "mlrRandomBot") {
 
 # @param tag Name of the tag of the benchmark study.
 # @return [\code{data.frame}] Table with run.id, task.id, flow.id, flow.name, measure values.
-getMlrRandomBotResults = function(tag = "mlrRandomBot") {
+getRunTable = function(tag = "mlrRandomBot") {
+  
+  
   df = listOMLRunEvaluations(tag = tag) %>%
     gather(., key = "measure.name", value = "measure.value", -(run.id:upload.time), na.rm = TRUE) %>%
     mutate(flow.version = c(stri_match_last(flow.name, regex = "[[:digit:]]+\\.*[[:digit:]]*")),
@@ -21,8 +23,11 @@ getMlrRandomBotResults = function(tag = "mlrRandomBot") {
 
 # @param tag Name of the tag of the benchmark study.
 # @return [\code{data.frame}] Table with run.id, hyperparameter name & value.
-getMlrRandomBotHyperpars = function(tag = "mlrRandomBot") {
+getHyperparTable = function(tag = "mlrRandomBot") {
   runs = listOMLRuns(tag = tag)
+  
+  
+  
   res = lapply(runs$run.id, function(x){
     pars = getOMLRunParList(getOMLRun(x))
     #FIXME: Just kill me now...
