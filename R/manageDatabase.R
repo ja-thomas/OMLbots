@@ -48,15 +48,18 @@ initializeLocalDatabase = function(path = ".", overwrite = FALSE) {
   return(src)
 }
 
-updateRunTable = function(){
+updateRunTable = function(run.tag, local.db){
+  df = getRunTable(run.tag = run.tag)
   
 }
 
-updateHyperparTable = function(){
+updateHyperparTable = function(run.tag, local.db){
+  df = getHyperparTable(run.tag = run.tag)
   
 }
 
-updateMetaTable = function(){
+updateMetaTable = function(task.tag, local.db){
+  df = getMetaFeaturesTable(task.tag = task.tag)
   
 }
 
@@ -65,9 +68,12 @@ updateMetaTable = function(){
 #' @param run.tag tag for OMLRun
 #' @param task.tag tag for OMLTask
 #' @return database
-updateLocalDatabase = function(path, run.tag = "mlrRandomBotV1", task.tag = "study_14") {
+updateLocalDatabase = function(path = ".", run.tag = "mlrRandomBot", task.tag = "study_14") {
   
   local.db = initializeLocalDatabase(path = path)
+  updateRunTable(run.tag = run.tag, local.db)
+  updateHyperparTable(run.tag = run.tag, local.db)
+  updateMetaTable(task.tag = task.tag, local.db)
   
   
   

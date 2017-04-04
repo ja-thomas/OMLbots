@@ -17,37 +17,16 @@ for(i in 1:3){
   runBot(10, path = "test", upload = TRUE)
 }
 
-overview = getMlrRandomBotOverview("botV1")
-print(overview)
-# Geht nicht bei zu großen Ergebnissen; stattdessen mit limit und listOMLRuns 
-tag = "mlrRandomBot"
-numRuns = 30000
-results = do.call("rbind", 
-  lapply(0:floor(numRuns/10000), function(i) {
-    return(listOMLRuns(tag = tag, limit = 10000, offset = (10000 * i) + 1))
-  })
-)
-table(results$flow.id, results$task.id)
+#overview = getMlrRandomBotOverview("botV1")
+#print(overview)
 
-res = do.call("rbind", 
-  lapply(0:floor(nrow(results)/100), function(i) {
-    return(listOMLRunEvaluations(run.id = results$run.id[((100*i)+1):(100*(i+1))]))
-  })
-)
-# dauert ewig
-df = res %>% 
-  mutate(flow.version = c(stri_match_last(flow.name, regex = "[[:digit:]]+\\.*[[:digit:]]*")),
-      learner.name = stri_replace_last(flow.name, replacement = "", regex = "[([:digit:]]+\\.*[[:digit:]*)]"))
-as.data.frame.matrix(table(df$learner.name, df$data.name))
-
-
-tbl.results = getMlrRandomBotResults("botV1")
+tbl.results = getRunTable(run.tag = "botV1")
 print(tbl.results)
 
-tbl.hypPars = getMlrRandomBotHyperpars("botV1")
+tbl.hypPars = getHyperparTable(run.tag = "botV1")
 print(tbl.hypPars)
 
-tbl.metaFeatures = getMetaFeatures(tag = "study_14")
+tbl.metaFeatures = getMetaFeaturesTable(task.tag = "study_14")
 print(head(tbl.metaFeatures))
 
 # surrogate function stuff
