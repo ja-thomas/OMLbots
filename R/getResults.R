@@ -62,7 +62,7 @@ addDefaultValues = function(res, flow.id) {
     res = gather(data_wide, hyperpar.name, hyperpar.value, -run.id)
   }
   
-  if(flow.id %in% c(5889, 5964, 5965, 5968) { # ranger
+  if(flow.id %in% c(5889, 5964, 5965, 5968)) { # ranger
     levels(res$hyperpar.value) = c(levels(res$hyperpar.value), TRUE, 500, FALSE)
     data_wide <- spread(res, hyperpar.name, hyperpar.value)
     data_wide$num.trees[is.na(data_wide$num.trees)] = 500
@@ -71,7 +71,7 @@ addDefaultValues = function(res, flow.id) {
     res = gather(data_wide, hyperpar.name, hyperpar.value, -run.id)
   }
     
-    if(flow.id %in% c(5906, 5963, 5971, 6003) { # xgboost
+    if(flow.id %in% c(5906, 5963, 5971, 6003)) { # xgboost
       levels(res$hyperpar.value) = c(levels(res$hyperpar.value), "gbtree", 1, 6)
       data_wide <- spread(res, hyperpar.name, hyperpar.value)
       data_wide$nrounds[is.na(data_wide$nrounds)] = 1
