@@ -38,6 +38,51 @@ getMlrRandomBotHyperpars = function(tag = "mlrRandomBot") {
   return(res)
 }
 
+addDefaultValues = function(res, flow.id) {
+  if(flow.id %in% c(5624, 5859)) { # rpart
+    levels(res$hyperpar.value) = c(levels(res$hyperpar.value), 30, 20)
+    data_wide <- spread(res, hyperpar.name, hyperpar.value)
+    data_wide$maxdepth[is.na(data_wide$maxdepth)] = 30
+    data_wide$minsplit[is.na(data_wide$minsplit)] = 20
+    res = gather(data_wide, hyperpar.name, hyperpar.value, -run.id, -xval)
+  }
+  
+  if(flow.id %in% c(5890, 5972)) { # kknn
+    res$hyperpar.name = "k"
+    levels(res$hyperpar.value) = c(levels(res$hyperpar.value), 7)
+    res$hyperpar.value[is.na(res$hyperpar.value)] = 7
+  }
+  
+  if(flow.id %in% c(5891,5969)) { # svm
+    levels(res$hyperpar.value) = c(levels(res$hyperpar.value), "radial", 3)
+    data_wide <- spread(res, hyperpar.name, hyperpar.value)
+    data_wide$kernel[is.na(data_wide$kernel)] = "radial"
+    nas = is.na(data_wide[data_wide$kernel == "polynomial",]$degree)
+    data_wide[data_wide$kernel == "polynomial",]$degree[nas] = 3
+    res = gather(data_wide, hyperpar.name, hyperpar.value, -run.id)
+  }
+  
+  if(flow.id %in% c(5889, 5964, 5965, 5968) { # ranger
+    levels(res$hyperpar.value) = c(levels(res$hyperpar.value), TRUE, 500, FALSE)
+    data_wide <- spread(res, hyperpar.name, hyperpar.value)
+    data_wide$num.trees[is.na(data_wide$num.trees)] = 500
+    data_wide$replace[is.na(data_wide$replace)] = TRUE
+    data_wide$respect.unordered.factors[is.na(data_wide$respect.unordered.factors)] = FALSE
+    res = gather(data_wide, hyperpar.name, hyperpar.value, -run.id)
+  }
+    
+    if(flow.id %in% c(5906, 5963, 5971, 6003) { # xgboost
+      levels(res$hyperpar.value) = c(levels(res$hyperpar.value), "gbtree", 1, 6)
+      data_wide <- spread(res, hyperpar.name, hyperpar.value)
+      data_wide$nrounds[is.na(data_wide$nrounds)] = 1
+      data_wide$booster[is.na(data_wide$booster)] = "gbtree"
+      nas = is.na(data_wide[data_wide$booster == "gbtree",]$max_depth)
+      data_wide[data_wide$booster == "gbtree",]$max_depth[nas] = 6
+      res = gather(data_wide, hyperpar.name, hyperpar.value, -run.id)
+    }
+      res
+}
+
 # @param tag Name of the tag of the benchmark datasets.
 # @return [\code{data.frame}] Table with task.id, data.id, name, target.feature and metafeatures.
 getMetaFeatures = function(tag = "study_14") {
