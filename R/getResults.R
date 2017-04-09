@@ -21,17 +21,21 @@ getRunTable = function(run.tag = "mlrRandomBot", excl.run.ids = NULL, local.db =
     
     results = results[results$run.id %in% setdiff(results$run.id, excl.run.ids),]
     
-    res = do.call("rbind", 
-      lapply(0:floor(nrow(results)/100), function(i) {
-        return(listOMLRunEvaluations(run.id = results$run.id[((100*i)+1):(100*(i+1))]))
-      })
-    )
-    
-    df = res %>%
-      gather(., key = "measure.name", value = "measure.value", -(run.id:upload.time), na.rm = TRUE) %>%
-      mutate(flow.version = c(stri_match_last(flow.name, regex = "[[:digit:]]+\\.*[[:digit:]]*")),
-        learner.name = stri_replace_last(flow.name, replacement = "", regex = "[([:digit:]]+\\.*[[:digit:]*)]"))
-  
+    if(nrow(results) > 0){
+      res = do.call("rbind", 
+        lapply(0:floor(nrow(results)/100), function(i) {
+          return(listOMLRunEvaluations(run.id = results$run.id[((100*i)+1):(100*(i+1))]))
+        })
+      )
+      
+      df = res %>%
+        gather(., key = "measure.name", value = "measure.value", -(run.id:upload.time), na.rm = TRUE) %>%
+        mutate(flow.version = c(stri_match_last(flow.name, regex = "[[:digit:]]+\\.*[[:digit:]]*")),
+          learner.name = stri_replace_last(flow.name, replacement = "", regex = "[([:digit:]]+\\.*[[:digit:]*)]"))
+    } else {
+      df <- NULL
+    }
+
   } else {
     df = collect(tbl(local.db, sql("SELECT * FROM [run.table]")))
   }

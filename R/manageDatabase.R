@@ -51,7 +51,7 @@ initializeLocalDatabase = function(path = ".", overwrite = FALSE) {
     copy_to(src, meta.table, temporary = FALSE)
     
   } else {
-    src = src_sqlite(path)
+    src = src_sqlite(db)
   }
   
   return(src)
@@ -59,8 +59,10 @@ initializeLocalDatabase = function(path = ".", overwrite = FALSE) {
 
 updateRunTable = function(run.tag, local.db){
   run.ids <- collect(tbl(local.db, sql("SELECT DISTINCT [run.id] FROM [run.table]")))
-  df = getRunTable(run.tag = run.tag, excl.run.ids = run.ids)
-  db_insert_into(local.db$con, "run.table", df)
+  df = getRunTable(run.tag = run.tag, excl.run.ids = run.ids$run.id)
+  if(!is.null(df)){
+    db_insert_into(local.db$con, "run.table", df)
+  }
 }
 
 updateHyperparTable = function(run.tag, local.db){
