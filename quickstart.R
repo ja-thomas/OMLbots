@@ -32,28 +32,22 @@ results = do.call("rbind",
 table(results$flow.id, results$task.id)
 table(results$uploader)
 
-res = do.call("rbind", 
-  lapply(0:floor(nrow(results)/100), function(i) {
-    return(listOMLRunEvaluations(run.id = results$run.id[((100*i)+1):(100*(i+1))]))
-  })
-)
-# dauert ewig
-df = res %>% 
-  mutate(flow.version = c(stri_match_last(flow.name, regex = "[[:digit:]]+\\.*[[:digit:]]*")),
-      learner.name = stri_replace_last(flow.name, replacement = "", regex = "[([:digit:]]+\\.*[[:digit:]*)]"))
-as.data.frame.matrix(table(df$learner.name, df$data.name))
+updateLocalDatabase()
+local.db = initializeLocalDatabase()
 
+for(i in 2:11){
+  deleteOMLObject(results$run.id[i], object = "run")
+}
 
-for(i in 2:11)
-deleteOMLObject(results$run.id[i], object = "run")
+tbl.results = getRunTable(local.db = local.db)
 
-tbl.results = getMlrRandomBotResults("botV1")
+ 
 print(tbl.results)
 
-tbl.hypPars = getMlrRandomBotHyperpars("botV1")
+tbl.hypPars = getHyperparTable(local.db = local.db)
 print(tbl.hypPars)
 
-tbl.metaFeatures = getMetaFeatures(tag = "study_14")
+tbl.metaFeatures = getMetaFeaturesTable(local.db = local.db)
 print(head(tbl.metaFeatures))
 
 # surrogate function stuff
