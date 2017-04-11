@@ -45,32 +45,43 @@ getRunTable = function(run.tag = "mlrRandomBot", excl.run.ids = NULL, local.db =
 
 # @param tag Name of the tag of the benchmark study.
 # @return [\code{data.frame}] Table with run.id, hyperparameter name & value.
-getHyperparTable = function(run.tag = "mlrRandomBot", excl.run.ids = NULL) {
-  numRuns = 20000 #FIXME: Fix this once OpenML offers different solution
-  runs = do.call("rbind", 
-    lapply(0:floor(numRuns/10000), function(i) {
-      return(listOMLRuns(tag = run.tag, limit = 10000, offset = (10000 * i) + 1))
-    })
-  )
-
-  # FIXME: HORRIBLE performance
-  res = lapply(runs$run.id, function(x){ #FIXME: Increase performance once OpenML offers solution
-    pars = tryCatch(getOMLRunParList(getOMLRun(x)), error = function(cond){return(NA)}) 
-    if(length(pars) > 0){
-      pars = ifelse(is.na(pars),
-        data.frame(name = "run_NA", value = NA, component = NA, stringsAsFactors = FALSE),
-        data.frame(do.call(rbind, lapply(pars, function(p) do.call(cbind, p))), stringsAsFactors = FALSE))
+getHyperparTable = function(run.tag = "mlrRandomBot", excl.run.ids = NULL, local.db = NULL) {
+  if(is.null(local.db)){
+    numRuns = 20000 #FIXME: Fix this once OpenML offers different solution
+    runs = do.call("rbind", 
+                   lapply(0:floor(numRuns/10000), function(i) {
+                     return(listOMLRuns(tag = run.tag, limit = 10000, offset = (10000 * i) + 1))
+                   })
+    )
+    
+    runs = runs[runs$run.id %in% setdiff(runs$run.id, excl.run.ids),]
+    
+    if(nrow(runs) > 0){
+      # FIXME: HORRIBLE performance
+      res = lapply(runs$run.id, function(x){ #FIXME: Increase performance once OpenML offers solution
+        pars = tryCatch(getOMLRunParList(getOMLRun(x)), error = function(cond){return(NA)}) 
+        if(length(pars) > 0){
+          pars = ifelse(is.na(pars),
+                        data.frame(name = "run_NA", value = NA, component = NA, stringsAsFactors = FALSE),
+                        data.frame(do.call(rbind, lapply(pars, function(p) do.call(cbind, p))), stringsAsFactors = FALSE))
+        } else {
+          pars = data.frame(name = "no_pars", value = NA, component = NA, stringsAsFactors = FALSE)
+        }
+        
+        pars$run.id = x
+        return(pars)
+      })
+      res = do.call(rbind, res)
+      res = res %>% 
+        mutate(hyperpar.name = name, hyperpar.value = value) %>% 
+        select(run.id, hyperpar.name, hyperpar.value)
     } else {
-      pars = data.frame(name = "no_pars", value = NA, component = NA, stringsAsFactors = FALSE)
+      res = NULL
     }
     
-    pars$run.id = x
-    pars
-  })
-  res = do.call(rbind, res)
-  res = res %>% 
-    mutate(hyperpar.name = name, hyperpar.value = value) %>% 
-    select(run.id, hyperpar.name, hyperpar.value)
+  } else {
+    res = collect(tbl(local.db, sql("SELECT * FROM [hyperpar.table]")))
+  }
   
   return(res)
 }

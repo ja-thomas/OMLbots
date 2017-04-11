@@ -67,8 +67,10 @@ updateRunTable = function(run.tag, local.db){
 
 updateHyperparTable = function(run.tag, local.db){
   run.ids <- collect(tbl(local.db, sql("SELECT DISTINCT [run.id] FROM [hyperpar.table]")))
-  df = getHyperparTable(run.tag = run.tag)
-  db_insert_into(local.db$con, "hyperpar.table", df)
+  df = getHyperparTable(run.tag = run.tag, excl.run.ids = run.ids$run.id)
+  if(!is.null(df)){
+    db_insert_into(local.db$con, "hyperpar.table", df)
+  }
 }
 
 updateMetaTable = function(task.tag, local.db){
