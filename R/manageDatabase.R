@@ -58,7 +58,7 @@ initializeLocalDatabase = function(path = ".", overwrite = FALSE) {
 }
 
 updateRunTable = function(run.tag, local.db){
-  run.ids <- collect(tbl(local.db, sql("SELECT DISTINCT [run.id] FROM [run.table]")))
+  run.ids = collect(tbl(local.db, sql("SELECT DISTINCT [run.id] FROM [run.table]")))
   df = getRunTable(run.tag = run.tag, excl.run.ids = run.ids$run.id)
   if(!is.null(df)){
     db_insert_into(local.db$con, "run.table", df)
@@ -66,7 +66,7 @@ updateRunTable = function(run.tag, local.db){
 }
 
 updateHyperparTable = function(run.tag, local.db){
-  run.ids <- collect(tbl(local.db, sql("SELECT DISTINCT [run.id] FROM [hyperpar.table]")))
+  run.ids = collect(tbl(local.db, sql("SELECT DISTINCT [run.id] FROM [hyperpar.table]")))
   df = getHyperparTable(run.tag = run.tag, excl.run.ids = run.ids$run.id)
   if(!is.null(df)){
     db_insert_into(local.db$con, "hyperpar.table", df)
@@ -74,8 +74,12 @@ updateHyperparTable = function(run.tag, local.db){
 }
 
 updateMetaTable = function(task.tag, local.db){
+  task.ids = collect(tbl(local.db, sql("SELECT DISTINCT [task.id] FROM [meta.table]")))
   df = getMetaFeaturesTable(task.tag = task.tag)
-  db_insert_into(local.db$con, "meta.table", df)
+  df = df[df$task.id %in% setdiff(df$task.id, task.ids),]
+  if(!is.null(df)){
+    db_insert_into(local.db$con, "meta.table", df)
+  }
 }
 
 #' Check each tables of the local database for update requirement
@@ -87,8 +91,8 @@ updateLocalDatabase = function(path = ".", run.tag = "mlrRandomBot", task.tag = 
   
   local.db = initializeLocalDatabase(path = path)
   updateRunTable(run.tag = run.tag, local.db)
-  #updateHyperparTable(run.tag = run.tag, local.db)
-  #updateMetaTable(task.tag = task.tag, local.db)
+  updateHyperparTable(run.tag = run.tag, local.db)
+  updateMetaTable(task.tag = task.tag, local.db)
 }
 
 

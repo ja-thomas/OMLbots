@@ -8,30 +8,43 @@ getMlrRandomBotOverview = function(tag = "mlrRandomBot") {
   return(as.data.frame.matrix(table(df$learner.name, df$data.name)))
 }
 
+# Small helper function to get a clean df from listOMLRuns
+getRunDf = function(run.tag, numRuns, excl.run.ids){
+  max.limit = 10000 #FIXME: fix this once OpenML offers new solution
+  results = do.call("rbind", 
+    lapply(seq(0, numRuns/max.limit), function(i) {
+      run.df = tryCatch(listOMLRuns(tag = run.tag, 
+        limit = min(max.limit, numRuns - max.limit * i), 
+        offset = (max.limit * i) + 1), 
+        error = function(cond){return(NULL)})
+      return(run.df)
+    })
+  )
+  
+  results = results[results$run.id %in% setdiff(results$run.id, excl.run.ids),]
+  return(results)
+}
+
 # @param tag Name of the tag of the benchmark study.
 # @return [\code{data.frame}] Table with run.id, task.id, flow.id, flow.name, measure values.
-getRunTable = function(run.tag = "mlrRandomBot", excl.run.ids = NULL, local.db = NULL) {
+getRunTable = function(run.tag = "mlrRandomBot", numRuns = 20000, excl.run.ids = NULL, local.db = NULL) {
   if(is.null(local.db)){
-    numRuns = 20000 #FIXME: fix this once OpenML offers new solution
-    results = do.call("rbind", 
-      lapply(0:floor(numRuns/10000), function(i) {
-        return(listOMLRuns(tag = run.tag, limit = 10000, offset = (10000 * i) + 1))
-      })
-    )
-    
-    results = results[results$run.id %in% setdiff(results$run.id, excl.run.ids),]
+    results = getRunDf(run.tag = run.tag, numRuns = numRuns, excl.run.ids = excl.run.ids)
     
     if(nrow(results) > 0){
+      res.ids = results$run.id
+      res.chunks = split(seq_along(res.ids), ceiling(seq_along(res.ids)/475))
       res = do.call("rbind", 
-        lapply(0:floor(nrow(results)/100), function(i) {
-          return(listOMLRunEvaluations(run.id = results$run.id[((100*i)+1):(100*(i+1))]))
+        lapply(seq_along(res.chunks), function(i) {
+          return(listOMLRunEvaluations(run.id = res.ids[res.chunks[[i]]]))
         })
       )
       
       df = res %>%
         gather(., key = "measure.name", value = "measure.value", -(run.id:upload.time), na.rm = TRUE) %>%
         mutate(flow.version = c(stri_match_last(flow.name, regex = "[[:digit:]]+\\.*[[:digit:]]*")),
-          learner.name = stri_replace_last(flow.name, replacement = "", regex = "[([:digit:]]+\\.*[[:digit:]*)]"))
+          learner.name = stri_replace_last(flow.name, replacement = "", regex = "[([:digit:]]+\\.*[[:digit:]*)]")) %>%
+        filter(substr(measure.name,1,5) != "array")
     } else {
       df <- NULL
     }
@@ -45,25 +58,18 @@ getRunTable = function(run.tag = "mlrRandomBot", excl.run.ids = NULL, local.db =
 
 # @param tag Name of the tag of the benchmark study.
 # @return [\code{data.frame}] Table with run.id, hyperparameter name & value.
-getHyperparTable = function(run.tag = "mlrRandomBot", excl.run.ids = NULL, local.db = NULL) {
+getHyperparTable = function(run.tag = "mlrRandomBot", numRuns = 100, excl.run.ids = NULL, local.db = NULL) {
   if(is.null(local.db)){
-    numRuns = 20000 #FIXME: Fix this once OpenML offers different solution
-    runs = do.call("rbind", 
-                   lapply(0:floor(numRuns/10000), function(i) {
-                     return(listOMLRuns(tag = run.tag, limit = 10000, offset = (10000 * i) + 1))
-                   })
-    )
-    
-    runs = runs[runs$run.id %in% setdiff(runs$run.id, excl.run.ids),]
+    runs = getRunDf(run.tag = run.tag, numRuns = numRuns, excl.run.ids = excl.run.ids)
     
     if(nrow(runs) > 0){
       # FIXME: HORRIBLE performance
       res = lapply(runs$run.id, function(x){ #FIXME: Increase performance once OpenML offers solution
         pars = tryCatch(getOMLRunParList(getOMLRun(x)), error = function(cond){return(NA)}) 
-        if(length(pars) > 0){
-          pars = ifelse(is.na(pars),
-                        data.frame(name = "run_NA", value = NA, component = NA, stringsAsFactors = FALSE),
-                        data.frame(do.call(rbind, lapply(pars, function(p) do.call(cbind, p))), stringsAsFactors = FALSE))
+        if(length(pars) > 0 && is.na(pars)){
+          pars = data.frame(name = "run_NA", value = NA, component = NA, stringsAsFactors = FALSE)
+        } else if (length(pars) > 0 && !is.na(pars)){
+          pars = data.frame(do.call(rbind, lapply(pars, function(p) do.call(cbind, p))), stringsAsFactors = FALSE)
         } else {
           pars = data.frame(name = "no_pars", value = NA, component = NA, stringsAsFactors = FALSE)
         }
@@ -88,11 +94,15 @@ getHyperparTable = function(run.tag = "mlrRandomBot", excl.run.ids = NULL, local
 
 # @param tag Name of the tag of the benchmark datasets.
 # @return [\code{data.frame}] Table with task.id, data.id, name, target.feature and metafeatures.
-getMetaFeaturesTable = function(task.tag = "study_14") {
-  df = listOMLTasks(tag = task.tag)
-  drops = c("task.type", "status", "format", "estimation.procedure", "evaluation.measures", 
-    "target.feature", "tags")
-  df = df[, !(names(df) %in% drops)]
-  
+getMetaFeaturesTable = function(task.tag = "study_14", local.db = NULL) {
+  if(is.null(local.db)){
+    df = listOMLTasks(tag = task.tag)
+    drops = c("task.type", "status", "format", "estimation.procedure", "evaluation.measures", 
+      "target.feature", "tags")
+    df = df[, !(names(df) %in% drops)]
+  } else {
+    df = collect(tbl(local.db, sql("SELECT * FROM [meta.table]")))
+  }
+
   return(df)
 }

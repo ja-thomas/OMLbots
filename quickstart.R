@@ -20,13 +20,16 @@ for(i in 1:3){
 #overview = getMlrRandomBotOverview("botV1")
 #print(overview)
 
-tbl.results = getRunTable(run.tag = "botV1")
+updateLocalDatabase()
+local.db = initializeLocalDatabase()
+
+tbl.results = getRunTable(local.db = local.db)
 print(tbl.results)
 
-tbl.hypPars = getHyperparTable(run.tag = "botV1")
+tbl.hypPars = getHyperparTable(local.db = local.db)
 print(tbl.hypPars)
 
-tbl.metaFeatures = getMetaFeaturesTable(task.tag = "study_14")
+tbl.metaFeatures = getMetaFeaturesTable(local.db = local.db)
 print(head(tbl.metaFeatures))
 
 # surrogate function stuff
