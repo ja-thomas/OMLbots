@@ -16,7 +16,8 @@ Depends:
   dplyr (>= 0.5.0),
   checkmate (>= 1.8.0),
   tidyr (>= 0.6.1),
-  stringi (>= 1.1.2) 
+  stringi (>= 1.1.2),
+  dummies (>= 1.5.6)
 Imports:
   rscimark (>= 1.0)
 
