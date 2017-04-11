@@ -107,6 +107,7 @@ addDefaultValues = function(res) {
   if(learner.name == "classif.xgboost") { # xgboost
     levels(res$hyperpar.value) = c(levels(res$hyperpar.value), "gbtree", 1, 6)
     data_wide <- spread(res, hyperpar.name, hyperpar.value)
+    data_wide$verbose = NULL
     data_wide$nrounds[is.na(data_wide$nrounds)] = 1
     data_wide$booster[is.na(data_wide$booster)] = "gbtree"
     nas = is.na(data_wide[data_wide$booster == "gbtree",]$max_depth)
