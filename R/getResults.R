@@ -15,7 +15,8 @@ getRunDf = function(run.tag, numRuns, excl.run.ids){
     lapply(seq(0, numRuns/max.limit), function(i) {
       run.df = tryCatch(listOMLRuns(tag = run.tag, 
         limit = min(max.limit, numRuns - max.limit * i), 
-        offset = (max.limit * i) + 1), 
+        offset = (max.limit * i) + 1,
+        uploader.id = 2702), # only OpenML_bot results
         error = function(cond){return(NULL)})
       return(run.df)
     })
@@ -62,68 +63,48 @@ getRunTable = function(run.tag = "mlrRandomBot", numRuns = 20000, excl.run.ids =
 # should be set to a value so that it downloads all available runs
 # @param n maximum number of runs that should be downloaded
 # @return [\code{data.frame}] Table with run.id, hyperparameter name & value.
-getHyperparTable = function(run.tag = "mlrRandomBot", numRuns = 100, excl.run.ids = NULL, local.db = NULL) {
+getHyperparTable = function(run.tag = "mlrRandomBot", numRuns = 10000, excl.run.ids = NULL, local.db = NULL, n = 100) {
   if(is.null(local.db)){
     runs = getRunDf(run.tag = run.tag, numRuns = numRuns, excl.run.ids = excl.run.ids)
+    runs = runs[sample(1:nrow(runs), size = n),]
     
     if(nrow(runs) > 0){
-      # FIXME: HORRIBLE performance
-      res = lapply(runs$run.id, function(x){ #FIXME: Increase performance once OpenML offers solution
-        pars = tryCatch(getOMLRunParList(getOMLRun(x)), error = function(cond){return(NA)}) 
-        if(length(pars) > 0 && is.na(pars)){
-          pars = data.frame(name = "run_NA", value = NA, component = NA, stringsAsFactors = FALSE)
-        } else if (length(pars) > 0 && !is.na(pars)){
-          pars = data.frame(do.call(rbind, lapply(pars, function(p) do.call(cbind, p))), stringsAsFactors = FALSE)
-        } else {
-          pars = data.frame(name = "no_pars", value = NA, component = NA, stringsAsFactors = FALSE)
-        }
-        
-        pars$run.id = x
-        return(pars)
-      })
-      res = do.call(rbind, res)
-      res = res %>% 
-        mutate(hyperpar.name = name, hyperpar.value = value) %>% 
-        select(run.id, hyperpar.name, hyperpar.value)
+      
+      res_total = data.frame()
+      flow.ids = unique(runs$flow.id)
+      
+      for(i in seq_along(flow.ids)) {
+        run.ids = runs$run.id[runs$flow.id == flow.ids[i]]
+        # FIXME: HORRIBLE performance
+        res = lapply(run.ids, function(x){ #FIXME: Increase performance once OpenML offers solution
+          pars = tryCatch(getOMLRunParList(getOMLRun(x)), error = function(cond){return(NA)}) 
+          if(length(pars) > 0 && is.na(pars)){
+            pars = data.frame(name = "run_NA", value = NA, component = NA, stringsAsFactors = FALSE)
+          } else if (length(pars) > 0 && !is.na(pars)){
+            pars = data.frame(do.call(rbind, lapply(pars, function(p) do.call(cbind, p))), stringsAsFactors = FALSE)
+          } else {
+            pars = data.frame(name = "no_pars", value = NA, component = NA, stringsAsFactors = FALSE)
+          }
+          
+          pars$run.id = x
+          return(pars)
+        })
+        res = do.call(rbind, res)
+        res = res %>% 
+          mutate(hyperpar.name = name, hyperpar.value = value) %>% 
+          select(run.id, hyperpar.name, hyperpar.value)
+        res = try(addDefaultValues(res))
+        if(ncol(res) == 3 && !is.character(res))
+          res_total = rbind(res_total, res)
+      }
     } else {
-      res = NULL
+      res_total = NULL
     }
     
   } else {
-    res = collect(tbl(local.db, sql("SELECT * FROM [hyperpar.table]")))
+    res_total = collect(tbl(local.db, sql("SELECT * FROM [hyperpar.table]")))
   }
 
-  
-  runs = runs[1:n,]
-  
-  # FIXME: HORRIBLE performance
-  res_total = data.frame()
-  flow.ids = unique(runs$flow.id)
-  
-  for(i in seq_along(flow.ids)) {
-    run.ids = runs$run.id[runs$flow.id == flow.ids[i]]
-    res = lapply(run.ids, function(x){ #FIXME: Increase performance once OpenML offers solution
-      pars = tryCatch(getOMLRunParList(getOMLRun(x)), error = function(cond){return(NA)}) 
-      if(length(pars) > 0){
-        pars = data.frame(do.call(rbind, lapply(pars, function(p) do.call(cbind, p))))
-        pars$run.id = x
-        pars
-      } else {
-        pars = data.frame(name = "no_pars", value = NA, component = NA, stringsAsFactors = FALSE)
-      }
-      
-      pars$run.id = x
-      pars
-    })
-    res = do.call(rbind, res)
-    
-    res = res %>% 
-      mutate(hyperpar.name = name, hyperpar.value = value) %>% 
-      select(run.id, hyperpar.name, hyperpar.value)
-    res = try(addDefaultValues(res))
-    if(ncol(res) == 3 && !is.character(res))
-      res_total = rbind(res_total, res)
-  }
   return(res_total)
 }
 
@@ -131,6 +112,12 @@ getHyperparTable = function(run.tag = "mlrRandomBot", numRuns = 100, excl.run.id
 # @return [\code{data.frame}] Long Table with added values for the defaults.
 addDefaultValues = function(res) {
   learner.name = try(listOMLRunEvaluations(run.id = res$run.id[1])$learner.name)
+  
+  if(learner.name == "classif.glmnet") { # glmnet
+    data_wide <- spread(res, hyperpar.name, hyperpar.value)
+    data_wide$s = NULL
+    res = gather(data_wide, hyperpar.name, hyperpar.value, -run.id)
+  }
   
   if(learner.name == "classif.rpart") { # rpart
     levels(res$hyperpar.value) = c(levels(res$hyperpar.value), 30, 20)
@@ -158,6 +145,7 @@ addDefaultValues = function(res) {
     levels(res$hyperpar.value) = c(levels(res$hyperpar.value), TRUE, 500, FALSE)
     data_wide <- spread(res, hyperpar.name, hyperpar.value)
     data_wide$verbose = NULL
+    data_wide$num.threads = NULL
     data_wide$num.trees[is.na(data_wide$num.trees)] = 500
     data_wide$replace[is.na(data_wide$replace)] = TRUE
     data_wide$respect.unordered.factors[is.na(data_wide$respect.unordered.factors)] = FALSE
