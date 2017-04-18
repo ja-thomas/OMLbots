@@ -26,7 +26,7 @@ overview = getMlrRandomBotOverview("botV1")
 print(overview)
 # Geht nicht bei zu großen Ergebnissen; stattdessen mit limit und listOMLRuns 
 tag = "mlrRandomBot"
-numRuns = 140000
+numRuns = 160000
 results = do.call("rbind", 
   lapply(0:floor(numRuns/10000), function(i) {
     return(listOMLRuns(tag = tag, limit = 10000, offset = (10000 * i) + 1))
@@ -42,9 +42,8 @@ for(i in 2:11){
   deleteOMLObject(results$run.id[i], object = "run")
 }
 
-tbl.results = getRunTable(local.db = local.db)
+tbl.results = getRunTable(local.db = NULL, numRuns = 170000)
 
- 
 print(tbl.results)
 
 tbl.hypPars = getHyperparTable(local.db = local.db)

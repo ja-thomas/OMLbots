@@ -33,9 +33,11 @@ runBot = function(batch.size, sample.learner.fun = sampleRandomLearner,
   }
   
   if (getLearnerPackages(lrn$learner) == "xgboost") {
-    cols = which(colnames(task$task$input$data.set$data) != task$task$input$data.set$target.features)
-    task$task$input$data.set$data[cols] = dummy.data.frame(task$task$input$data.set$data[cols])
     #task$task$input$data.set$data[cols] = data.frame(convToNum(task$task$input$data.set$data[, cols]))
+    
+    target = task$task$input$data.set$target.features
+    cols = which(colnames(task$task$input$data.set$data) != target)
+    task$task$input$data.set$data = cbind(sapply(dummy.data.frame(task$task$input$data.set$data[cols]), as.numeric), task$task$input$data.set$data[,target])
   }
   
   evalConfigurations(lrn$learner, task = task, par, min.resources, max.resources, 
