@@ -15,8 +15,11 @@ for(i in 2:1000) {
 
 
 # Locally
-for(i in 1:3){
-  runBot(3, lrn.ps.sets = lrn.par.set[5], path = "test", upload = TRUE)
+for(i in 1:1000){
+  try(runBot(100, path = paste0("test", i), 
+    sample.learner.fun = sampleRandomLearner, sample.task.fun = sampleRandomTask, 
+    sample.configuration.fun = sampleRandomConfiguration,   
+    lrn.ps.sets = lrn.par.set, upload = TRUE, extra.tag = "botV1"))
 }
 
 overview = getMlrRandomBotOverview("botV1")
@@ -47,7 +50,7 @@ print(tbl.results)
 tbl.hypPars = getHyperparTable(local.db = local.db)
 print(tbl.hypPars)
 
-tbl.metaFeatures = getMetaFeaturesTable(local.db = local.db)
+tbl.metaFeatures = getMetaFeaturesTable(local.db = NULL)
 print(head(tbl.metaFeatures))
 
 # surrogate function stuff
@@ -66,3 +69,41 @@ plot(x$pred.measure.value, x$pred.time)
 
 #create pareto-front 
 #pick random points from pareto-front for validation runs to check results
+
+# --------------------------------------------------------------------------------------------------------------------------------------
+# Create surrogate models
+library(repmis)
+source_data("https://github.com/PhilippPro/tunability/blob/master/hypPars.RData?raw=True")
+
+# get learner names
+library(stringi)
+learner.names = paste0("mlr.", names(lrn.par.set))
+learner.names = stri_sub(learner.names, 1, -5)
+# get task.ids
+task.ids = unique(tbl.results$task.id)
+# set surrogate model
+surrogate.mlr.lrn = makeLearner("regr.ranger", par.vals = list(num.trees = 2000))
+# user time fehlt noch im Modell!! -> Daniel
+
+surrogates_measures = surrogates_time = list()
+
+for (i in seq_along(learner.names)) {
+surrogates_measures[[i]] = makeSurrogateModels(measure.name = "area.under.roc.curve", learner.name = learner.names[i], task.ids, tbl.results, tbl.hypPars, 
+  tbl.metaFeatures, lrn.par.set, surrogate.mlr.lrn, min.experiments = 100)
+surrogates_time[[i]] = makeSurrogateModels(measure.name = "area.under.roc.curve", learner.name = learner.names[i], task.ids, tbl.results, tbl.hypPars, 
+  tbl.metaFeatures, lrn.par.set, surrogate.mlr.lrn, min.experiments = 100, time = TRUE)
+}
+names(surrogates_measures) = learner.names
+names(surrogates_time) = learner.names
+save(surrogates_measures, surrogates_time, file = "surrogates.RData")
+
+# Compare different surrogate models 
+surrogate.mlr.lrns = list(
+  makeLearner("regr.ranger", par.vals = list(num.trees = 2000)), 
+  makeLearner("regr.cubist")
+)
+res = makeSurrogateModels(measure.name = "area.under.roc.curve", learner.name = learner.names[1], task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
+  tbl.metaFeatures, surrogate.mlr.lrns, min.experiments = 100, benchmark = TRUE)
+
+
+
