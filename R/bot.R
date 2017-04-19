@@ -37,7 +37,8 @@ runBot = function(batch.size, sample.learner.fun = sampleRandomLearner,
     
     target = task$task$input$data.set$target.features
     cols = which(colnames(task$task$input$data.set$data) != target)
-    task$task$input$data.set$data = cbind(sapply(dummy.data.frame(task$task$input$data.set$data[,cols], sep = "_._"), as.numeric), task$task$input$data.set$data[,target])
+    task$task$input$data.set$data = data.frame(sapply(dummy.data.frame(task$task$input$data.set$data[,cols], sep = "_._"), as.numeric), 
+      task$task$input$data.set$data[,target,drop = F])
     colnames(task$task$input$data.set$data) = make.names(colnames(task$task$input$data.set$data))
   }
   
