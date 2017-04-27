@@ -1,7 +1,6 @@
 reference1.lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.ranger", predict.type = "prob"), 
   param.set = makeParamSet(
-    makeIntegerParam("num.trees", lower = 2000, upper = 2000, default = 2000),
-    makeIntegerParam("num.threads", lower = 1, upper = 1, default = 1)
+    makeIntegerParam("num.trees", lower = 2000, upper = 2000, default = 2000)
     )
 )
 

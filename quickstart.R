@@ -75,6 +75,14 @@ source_data("https://github.com/PhilippPro/tunability/blob/master/hypPars.RData?
 tbl.results = getRunTable(run.tag = "botV1", numRuns = 200000)
 tbl.metaFeatures = getMetaFeaturesTable(local.db = NULL)
 
+tbl.results = getRunTable(run.tag = "referenceV1", numRuns = 200000)
+tbl.results = data.table(tbl.results)
+tbl.results[tbl.results$measure.name == "area.under.roc.curve", list(AUC=mean(measure.value)), by = "data.name,learner.name"]
+
+is.data.table(tbl.results)
+table(tbl.results$measure.name)
+
+
 # get learner names
 library(stringi)
 learner.names = paste0("mlr.", names(lrn.par.set))
