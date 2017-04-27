@@ -13,7 +13,6 @@ for(i in 2:1000) {
     lrn.ps.sets = lrn.par.set, upload = TRUE, extra.tag = "botV1"))
 }
 
-
 # Locally
 for(i in 1:1000){
   try(runBot(100, path = paste0("test", i), 
@@ -73,6 +72,8 @@ plot(x$pred.measure.value, x$pred.time)
 # Create surrogate models
 library(repmis)
 source_data("https://github.com/PhilippPro/tunability/blob/master/hypPars.RData?raw=True")
+tbl.results = getRunTable(run.tag = "botV1", numRuns = 200000)
+tbl.metaFeatures = getMetaFeaturesTable(local.db = NULL)
 
 # get learner names
 library(stringi)
@@ -83,12 +84,16 @@ task.ids = unique(tbl.results$task.id)
 # set surrogate model
 surrogate.mlr.lrn = makeLearner("regr.ranger", par.vals = list(num.trees = 2000))
 # user time fehlt noch im Modell!! -> Daniel
+# +Skalierung mit Reference learner
+#tbl.results.ref = getRunTable("reference")
 
 surrogates_measures = surrogates_time = list()
 
 for (i in seq_along(learner.names)) {
-surrogates_measures[[i]] = makeSurrogateModels(measure.name = "area.under.roc.curve", learner.name = learner.names[i], task.ids, tbl.results, tbl.hypPars, 
-  tbl.metaFeatures, lrn.par.set, surrogate.mlr.lrn, min.experiments = 100)
+surrogates_measures[[i]] = makeSurrogateModels(measure.name = "area.under.roc.curve", 
+  learner.name = learner.names[i], task.ids,   lrn.par.set, tbl.results, tbl.hypPars, 
+  tbl.metaFeatures, surrogate.mlr.lrn, min.experiments = 100)
+
 surrogates_time[[i]] = makeSurrogateModels(measure.name = "area.under.roc.curve", learner.name = learner.names[i], task.ids, tbl.results, tbl.hypPars, 
   tbl.metaFeatures, lrn.par.set, surrogate.mlr.lrn, min.experiments = 100, time = TRUE)
 }

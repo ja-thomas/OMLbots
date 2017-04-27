@@ -27,7 +27,7 @@ runBot = function(batch.size, sample.learner.fun = sampleRandomLearner,
   print("Selected configurations:")
   print(par)
   
-  if (getLearnerPackages(lrn$learner) == "ranger") {
+  if (getLearnerPackages(lrn$learner) == "ranger" & extra.tag != "referenceV1") {
     p = ncol(task$task$input$data.set$data) - 1
     par$mtry = ceiling(p * par$mtry)
   }
