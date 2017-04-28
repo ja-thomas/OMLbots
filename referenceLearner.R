@@ -13,7 +13,7 @@ reference2.lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.featureles
 tasks = listOMLTasks(number.of.classes = 2L, number.of.missing.values = 0, 
   data.tag = "study_14", estimation.procedure = "10-fold Crossvalidation")
 
-for (i in seq_along(tasks)) {
+for (i in 1:nrow(tasks)) {
   fixed.task = function() list(id = tasks$task.id[i], name = tasks$name[i])
   
   runBot(10, sample.learner.fun = sampleRandomLearner, 

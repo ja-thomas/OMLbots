@@ -4,9 +4,9 @@ load_all()
 # On LRZ
 # Serial cluster
 setOMLConfig(apikey = "34ebc7dff3057d8e224e5beac53aea0e")
-max.resources = list(walltime = 3600*6, memory = 2000)
+max.resources = list(walltime = 3600*5, memory = 2000)
 
-for(i in 2:1000) {
+for(i in 1:1000) {
   try(runBot(500, path = paste0("/naslx/projects/ua341/di49ruw/test", i), 
     sample.learner.fun = sampleRandomLearner, sample.task.fun = sampleRandomTask, 
     sample.configuration.fun = sampleRandomConfiguration, max.resources = max.resources,  
@@ -34,9 +34,6 @@ results = do.call("rbind",
 table(results$flow.id, results$task.id)
 table(results$uploader)
 
-updateLocalDatabase()
-local.db = initializeLocalDatabase()
-
 for(i in 2:11){
   deleteOMLObject(results$run.id[i], object = "run")
 }
@@ -50,6 +47,28 @@ print(tbl.hypPars)
 
 tbl.metaFeatures = getMetaFeaturesTable(local.db = NULL)
 print(head(tbl.metaFeatures))
+
+# Database
+
+local.db = initializeLocalDatabase(overwrite = FALSE)
+run.tag = "botV1"
+updateLocalDatabase()
+updateRunTable(run.tag = run.tag, local.db) # geht das gescheit?
+updateHyperparTable(run.tag = run.tag, local.db)
+updateMetaTable(task.tag = "study_14", local.db)
+updateRunTimeTable(local.db)
+meta.table1 = tbl(local.db, "meta.table")
+
+a = getRunTable(local.db = local.db, numRuns = 5000000)
+b = getHyperparTable(local.db = local.db, numRuns = 1000000)
+c = getMetaFeaturesTable(local.db = local.db)
+d = getRunTimeTable(local.db = local.db)
+
+a <- tbl(local.db, "run.table")
+remote <- select(filter(batting, yearID > 2010 && stint == 1), playerID:H)
+local = collect(a)
+dim(local)
+
 
 # surrogate function stuff
 x <- makeMeasureTimePrediction(measure.name = "area.under.roc.curve",
@@ -75,7 +94,7 @@ source_data("https://github.com/PhilippPro/tunability/blob/master/hypPars.RData?
 tbl.results = getRunTable(run.tag = "botV1", numRuns = 200000)
 tbl.metaFeatures = getMetaFeaturesTable(local.db = NULL)
 
-tbl.results = getRunTable(run.tag = "referenceV1", numRuns = 200000)
+tbl.results = getRunTable(run.tag = "referenceV1", numRuns = 20000)
 tbl.results = data.table(tbl.results)
 tbl.results[tbl.results$measure.name == "area.under.roc.curve", list(AUC=mean(measure.value)), by = "data.name,learner.name"]
 
@@ -93,7 +112,6 @@ task.ids = unique(tbl.results$task.id)
 surrogate.mlr.lrn = makeLearner("regr.ranger", par.vals = list(num.trees = 2000))
 # user time fehlt noch im Modell!! -> Daniel
 # +Skalierung mit Reference learner
-#tbl.results.ref = getRunTable("reference")
 
 surrogates_measures = surrogates_time = list()
 

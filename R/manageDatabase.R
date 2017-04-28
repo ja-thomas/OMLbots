@@ -101,8 +101,9 @@ updateRunTimeTable = function(local.db){
   
   run.chunks = run.chunks[1:10] #just for testing: can be switched off
   
-  for(i in run.chunks){
-    df = getRunTime(i)
+  for(i in seq_along(run.chunks)){
+    print(paste("Chunk", i, "of", length(run.chunks)))
+    df = getRunTime(run.chunks[[i]])
     if(!is.null(df)){
       db_insert_into(local.db$con, "runtime.table", df)
     }

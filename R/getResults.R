@@ -28,7 +28,7 @@ getRunDf = function(run.tag, numRuns, excl.run.ids){
 
 #' @param tag Name of the tag of the benchmark study.
 #' @return [\code{data.frame}] Table with run.id, task.id, flow.id, flow.name, measure values.
-getRunTable = function(run.tag = "mlrRandomBot", numRuns = 20000, excl.run.ids = NULL, local.db = NULL) {
+getRunTable = function(run.tag = "mlrRandomBot", numRuns = 200000, excl.run.ids = NULL, local.db = NULL) {
   if(is.null(local.db)){
     results = getRunDf(run.tag = run.tag, numRuns = numRuns, excl.run.ids = excl.run.ids)
     
@@ -51,7 +51,7 @@ getRunTable = function(run.tag = "mlrRandomBot", numRuns = 20000, excl.run.ids =
     }
 
   } else {
-    df = collect(tbl(local.db, sql("SELECT * FROM [run.table]")))
+    df = collect(tbl(local.db, sql("SELECT * FROM [run.table]")), n = numRuns)
   }
 
   return(df)
@@ -63,10 +63,10 @@ getRunTable = function(run.tag = "mlrRandomBot", numRuns = 20000, excl.run.ids =
 #' should be set to a value so that it downloads all available runs
 #' @param n maximum number of runs that should be downloaded
 #' @return [\code{data.frame}] Table with run.id, hyperparameter name & value.
-getHyperparTable = function(run.tag = "mlrRandomBot", numRuns = 10000, excl.run.ids = NULL, local.db = NULL, n = 100) {
+getHyperparTable = function(run.tag = "mlrRandomBot", numRuns = 200000, excl.run.ids = NULL, local.db = NULL, n = 200000) {
   if(is.null(local.db)){
     runs = getRunDf(run.tag = run.tag, numRuns = numRuns, excl.run.ids = excl.run.ids)
-    runs = runs[sample(1:nrow(runs), size = n),]
+    runs = runs[sample(1:nrow(runs), size = min(n,nrow(runs))),]
     
     if(nrow(runs) > 0){
       
@@ -102,7 +102,7 @@ getHyperparTable = function(run.tag = "mlrRandomBot", numRuns = 10000, excl.run.
     }
     
   } else {
-    res_total = collect(tbl(local.db, sql("SELECT * FROM [hyperpar.table]")))
+    res_total = collect(tbl(local.db, sql("SELECT * FROM [hyperpar.table]")), n = numRuns)
   }
 
   return(res_total)
@@ -216,5 +216,11 @@ getRunTime = function(run.ids) {
   res = lapply(run.ids, function(x) scrapeRunTime(x))
   df = do.call(rbind, res)
   return(df)
+}
+
+#' Get runtime table from the database
+getRunTimeTable = function(local.db = NULL) {
+  if(!is.null(local.db))
+    collect(tbl(local.db, sql("SELECT * FROM [runtime.table]")))
 }
 
