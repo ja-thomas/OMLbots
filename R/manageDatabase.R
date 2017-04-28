@@ -99,7 +99,7 @@ updateRunTimeTable = function(local.db){
   run.ids = local.db %>% tbl(sql(qry_sql)) %>% collect(n = Inf)
   run.chunks = split(run.ids$run.id, ceiling(seq_along(run.ids$run.id)/100))
   
-  run.chunks = run.chunks[1:10] #just for testing: can be switched off
+  #run.chunks = run.chunks[1:10] #just for testing: can be switched off
   
   for(i in seq_along(run.chunks)){
     print(paste("Chunk", i, "of", length(run.chunks)))

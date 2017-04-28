@@ -14,7 +14,7 @@ getRunDf = function(run.tag, numRuns, excl.run.ids){
   results = do.call("rbind", 
     lapply(seq(0, numRuns/max.limit), function(i) {
       run.df = tryCatch(listOMLRuns(tag = run.tag, 
-        limit = min(max.limit, numRuns - max.limit * i), 
+        limit = max.limit, #min(max.limit, numRuns - max.limit * i), 
         offset = (max.limit * i) + 1,
         uploader.id = 2702), # only OpenML_bot results
         error = function(cond){return(NULL)})
@@ -34,10 +34,11 @@ getRunTable = function(run.tag = "mlrRandomBot", numRuns = 200000, excl.run.ids 
     
     if(nrow(results) > 0){
       res.ids = results$run.id
-      res.chunks = split(seq_along(res.ids), ceiling(seq_along(res.ids)/475))
+      #res.chunks = split(seq_along(res.ids), ceiling(seq_along(res.ids)/475))
       res = do.call("rbind", 
-        lapply(seq_along(res.chunks), function(i) {
-          return(listOMLRunEvaluations(run.id = res.ids[res.chunks[[i]]]))
+        lapply(seq_along(res.ids), function(i) {
+          #return(listOMLRunEvaluations(run.id = res.ids[res.chunks[[i]]]))
+          return(listOMLRunEvaluations(run.id = res.ids[i]))
         })
       )
       
@@ -47,7 +48,7 @@ getRunTable = function(run.tag = "mlrRandomBot", numRuns = 200000, excl.run.ids 
           learner.name = stri_replace_last(flow.name, replacement = "", regex = "[([:digit:]]+\\.*[[:digit:]*)]")) %>%
         filter(substr(measure.name,1,5) != "array")
     } else {
-      df <- NULL
+      df = NULL
     }
 
   } else {
@@ -114,14 +115,14 @@ addDefaultValues = function(res) {
   learner.name = try(listOMLRunEvaluations(run.id = res$run.id[1])$learner.name)
   
   if(learner.name == "classif.glmnet") { # glmnet
-    data_wide <- spread(res, hyperpar.name, hyperpar.value)
+    data_wide = spread(res, hyperpar.name, hyperpar.value)
     data_wide$s = NULL
     res = gather(data_wide, hyperpar.name, hyperpar.value, -run.id)
   }
   
   if(learner.name == "classif.rpart") { # rpart
     levels(res$hyperpar.value) = c(levels(res$hyperpar.value), 30, 20)
-    data_wide <- spread(res, hyperpar.name, hyperpar.value)
+    data_wide = spread(res, hyperpar.name, hyperpar.value)
     data_wide$xval = NULL
     data_wide$maxdepth[is.na(data_wide$maxdepth)] = 30
     data_wide$minsplit[is.na(data_wide$minsplit)] = 20
@@ -135,7 +136,7 @@ addDefaultValues = function(res) {
   }
   if(learner.name == "classif.svm") { # svm
     levels(res$hyperpar.value) = c(levels(res$hyperpar.value), "radial", 3)
-    data_wide <- spread(res, hyperpar.name, hyperpar.value)
+    data_wide = spread(res, hyperpar.name, hyperpar.value)
     data_wide$kernel[is.na(data_wide$kernel)] = "radial"
     nas = is.na(data_wide[data_wide$kernel == "polynomial",]$degree)
     data_wide[data_wide$kernel == "polynomial",]$degree[nas] = 3
@@ -143,7 +144,7 @@ addDefaultValues = function(res) {
   }
   if(learner.name == "classif.ranger") { # ranger
     levels(res$hyperpar.value) = c(levels(res$hyperpar.value), TRUE, 500, FALSE)
-    data_wide <- spread(res, hyperpar.name, hyperpar.value)
+    data_wide = spread(res, hyperpar.name, hyperpar.value)
     data_wide$verbose = NULL
     data_wide$num.threads = NULL
     data_wide$num.trees[is.na(data_wide$num.trees)] = 500
@@ -153,7 +154,7 @@ addDefaultValues = function(res) {
   }
   if(learner.name == "classif.xgboost") { # xgboost
     levels(res$hyperpar.value) = c(levels(res$hyperpar.value), "gbtree", 1, 6)
-    data_wide <- spread(res, hyperpar.name, hyperpar.value)
+    data_wide = spread(res, hyperpar.name, hyperpar.value)
     data_wide$verbose = NULL
     data_wide$nrounds[is.na(data_wide$nrounds)] = 1
     data_wide$booster[is.na(data_wide$booster)] = "gbtree"
@@ -184,7 +185,7 @@ getMetaFeaturesTable = function(task.tag = "study_14", local.db = NULL) {
 scrapeRunTime = function(run.id) {
   oml.url = "https://www.openml.org/r/"
   
-  xml.scraper <- function(run.id){
+  xml.scraper = function(run.id){
     html_body = getURL(paste0(oml.url, run.id))
     parsed_body = htmlParse(html_body, asText =  TRUE, encoding = "utf-8")
     
@@ -207,7 +208,7 @@ scrapeRunTime = function(run.id) {
       sci.mark = NA)
   }
   
-  Sys.sleep(0.5) #Just being nice to the server :)
+  Sys.sleep(0.1) #Just being nice to the server :)
   return(df)
 }
 

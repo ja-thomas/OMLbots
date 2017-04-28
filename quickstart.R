@@ -64,12 +64,6 @@ b = getHyperparTable(local.db = local.db, numRuns = 1000000)
 c = getMetaFeaturesTable(local.db = local.db)
 d = getRunTimeTable(local.db = local.db)
 
-a <- tbl(local.db, "run.table")
-remote <- select(filter(batting, yearID > 2010 && stint == 1), playerID:H)
-local = collect(a)
-dim(local)
-
-
 # surrogate function stuff
 x <- makeMeasureTimePrediction(measure.name = "area.under.roc.curve",
   learner.name = "mlr.classif.kknn",
@@ -97,10 +91,8 @@ tbl.metaFeatures = getMetaFeaturesTable(local.db = NULL)
 tbl.results = getRunTable(run.tag = "referenceV1", numRuns = 20000)
 tbl.results = data.table(tbl.results)
 tbl.results[tbl.results$measure.name == "area.under.roc.curve", list(AUC=mean(measure.value)), by = "data.name,learner.name"]
-
-is.data.table(tbl.results)
-table(tbl.results$measure.name)
-
+table(tbl.results[tbl.results$measure.name == "area.under.roc.curve",]$task.id)
+tbl.results[tbl.results$measure.name == "area.under.roc.curve" & tbl.results$task.id == 9977,]
 
 # get learner names
 library(stringi)
