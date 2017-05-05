@@ -220,8 +220,8 @@ getRunTime = function(run.ids) {
 }
 
 #' Get runtime table from the database
-getRunTimeTable = function(local.db = NULL) {
+getRunTimeTable = function(local.db = NULL, numRuns = 200000) {
   if(!is.null(local.db))
-    collect(tbl(local.db, sql("SELECT * FROM [runtime.table]")))
+    collect(tbl(local.db, sql("SELECT * FROM [runtime.table]")), n = numRuns)
 }
 
