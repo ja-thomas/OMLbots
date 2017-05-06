@@ -34,21 +34,7 @@ results = do.call("rbind",
 table(results$flow.id, results$task.id)
 table(results$uploader)
 
-for(i in 2:11){
-  deleteOMLObject(results$run.id[i], object = "run")
-}
-
-tbl.results = getRunTable(local.db = NULL, numRuns = 170000)
-
-print(tbl.results)
-
-tbl.hypPars = getHyperparTable(local.db = local.db)
-print(tbl.hypPars)
-
-tbl.metaFeatures = getMetaFeaturesTable(local.db = NULL)
-print(head(tbl.metaFeatures))
-
-# Database
+# Database extraction
 
 local.db = initializeLocalDatabase(overwrite = FALSE)
 run.tag = "botV1"
@@ -59,40 +45,13 @@ updateMetaTable(task.tag = "study_14", local.db)
 updateRunTimeTable(local.db)
 meta.table1 = tbl(local.db, "meta.table")
 
-a = getRunTable(local.db = local.db, numRuns = 5000000)
-b = getHyperparTable(local.db = local.db, numRuns = 1000000)
-c = getMetaFeaturesTable(local.db = local.db)
-d = getRunTimeTable(local.db = local.db)
-
-# surrogate function stuff
-x <- makeMeasureTimePrediction(measure.name = "area.under.roc.curve",
-  learner.name = "mlr.classif.kknn",
-  task.id = 3950, 
-  lrn.par.set = lrn.par.set,
-  n = 2000,
-  tbl.results = tbl.results,
-  tbl.hypPars = tbl.hypPars,
-  tbl.metaFeatures = tbl.metaFeatures)
-
-plot(x$k, x$pred.measure.value)
-plot(x$k, x$pred.time)
-plot(x$pred.measure.value, x$pred.time)  
-
-#create pareto-front 
-#pick random points from pareto-front for validation runs to check results
-
 # --------------------------------------------------------------------------------------------------------------------------------------
 # Create surrogate models
-library(repmis)
-source_data("https://github.com/PhilippPro/tunability/blob/master/hypPars.RData?raw=True")
-tbl.results = getRunTable(run.tag = "botV1", numRuns = 200000)
-tbl.metaFeatures = getMetaFeaturesTable(local.db = NULL)
-
-tbl.results = getRunTable(run.tag = "referenceV1", numRuns = 20000)
-tbl.results = data.table(tbl.results)
-tbl.results[tbl.results$measure.name == "area.under.roc.curve", list(AUC=mean(measure.value)), by = "data.name,learner.name"]
-table(tbl.results[tbl.results$measure.name == "area.under.roc.curve",]$task.id)
-tbl.results[tbl.results$measure.name == "area.under.roc.curve" & tbl.results$task.id == 9977,]
+tbl.results = getRunTable(local.db = local.db, numRuns = 5000000)
+tbl.metaFeatures = getMetaFeaturesTable(local.db = local.db)
+tbl.hypPars = getHyperparTable(local.db = local.db, numRuns = 1000000)
+tbl.runTime = getRunTimeTable(local.db = local.db, numRuns = 250000)
+tbl.resultsReference = getRunTable(run.tag = "referenceV1", numRuns = 20000, local.db = NULL)
 
 # get learner names
 library(stringi)
@@ -102,18 +61,21 @@ learner.names = stri_sub(learner.names, 1, -5)
 task.ids = unique(tbl.results$task.id)
 # set surrogate model
 surrogate.mlr.lrn = makeLearner("regr.ranger", par.vals = list(num.trees = 2000))
-# user time fehlt noch im Modell!! -> Daniel
-# +Skalierung mit Reference learner
+# user time fehlt noch im Modell
+# add sci.mark scale -> Daniel
 
 surrogates_measures = surrogates_time = list()
 
 for (i in seq_along(learner.names)) {
-surrogates_measures[[i]] = makeSurrogateModels(measure.name = "area.under.roc.curve", 
-  learner.name = learner.names[i], task.ids,   lrn.par.set, tbl.results, tbl.hypPars, 
-  tbl.metaFeatures, surrogate.mlr.lrn, min.experiments = 100)
-
-surrogates_time[[i]] = makeSurrogateModels(measure.name = "area.under.roc.curve", learner.name = learner.names[i], task.ids, tbl.results, tbl.hypPars, 
-  tbl.metaFeatures, lrn.par.set, surrogate.mlr.lrn, min.experiments = 100, time = TRUE)
+  print(i)
+  surrogates_measures[[i]] = makeSurrogateModel(measure.name = "area.under.roc.curve", 
+    learner.name = learner.names[i], task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
+    tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrn, min.experiments = 100)
+  
+  surrogates_time[[i]] = makeSurrogateModel(measure.name = "area.under.roc.curve", 
+    learner.name = learner.names[i], task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
+    tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrn, min.experiments = 100, 
+    time = TRUE)
 }
 names(surrogates_measures) = learner.names
 names(surrogates_time) = learner.names
@@ -125,7 +87,11 @@ surrogate.mlr.lrns = list(
   makeLearner("regr.cubist")
 )
 res = makeSurrogateModels(measure.name = "area.under.roc.curve", learner.name = learner.names[1], task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
-  tbl.metaFeatures, surrogate.mlr.lrns, min.experiments = 100, benchmark = TRUE)
+  tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrns, min.experiments = 100, benchmark = TRUE)
 
+###################### 
+
+#create pareto-front 
+#pick random points from pareto-front for validation runs to check results
 
 

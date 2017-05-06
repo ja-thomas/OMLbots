@@ -1,4 +1,4 @@
-#' Create surrogate models for different tasks
+#' Create surrogate model for different tasks
 #' @param measure.name Name of the measure to optimize
 #' @param learner.name Name of learner
 #' @param task.ids [\code{numeric}] ids of the tasks
@@ -11,15 +11,15 @@
 #' @param benchmark [\code{logical}] Should a benchmark experiment with different surrogate models be executed to 
 #' evaluate the performance of the surrogate models? Default is FALSE.
 #' @return surrogate model
-makeSurrogateModels = function(measure.name, learner.name, task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
-  tbl.metaFeatures, surrogate.mlr.lrn, min.experiments = 100, benchmark = FALSE, time = FALSE) {
+makeSurrogateModel = function(measure.name, learner.name, task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
+  tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrn, min.experiments = 100, benchmark = FALSE, time = FALSE) {
   param.set = lrn.par.set[[which(names(lrn.par.set) == paste0(substr(learner.name, 5, 100), ".set"))]]$param.set
   
   #train mlr model on full table for measure
   mlr.mod.measure = list()
-  task.data = makeBotTable2(measure.name, learner.name, tbl.results, tbl.hypPars, tbl.metaFeatures)
+  task.data = makeBotTable2(measure.name, learner.name, tbl.results, tbl.hypPars, tbl.metaFeatures, tbl.runTime, tbl.resultsReference)
   # delete or Transform Missing values
-  task.data[, names(param.set$pars)] = deleteNA(task.data[, names(param.set$pars)])
+  task.data[, names(param.set$pars)] = deleteNA(task.data[, names(param.set$pars), drop = FALSE])
   
   bigger = names(table(task.data$task.id))[which(table(task.data$task.id) > min.experiments)]
   task.data = task.data[task.data$task.id %in% bigger,]
@@ -32,9 +32,15 @@ makeSurrogateModels = function(measure.name, learner.name, task.ids, lrn.par.set
     task.ids = unique(task.data$task.id)
   }
   
-  mlr.task.measure = makeRegrTask(id = as.character(learner.name), subset(task.data, task.id %in% task.ids, select =  c("measure.value", names(param.set$pars), 
-    "majority.class.size", "minority.class.size", "number.of.classes", "number.of.features", "number.of.instances",
-    "number.of.numeric.features", "number.of.symbolic.features")), target = "measure.value")
+  if (time) {
+    mlr.task.measure = makeRegrTask(id = as.character(learner.name), subset(task.data, task.id %in% task.ids, select =  c("run.time", names(param.set$pars), 
+      "majority.class.size", "minority.class.size", "number.of.classes", "number.of.features", "number.of.instances",
+      "number.of.numeric.features", "number.of.symbolic.features")), target = "run.time")
+  } else {
+    mlr.task.measure = makeRegrTask(id = as.character(learner.name), subset(task.data, task.id %in% task.ids, select =  c("measure.value", names(param.set$pars), 
+      "majority.class.size", "minority.class.size", "number.of.classes", "number.of.features", "number.of.instances",
+      "number.of.numeric.features", "number.of.symbolic.features")), target = "measure.value")
+  }
   mlr.lrn = surrogate.mlr.lrn
   
   if(benchmark) {
@@ -55,7 +61,7 @@ makeSurrogateModels = function(measure.name, learner.name, task.ids, lrn.par.set
 #' @param tbl.hypPars df with getMlrRandomBotHyperpars()
 #' @param tbl.metaFeatures df with getMlrRandomBotHyperpars()
 #' @return [\code{data.frame}] Complete table used for creating the surrogate model 
-makeBotTable2 = function(measure.name, learner.name, tbl.results, tbl.hypPars, tbl.metaFeatures){
+makeBotTable2 = function(measure.name, learner.name, tbl.results, tbl.hypPars, tbl.metaFeatures, tbl.runTime, tbl.resultsReference){
   
   measure.name.filter = measure.name
   learner.name.fiter = learner.name
@@ -67,10 +73,21 @@ makeBotTable2 = function(measure.name, learner.name, tbl.results, tbl.hypPars, t
       -setup.id, -data.name, -upload.time, -flow.version, -learner.name, -name, -number.of.instances.with.missing.values, 
       -number.of.missing.values) %>%
     spread(., key = hyperpar.name, value = hyperpar.value, convert = TRUE) %>%
-    select(., -run_NA, -run.id)
-  #bot.table$user.time = tbl.results[tbl.results$measure.name == "usercpu.time.millis" & tbl.results$learner.name == learner.name.fiter, "measure.value"]
+    inner_join(., tbl.runTime, by = "run.id") %>%
+    select(., -run.id)
   bot.table$measure.value = as.numeric(bot.table$measure.value)
-  #bot.table$user.time = as.numeric(bot.table$user.time)
+  
+  # scale by reference learner
+  tbl.reference = data.table(tbl.resultsReference[tbl.resultsReference$measure.name == measure.name,])
+  tbl.reference = tbl.reference[, list(avg = mean(measure.value)), by = c("task.id", "learner.name")]
+  # only ranger results, as featureless is constant (= 0.5)
+  tbl.reference = tbl.reference[tbl.reference$learner.name == "mlr.classif.ranger"]
+  tbl.reference[,learner.name:=NULL]
+  bot.table = bot.table %>%
+    left_join(., tbl.reference, by = "task.id")
+  # this can be changed!
+  bot.table$measure.value = bot.table$measure.value - bot.table$avg + 0.5
+  
   bot.table = convertDataFrameCols(bot.table, chars.as.factor = TRUE)  
   return(bot.table)
 }
