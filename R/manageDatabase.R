@@ -83,7 +83,7 @@ updateHyperparTable = function(run.tag, local.db){
 
 #' Save meta data for task to db
 updateMetaTable = function(task.tag, local.db){
-  task.ids = local.db %>% tbl(sql("SELECT DISTINCT [task.id] FROM [meta.table]")) %>% collect(n = Inf) 
+  task.ids = local.db %>% tbl(sql("SELECT DISTINCT [task.id] FROM [meta.table]")) %>% collect(n = Inf)
   df = getMetaFeaturesTable(task.tag = task.tag)
   df = df[df$task.id %in% setdiff(df$task.id, task.ids),]
   if(!is.null(df)){

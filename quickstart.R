@@ -43,7 +43,6 @@ updateRunTable(run.tag = run.tag, local.db) # geht das gescheit?
 updateHyperparTable(run.tag = run.tag, local.db)
 updateMetaTable(task.tag = "study_14", local.db)
 updateRunTimeTable(local.db)
-meta.table1 = tbl(local.db, "meta.table")
 
 # --------------------------------------------------------------------------------------------------------------------------------------
 # Create surrogate models
