@@ -15,7 +15,7 @@ createParetoFront = function(learner.name, lrn.par.set, surrogates.measures, sur
   preds.measures = predict(surrogate.measures, newdata = rnd.points)
   preds.time = predict(surrogate.time, newdata = rnd.points)
   
-  return(list(preds.measure, preds.time))
+  return(list(measure = preds.measures$data$response, time = preds.time$data$response))
 }
 
 getTimeDependentHyperpar = function(surrogate_measures, surrogate_time, meta_features) {
