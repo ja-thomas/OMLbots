@@ -43,14 +43,16 @@ updateRunTable(run.tag = run.tag, local.db) # geht das gescheit?
 updateHyperparTable(run.tag = run.tag, local.db)
 updateMetaTable(task.tag = "study_14", local.db)
 updateRunTimeTable(local.db)
+updateReferenceTable(run.tag = "referenceV1", local.db)
 
 # --------------------------------------------------------------------------------------------------------------------------------------
 # Create surrogate models
+local.db = initializeLocalDatabase(overwrite = FALSE)
 tbl.results = getRunTable(local.db = local.db, numRuns = 5000000)
 tbl.metaFeatures = getMetaFeaturesTable(local.db = local.db)
 tbl.hypPars = getHyperparTable(local.db = local.db, numRuns = 1000000)
 tbl.runTime = getRunTimeTable(local.db = local.db, numRuns = 250000)
-tbl.resultsReference = getRunTable(run.tag = "referenceV1", numRuns = 20000, local.db = NULL)
+tbl.resultsReference = getReferenceTable(local.db = local.db)
 
 # get learner names
 library(stringi)
@@ -60,37 +62,55 @@ learner.names = stri_sub(learner.names, 1, -5)
 task.ids = unique(tbl.results$task.id)
 # set surrogate model
 surrogate.mlr.lrn = makeLearner("regr.ranger", par.vals = list(num.trees = 2000))
-# user time fehlt noch im Modell
-# add sci.mark scale -> Daniel
 
-surrogates_measures = surrogates_time = list()
+surrogates.measures = surrogates.time = list()
 
+set.seed(123)
 for (i in seq_along(learner.names)) {
   print(i)
-  surrogates_measures[[i]] = makeSurrogateModel(measure.name = "area.under.roc.curve", 
+  surrogates.measures[[i]] = makeSurrogateModel(measure.name = "area.under.roc.curve", 
     learner.name = learner.names[i], task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
     tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrn, min.experiments = 100)
   
-  surrogates_time[[i]] = makeSurrogateModel(measure.name = "area.under.roc.curve", 
+  surrogates.time[[i]] = makeSurrogateModel(measure.name = "area.under.roc.curve", 
     learner.name = learner.names[i], task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
     tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrn, min.experiments = 100, 
     time = TRUE)
 }
-names(surrogates_measures) = learner.names
-names(surrogates_time) = learner.names
-save(surrogates_measures, surrogates_time, file = "surrogates.RData")
+names(surrogates.measures) = learner.names
+names(surrogates.time) = learner.names
+save(surrogates.measures, surrogates.time, file = "surrogates.RData")
 
 # Compare different surrogate models 
 surrogate.mlr.lrns = list(
-  makeLearner("regr.ranger", par.vals = list(num.trees = 2000)), 
-  makeLearner("regr.cubist")
+  makeLearner("regr.rpart"),
+  makeLearner("regr.ranger", par.vals = list(num.trees = 2000, respect.unordered.factors = TRUE, num.threads = 10)),
+  makeLearner("regr.cubist"),
+  makeLearner("regr.kknn"),
+  makeLearner("regr.lm"),
+  makeLearner("regr.featureless")
 )
-res = makeSurrogateModels(measure.name = "area.under.roc.curve", learner.name = learner.names[1], task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
-  tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrns, min.experiments = 100, benchmark = TRUE)
 
+surrogate.measures.benchmark = surrogate.time.benchmark = list()
+for (i in seq_along(learner.names)) {
+  print(i)
+  surrogate.measures.benchmark[[i]] = makeSurrogateModel(measure.name = "area.under.roc.curve", 
+    learner.name = learner.names[i], task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
+    tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrns, min.experiments = 100, benchmark = TRUE)
+  
+ 
+  surrogate.measures.benchmark[[i]] = makeSurrogateModel(measure.name = "area.under.roc.curve", 
+    learner.name = learner.names[i], task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
+    tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrns, min.experiments = 100, benchmark = TRUE, time = TRUE)
+}
+
+names(surrogates.measures_benchmark) = learner.names
+names(surrogates.time_benchmark) = learner.names
+save(surrogates.measures.benchmark, surrogates.time_benchmark, file = "surrogates_benchmark.RData")
 ###################### 
 
 #create pareto-front 
 #pick random points from pareto-front for validation runs to check results
-
-
+meta.features = tbl.metaFeatures[1,] %>% select(., majority.class.size, minority.class.size, number.of.classes,
+  number.of.features, number.of.instances, number.of.numeric.features, number.of.symbolic.features)
+createParetoFront(learner.name = learner.names[i], lrn.par.set, surrogate.measures, surrogate.times, meta.features, n.points = 10000) 

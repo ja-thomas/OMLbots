@@ -44,7 +44,7 @@ makeSurrogateModel = function(measure.name, learner.name, task.ids, lrn.par.set,
   mlr.lrn = surrogate.mlr.lrn
   
   if(benchmark) {
-    rdesc = makeResampleDesc("RepCV", reps = 2, folds = 10)
+    rdesc = makeResampleDesc("RepCV", reps = 10, folds = 10)
     res = benchmark(mlr.lrn, mlr.task.measure, resamplings = rdesc)
     return(list(result = res))
   }
@@ -54,6 +54,8 @@ makeSurrogateModel = function(measure.name, learner.name, task.ids, lrn.par.set,
   }
 }
 
+#task.data = makeBotTable2(measure.name, learner.name, tbl.results, tbl.hypPars, tbl.metaFeatures, tbl.runTime, tbl.resultsReference)
+
 #' Merge results, hyperpars and features tables and prepare for mlr.task input
 #' @param measure.name.filter What measure to analyse
 #' @param learner.name What learner to analyse
@@ -62,9 +64,12 @@ makeSurrogateModel = function(measure.name, learner.name, task.ids, lrn.par.set,
 #' @param tbl.metaFeatures df with getMlrRandomBotHyperpars()
 #' @return [\code{data.frame}] Complete table used for creating the surrogate model 
 makeBotTable2 = function(measure.name, learner.name, tbl.results, tbl.hypPars, tbl.metaFeatures, tbl.runTime, tbl.resultsReference){
-  
+
   measure.name.filter = measure.name
   learner.name.fiter = learner.name
+  
+  tbl.runTime = scaleRunTime(tbl.runTime)
+  
   bot.table = tbl.results %>% 
     filter(., measure.name == measure.name.filter & learner.name == learner.name.fiter) %>%
     inner_join(., tbl.metaFeatures, by = "task.id") %>%
@@ -78,18 +83,27 @@ makeBotTable2 = function(measure.name, learner.name, tbl.results, tbl.hypPars, t
   bot.table$measure.value = as.numeric(bot.table$measure.value)
   
   # scale by reference learner
-  tbl.reference = data.table(tbl.resultsReference[tbl.resultsReference$measure.name == measure.name,])
-  tbl.reference = tbl.reference[, list(avg = mean(measure.value)), by = c("task.id", "learner.name")]
-  # only ranger results, as featureless is constant (= 0.5)
-  tbl.reference = tbl.reference[tbl.reference$learner.name == "mlr.classif.ranger"]
-  tbl.reference[,learner.name:=NULL]
+  tbl.resultsReference = tbl.resultsReference[tbl.resultsReference$measure.name == measure.name.filter,]
+  tbl.resultsReference = tbl.resultsReference %>% group_by(task.id, learner.name) %>% summarize(mean(measure.value))
+  tbl.resultsReference = tbl.resultsReference[tbl.resultsReference$learner.name == "mlr.classif.ranger",]
+  tbl.resultsReference$learner.name = NULL
+  colnames(tbl.resultsReference)[2] = "avg"
+  
   bot.table = bot.table %>%
-    left_join(., tbl.reference, by = "task.id")
+    left_join(., tbl.resultsReference, by = "task.id")
   # this can be changed!
   bot.table$measure.value = bot.table$measure.value - bot.table$avg + 0.5
   
-  bot.table = convertDataFrameCols(bot.table, chars.as.factor = TRUE)  
+  bot.table = convertDataFrameCols(bot.table, chars.as.factor = TRUE)
   return(bot.table)
+}
+
+#' Scale the run time results with the sci.mark results
+#' @param tbl.runTime The runtime table
+scaleRunTime = function(tbl.runTime) {
+  tbl.runTime$sci.mark = tbl.runTime$sci.mark / median(tbl.runTime$sci.mark, na.rm = T)
+  tbl.runTime$run.time = tbl.runTime$run.time / tbl.runTime$sci.mark
+  return(tbl.runTime)
 }
 
 deleteNA = function(task.data) {

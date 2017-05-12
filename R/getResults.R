@@ -59,6 +59,18 @@ getRunTable = function(run.tag = "mlrRandomBot", numRuns = 200000, excl.run.ids 
 }
 
 #' @param tag Name of the tag of the benchmark study.
+#' @return [\code{data.frame}] Table with run.id, task.id, flow.id, flow.name, measure values.
+getReferenceTable = function(run.tag = "referenceV1", numRuns = 200000, excl.run.ids = NULL, local.db = NULL) {
+  if(is.null(local.db)){
+    df = getRunTable(run.tag = run.tag, excl.run.ids = run.ids$run.id, numRuns = numRuns)
+  } else {
+    df = collect(tbl(local.db, sql("SELECT * FROM [reference.table]")), n = numRuns)
+  }
+  return(df)
+}
+
+
+#' @param tag Name of the tag of the benchmark study.
 #' @param excl.run.ids ids that should not be downloaded
 #' @param numRuns maximum Number of runs that should be downloaded in the first step; 
 #' should be set to a value so that it downloads all available runs

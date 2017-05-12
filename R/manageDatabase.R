@@ -59,6 +59,22 @@ initializeLocalDatabase = function(path = ".", overwrite = FALSE) {
       stringsAsFactors = FALSE)
     copy_to(src, runtime.table, temporary = FALSE)
   }
+  if(!db_has_table(src$con, "reference.table")){
+    reference.table = data.frame(run.id = integer(0L), 
+      task.id = integer(0L), 
+      setup.id = integer(0L),
+      flow.id = integer(0L),
+      flow.name = character(0L),
+      flow.version = character(0L),
+      flow.source = character(0L),
+      learner.name = character(0L),
+      data.name = character(0L),
+      upload.time = character(0L),
+      measure.name = character(0L), 
+      measure.value = numeric(0L),
+      stringsAsFactors = FALSE)
+    copy_to(src, reference.table, temporary = FALSE)
+  }
   
   return(src)
 }
@@ -69,6 +85,15 @@ updateRunTable = function(run.tag, local.db){
   df = getRunTable(run.tag = run.tag, excl.run.ids = run.ids$run.id)
   if(!is.null(df)){
     db_insert_into(local.db$con, "run.table", df)
+  }
+}
+
+#' Save reference run results to db
+updateReferenceTable = function(run.tag, local.db){
+  run.ids = local.db %>% tbl(sql("SELECT DISTINCT [run.id] FROM [reference.table]")) %>% collect(n = Inf)
+  df = getRunTable(run.tag = run.tag, excl.run.ids = run.ids$run.id)
+  if(!is.null(df)){
+    db_insert_into(local.db$con, "reference.table", df)
   }
 }
 
