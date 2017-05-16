@@ -45,7 +45,8 @@ makeSurrogateModel = function(measure.name, learner.name, task.ids, lrn.par.set,
   
   if(benchmark) {
     rdesc = makeResampleDesc("RepCV", reps = 10, folds = 10)
-    res = benchmark(mlr.lrn, mlr.task.measure, resamplings = rdesc)
+    res = benchmark(mlr.lrn, mlr.task.measure, resamplings = rdesc, measures = list(mse, rsq, kendalltau, spearmanrho), 
+      models = FALSE, keep.pred = FALSE)
     return(list(result = res))
   }
   else {

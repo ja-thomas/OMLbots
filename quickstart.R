@@ -61,7 +61,7 @@ learner.names = stri_sub(learner.names, 1, -5)
 # get task.ids
 task.ids = unique(tbl.results$task.id)
 # set surrogate model
-surrogate.mlr.lrn = makeLearner("regr.ranger", par.vals = list(num.trees = 2000))
+surrogate.mlr.lrn = makeLearner("regr.ranger", par.vals = list(num.trees = 2000, num.threads = 10))
 
 surrogates.measures = surrogates.time = list()
 
@@ -84,7 +84,7 @@ save(surrogates.measures, surrogates.time, file = "surrogates.RData")
 # Compare different surrogate models 
 surrogate.mlr.lrns = list(
   makeLearner("regr.rpart"),
-  makeLearner("regr.ranger", par.vals = list(num.trees = 2000, respect.unordered.factors = TRUE, num.threads = 10)),
+  makeLearner("regr.ranger", par.vals = list(num.trees = 2000, respect.unordered.factors = TRUE, num.threads = 6)),
   makeLearner("regr.cubist"),
   makeLearner("regr.kknn"),
   makeLearner("regr.lm"),
@@ -92,21 +92,24 @@ surrogate.mlr.lrns = list(
 )
 
 surrogate.measures.benchmark = surrogate.time.benchmark = list()
+set.seed(123)
 for (i in seq_along(learner.names)) {
   print(i)
   surrogate.measures.benchmark[[i]] = makeSurrogateModel(measure.name = "area.under.roc.curve", 
     learner.name = learner.names[i], task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
     tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrns, min.experiments = 100, benchmark = TRUE)
-  
  
-  surrogate.measures.benchmark[[i]] = makeSurrogateModel(measure.name = "area.under.roc.curve", 
+  surrogate.time.benchmark[[i]] = makeSurrogateModel(measure.name = "area.under.roc.curve", 
     learner.name = learner.names[i], task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
     tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrns, min.experiments = 100, benchmark = TRUE, time = TRUE)
 }
 
-names(surrogates.measures_benchmark) = learner.names
-names(surrogates.time_benchmark) = learner.names
-save(surrogates.measures.benchmark, surrogates.time_benchmark, file = "surrogates_benchmark.RData")
+names(surrogate.measures.benchmark) = learner.names
+names(surrogate.time.benchmark) = learner.names
+save(surrogate.measures.benchmark, surrogate.time.benchmark, file = "surrogates_benchmark.RData")
+
+# cubist and ranger are the best surrogate models for the measures
+# Outliers destroy mse result for surrogate models for the time. RSQ: ranger and cubist in general the best model
 ###################### 
 
 #create pareto-front 
