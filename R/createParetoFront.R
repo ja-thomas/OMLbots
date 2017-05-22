@@ -10,12 +10,13 @@ createParetoFront = function(learner.name, lrn.par.set, surrogates.measures, sur
   
   rnd.points = generateRandomDesign(n.points, param.set, trafo = TRUE)
   rnd.points = deleteNA(rnd.points)
+  hyp.pars = rnd.points
   rnd.points = cbind(rnd.points, meta.features)
   
   preds.measures = predict(surrogate.measures, newdata = rnd.points)
   preds.time = predict(surrogate.time, newdata = rnd.points)
   
-  return(list(measure = preds.measures$data$response, time = preds.time$data$response))
+  return(list(measure = preds.measures$data$response, time = preds.time$data$response, hyp.pars = hyp.pars))
 }
 
 getTimeDependentHyperpar = function(surrogate_measures, surrogate_time, meta_features) {

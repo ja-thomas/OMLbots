@@ -63,23 +63,23 @@ task.ids = unique(tbl.results$task.id)
 # set surrogate model
 surrogate.mlr.lrn = makeLearner("regr.ranger", par.vals = list(num.trees = 2000, num.threads = 10))
 
-surrogates.measures = surrogates.time = list()
+surrogate.measures = surrogate.time = list()
 
 set.seed(123)
 for (i in seq_along(learner.names)) {
   print(i)
-  surrogates.measures[[i]] = makeSurrogateModel(measure.name = "area.under.roc.curve", 
+  surrogate.measures[[i]] = makeSurrogateModel(measure.name = "area.under.roc.curve", 
     learner.name = learner.names[i], task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
     tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrn, min.experiments = 100)
   
-  surrogates.time[[i]] = makeSurrogateModel(measure.name = "area.under.roc.curve", 
+  surrogate.time[[i]] = makeSurrogateModel(measure.name = "area.under.roc.curve", 
     learner.name = learner.names[i], task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
     tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrn, min.experiments = 100, 
     time = TRUE)
 }
-names(surrogates.measures) = learner.names
-names(surrogates.time) = learner.names
-save(surrogates.measures, surrogates.time, file = "surrogates.RData")
+names(surrogate.measures) = learner.names
+names(surrogate.time) = learner.names
+save(surrogate.measures, surrogate.time, file = "surrogates.RData")
 
 # Compare different surrogate models 
 surrogate.mlr.lrns = list(
@@ -114,6 +114,8 @@ save(surrogate.measures.benchmark, surrogate.time.benchmark, file = "surrogates_
 
 #create pareto-front 
 #pick random points from pareto-front for validation runs to check results
+load("surrogates.RData")
 meta.features = tbl.metaFeatures[1,] %>% select(., majority.class.size, minority.class.size, number.of.classes,
   number.of.features, number.of.instances, number.of.numeric.features, number.of.symbolic.features)
-createParetoFront(learner.name = learner.names[i], lrn.par.set, surrogate.measures, surrogate.times, meta.features, n.points = 10000) 
+parfront = createParetoFront(learner.name = learner.names[i], lrn.par.set, surrogate.measures, surrogate.time, meta.features, n.points = 10000) 
+
