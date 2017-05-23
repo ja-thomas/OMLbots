@@ -108,14 +108,42 @@ names(surrogate.measures.benchmark) = learner.names
 names(surrogate.time.benchmark) = learner.names
 save(surrogate.measures.benchmark, surrogate.time.benchmark, file = "surrogates_benchmark.RData")
 
+for(i in seq_along(learner.names)) {
+  print(paste(learner.names[i], "---------------------------------------------------------------------------------------"))
+  print(surrogate.measures.benchmark[[i]]$result)
+}
+
+for(i in seq_along(learner.names)) {
+  print(paste(learner.names[i], "---------------------------------------------------------------------------------------"))
+  print(surrogate.time.benchmark[[i]]$result)
+}
 # cubist and ranger are the best surrogate models for the measures
 # Outliers destroy mse result for surrogate models for the time. RSQ: ranger and cubist in general the best model
 ###################### 
 
 #create pareto-front 
 #pick random points from pareto-front for validation runs to check results
+library(emoa)
 load("surrogates.RData")
-meta.features = tbl.metaFeatures[1,] %>% select(., majority.class.size, minority.class.size, number.of.classes,
+meta.features = tbl.metaFeatures[2,] %>% select(., majority.class.size, minority.class.size, number.of.classes,
   number.of.features, number.of.instances, number.of.numeric.features, number.of.symbolic.features)
-parfront = createParetoFront(learner.name = learner.names[i], lrn.par.set, surrogate.measures, surrogate.time, meta.features, n.points = 10000) 
+for(i in seq_along(learner.names)) {
+  print(i)
+  print(learner.names[i])
+  parfront = createParetoFront(learner.name = learner.names[i], lrn.par.set, surrogate.measures, surrogate.time, meta.features, n.points = 10000) 
+  
+  parfront$measure[parfront$time < 50 & parfront$measure > quantile(parfront$measure, 0.999)]
+  parfront$hyp.pars[parfront$time < 50 & parfront$measure > quantile(parfront$measure, 0.999),]
+  library(ParamHelpers)
+  
+  mat = matrix(NA, 2, length(parfront$measure))
+  mat[1, ] = parfront$time
+  mat[2, ] = - parfront$measure
+  nondomi_logical = !is_dominated(mat)
+  nondomi = nondominated_points(mat)
+  nondomi[2,] = -nondomi[2,]
+  plot(parfront$measure, parfront$time, cex = 0.1, main = learner.names[i])
+  points(nondomi[2,], nondomi[1,], col = "red", cex = 0.7, pch = 16)
+  print(parfront$hyp.pars[nondomi_logical & parfront$measure > quantile(parfront$measure, 0.99), ])
+}
 
