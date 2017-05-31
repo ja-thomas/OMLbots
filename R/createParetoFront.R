@@ -19,6 +19,10 @@ createParetoFront = function(learner.name, lrn.par.set, surrogates.measures, sur
   return(list(measure = preds.measures$data$response, time = preds.time$data$response, hyp.pars = hyp.pars))
 }
 
+# Get a proposal for a hyperparameter setting for a given time
+#' @param surrogate_measure Name of the measure to optimize
+#' @param surrogate_time Name of learner
 getTimeDependentHyperpar = function(surrogate_measures, surrogate_time, meta_features) {
+  # Not ready yet
   return(hyperpar)
 }

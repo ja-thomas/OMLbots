@@ -55,8 +55,6 @@ makeSurrogateModel = function(measure.name, learner.name, task.ids, lrn.par.set,
   }
 }
 
-#task.data = makeBotTable2(measure.name, learner.name, tbl.results, tbl.hypPars, tbl.metaFeatures, tbl.runTime, tbl.resultsReference)
-
 #' Merge results, hyperpars and features tables and prepare for mlr.task input
 #' @param measure.name.filter What measure to analyse
 #' @param learner.name What learner to analyse
@@ -107,6 +105,8 @@ scaleRunTime = function(tbl.runTime) {
   return(tbl.runTime)
 }
 
+#' Replace NA values by -11 (numeric variables) or NA levels (factor variables)
+#' @param task.data
 deleteNA = function(task.data) {
   for(i in 1:ncol(task.data)) {
     if(is.numeric(task.data[, i]))

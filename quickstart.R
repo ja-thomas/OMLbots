@@ -127,6 +127,8 @@ library(emoa)
 load("surrogates.RData")
 meta.features = tbl.metaFeatures[2,] %>% select(., majority.class.size, minority.class.size, number.of.classes,
   number.of.features, number.of.instances, number.of.numeric.features, number.of.symbolic.features)
+
+pdf("paretofronts_example.pdf", width = 10, height = 8)
 for(i in seq_along(learner.names)) {
   print(i)
   print(learner.names[i])
@@ -146,4 +148,4 @@ for(i in seq_along(learner.names)) {
   points(nondomi[2,], nondomi[1,], col = "red", cex = 0.7, pch = 16)
   print(parfront$hyp.pars[nondomi_logical & parfront$measure > quantile(parfront$measure, 0.99), ])
 }
-
+dev.off()
