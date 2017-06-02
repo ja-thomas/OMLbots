@@ -16,10 +16,10 @@ runBot = function(batch.size, sample.learner.fun = sampleRandomLearner,
   
   task = sample.task.fun()
   task$task = getOMLTask(task$id)
-  print(sprintf("Selected OML task: %s (id %s)", task$name, task$id))
+  messagef("Selected OML task: %s (id %s)", task$name, task$id)
   
   lrn = sample.learner.fun(lrn.ps.sets)
-  print(sprintf("Selected learner: %s", lrn$learner$short.name))
+  messagef("Selected learner: %s", lrn$learner$short.name)
   
   par = sample.configuration.fun(batch.size, lrn$param.set)
   attr(par, "additional.tags") = c(attr(par, "additional.tags"), paste0("sciBenchV", packageDescription("rscimark")$Version))
