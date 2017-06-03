@@ -19,6 +19,8 @@ Depends:
   stringi (>= 1.1.2),
   dummies (>= 1.5.6),
   RCurl (>= 1.95-4.8),
-  XML (>= 3.98-1.6)
+  XML (>= 3.98-1.6),
+  emoa (>= 0.5.0),
+  plotly (>= 4.7.0)
 Imports:
   rscimark (>= 1.0)

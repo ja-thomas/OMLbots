@@ -132,20 +132,7 @@ pdf("paretofronts_example.pdf", width = 10, height = 8)
 for(i in seq_along(learner.names)) {
   print(i)
   print(learner.names[i])
-  parfront = createParetoFront(learner.name = learner.names[i], lrn.par.set, surrogate.measures, surrogate.time, meta.features, n.points = 10000) 
-  
-  parfront$measure[parfront$time < 50 & parfront$measure > quantile(parfront$measure, 0.999)]
-  parfront$hyp.pars[parfront$time < 50 & parfront$measure > quantile(parfront$measure, 0.999),]
-  library(ParamHelpers)
-  
-  mat = matrix(NA, 2, length(parfront$measure))
-  mat[1, ] = parfront$time
-  mat[2, ] = - parfront$measure
-  nondomi_logical = !is_dominated(mat)
-  nondomi = nondominated_points(mat)
-  nondomi[2,] = -nondomi[2,]
-  plot(parfront$measure, parfront$time, cex = 0.1, main = learner.names[i])
-  points(nondomi[2,], nondomi[1,], col = "red", cex = 0.7, pch = 16)
-  print(parfront$hyp.pars[nondomi_logical & parfront$measure > quantile(parfront$measure, 0.99), ])
+  par.front = createParetoFront(learner.name = learner.names[i], lrn.par.set, surrogate.measures, surrogate.time, meta.features, n.points = 10000) 
+  plotParetoFront(par.front)
 }
 dev.off()
