@@ -136,3 +136,6 @@ for(i in seq_along(learner.names)) {
   plotParetoFront(par.front)
 }
 dev.off()
+
+plotParetoFront(par.front, plotly = TRUE)
+plotParetoFront(par.front, plotly = FALSE)

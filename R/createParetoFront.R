@@ -33,12 +33,39 @@ createParetoFront = function(learner.name, lrn.par.set, surrogates.measures, sur
 
 # Plot the pareto front that was created with createParetoFront
 #' @param par.front pareto front object created with createParetoFront
-plotParetoFront = function(par.front) {
-  plot(par.front$dominated$preds$measure, par.front$dominated$preds$time, cex = 0.1, 
-    main = learner.names[i], xlab = "Performance", ylab = "Time in seconds",
-    xlim = range(c(par.front$non.dominated$preds$measure, par.front$dominated$preds$measure)),
-    ylim = range(c(par.front$non.dominated$preds$time, par.front$dominated$preds$time)))
-  points(par.front$non.dominated$preds$measure, par.front$non.dominated$preds$time, col = "red", cex = 0.7, pch = 16)
+plotParetoFront = function(par.front, plotly = FALSE) {
+  if (!plotly) {
+    plot(par.front$dominated$preds$measure, par.front$dominated$preds$time, cex = 0.1, 
+      main = learner.names[i], xlab = "Performance", ylab = "Time in seconds",
+      xlim = range(c(par.front$non.dominated$preds$measure, par.front$dominated$preds$measure)),
+      ylim = range(c(par.front$non.dominated$preds$time, par.front$dominated$preds$time)))
+    points(par.front$non.dominated$preds$measure, par.front$non.dominated$preds$time, col = "red", cex = 0.7, pch = 16)
+  } else {
+    d = data.frame(
+      rbind(par.front$non.dominated$preds, par.front$dominated$preds),
+      rbind(par.front$non.dominated$hyp.pars, par.front$dominated$hyp.pars)
+    )
+    d$non.dominated = c(rep(0, nrow(par.front$dominated$preds)),
+      rep(1, nrow(par.front$non.dominated$preds)))
+    
+    hyp.pars.names = colnames(d)[-c(1,2, ncol(d))]
+    text.func = function (x) {
+      paste(c("Parameters:", paste0(hyp.pars.names, "=", round(x, 3))), collapse = " ")
+    }
+    text = d[, hyp.pars.names]
+    text = unlist(apply(text, 1, function(x) text.func(x)))
+    
+    p = plot_ly(
+      d, x = ~measure, y = ~time,
+      type = "scatter",
+      mode = "markers",
+      text = text,
+      color = ~non.dominated,
+      sizes = c(1, 7),
+      size = rep(10, nrow(d))
+    )
+    p
+  }
 }
 
 # Get a proposal for a hyperparameter setting for a given time
