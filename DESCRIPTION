@@ -1,26 +1,27 @@
 Package: OMLbot2
-Title: Bot to run experiments on OpenML 
+Title: Bot to run experiments on OpenML
 Version: 0.0.0.9000
 Authors@R: person("Janek", "Thomas", email = "janek.thomas@stat.uni-muenchen.de", role = c("aut", "cre"))
-Description: Run more or less random experiments on 'OpenML'. Sampling procedure can be customized. 
-Depends: R (>= 3.3.2)
+Description: Run more or less random experiments on 'OpenML'. Sampling procedure
+    can be customized.
+Depends:
+    mlr (>= 2.10),
+    ParamHelpers (>= 1.8),
+    OpenML (>= 1.2),
+    batchtools (>= 0.9.0),
+    BBmisc (>= 1.10),
+    dplyr (>= 0.5.0),
+    checkmate (>= 1.8.0),
+    tidyr (>= 0.6.1),
+    stringi (>= 1.1.2),
+    dummies (>= 1.5.6),
+    RCurl (>= 1.95-4.8),
+    XML (>= 3.98-1.6),
+    emoa (>= 0.5.0),
+    plotly (>= 4.7.0)
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-Depends:
-  mlr (>= 2.10),
-  ParamHelpers (>= 1.8),
-  OpenML (>= 1.2),
-  batchtools (>= 0.9.0),
-  BBmisc (>= 1.10),
-  dplyr (>= 0.5.0),
-  checkmate (>= 1.8.0),
-  tidyr (>= 0.6.1),
-  stringi (>= 1.1.2),
-  dummies (>= 1.5.6),
-  RCurl (>= 1.95-4.8),
-  XML (>= 3.98-1.6),
-  emoa (>= 0.5.0),
-  plotly (>= 4.7.0)
 Imports:
-  rscimark (>= 1.0)
+    rscimark (>= 1.0)
+RoxygenNote: 5.0.1

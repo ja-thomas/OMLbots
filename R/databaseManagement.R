@@ -1,3 +1,5 @@
+#' initializeLocalDatabase
+#' 
 #' Initialize database
 #' @param path path of database
 #' @param overwrite overwrite existing database
@@ -79,7 +81,11 @@ initializeLocalDatabase = function(path = ".", overwrite = FALSE) {
   return(src)
 }
 
+#' updateRunTable
+#' 
 #' Save run results to db
+#' @param run.tag 
+#' @param local.db 
 updateRunTable = function(run.tag, local.db){
   run.ids = local.db %>% tbl(sql("SELECT DISTINCT [run.id] FROM [run.table]")) %>% collect(n = Inf)
   df = getRunTable(run.tag = run.tag, excl.run.ids = run.ids$run.id)
@@ -88,7 +94,11 @@ updateRunTable = function(run.tag, local.db){
   }
 }
 
+#' updateReferenceTable
+#' 
 #' Save reference run results to db
+#' @param run.tag 
+#' @param local.db 
 updateReferenceTable = function(run.tag, local.db){
   run.ids = local.db %>% tbl(sql("SELECT DISTINCT [run.id] FROM [reference.table]")) %>% collect(n = Inf)
   df = getRunTable(run.tag = run.tag, excl.run.ids = run.ids$run.id)
@@ -97,7 +107,11 @@ updateReferenceTable = function(run.tag, local.db){
   }
 }
 
+#' updateHyperparTable
+#' 
 #' Save hyperparameters for run to db
+#' @param run.tag 
+#' @param local.db 
 updateHyperparTable = function(run.tag, local.db){
   run.ids = local.db %>% tbl(sql("SELECT DISTINCT [run.id] FROM [hyperpar.table]")) %>% collect(n = Inf) 
   df = getHyperparTable(run.tag = run.tag, excl.run.ids = run.ids$run.id)
@@ -106,7 +120,11 @@ updateHyperparTable = function(run.tag, local.db){
   }
 }
 
+#' updateMetaTable
+#' 
 #' Save meta data for task to db
+#' @param task.tag 
+#' @param local.db 
 updateMetaTable = function(task.tag, local.db){
   task.ids = local.db %>% tbl(sql("SELECT DISTINCT [task.id] FROM [meta.table]")) %>% collect(n = Inf)
   df = getMetaFeaturesTable(task.tag = task.tag)
@@ -116,7 +134,10 @@ updateMetaTable = function(task.tag, local.db){
   }
 }
 
+#' updateRunTimeTable
+#' 
 #' Save user times to db
+#' @param local.db 
 updateRunTimeTable = function(local.db){
   qry_sql = paste0("SELECT DISTINCT a.[run.id] FROM [run.table] As a ",
     "LEFT JOIN [runtime.table] As b ON a.[run.id] = b.[run.id] ",
@@ -137,11 +158,15 @@ updateRunTimeTable = function(local.db){
 }
 
 
+#' updateLocalDatabase
+#' 
 #' Check each tables of the local database for update requirement
 #' @param path path of database
 #' @param run.tag tag for OMLRun
 #' @param task.tag tag for OMLTask
 #' @return database
+#' 
+#' @export
 updateLocalDatabase = function(path = ".", run.tag = "mlrRandomBot", task.tag = "study_14") {
   
   local.db = initializeLocalDatabase(path = path)
