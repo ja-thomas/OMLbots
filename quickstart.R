@@ -132,7 +132,7 @@ pdf("paretofronts_example.pdf", width = 10, height = 8)
 for(i in seq_along(learner.names)) {
   print(i)
   print(learner.names[i])
-  par.front = createParetoFront(learner.name = learner.names[i], lrn.par.set, surrogate.measures, surrogate.time, meta.features, n.points = 10000) 
+  par.front = createParetoFront(learner.name = learner.names[i], lrn.par.set, surrogates.measures = surrogate.measures, surrogates.time = surrogate.time, meta.features, n.points = 10000) 
   plotParetoFront(par.front)
 }
 dev.off()
