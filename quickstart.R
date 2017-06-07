@@ -48,10 +48,10 @@ updateReferenceTable(run.tag = "referenceV1", local.db)
 # --------------------------------------------------------------------------------------------------------------------------------------
 # Create surrogate models
 local.db = initializeLocalDatabase(overwrite = FALSE)
-tbl.results = getRunTable(local.db = local.db, numRuns = 5000000)
+tbl.results = getRunTable(local.db = local.db, numRuns = 6000000)
 tbl.metaFeatures = getMetaFeaturesTable(local.db = local.db)
-tbl.hypPars = getHyperparTable(local.db = local.db, numRuns = 1000000)
-tbl.runTime = getRunTimeTable(local.db = local.db, numRuns = 250000)
+tbl.hypPars = getHyperparTable(local.db = local.db, numRuns = 2000000)
+tbl.runTime = getRunTimeTable(local.db = local.db, numRuns = 3500000)
 tbl.resultsReference = getReferenceTable(local.db = local.db)
 
 # get learner names
