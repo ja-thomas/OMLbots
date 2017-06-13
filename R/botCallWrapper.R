@@ -1,14 +1,15 @@
-# Main function to run the bot. This evaluates batch.size configurations. 
-# Task, learner and the actual configuration are defined by the corresponding functions. 
-# @param batch.size number of configurations to evaluate in parallel
-# @param sample.learner.fun function to sample a learner from tunePair
-# @param sample.task.fun sample a OML task
-# @param sample.configuration given a lrn sample a configuration
-# @param min.resources minimal resources to start benchmark (list with elements walltime and memory)
-# @param max.resources maximum resources allowed for each evaluation (list with elements walltime and memory)
-# @param lrn.ps.sets of available learners with matching parameter sets
-# @param upload should the run be uploaded to OpenML
-# @param path where should the registry be created, defaults to tempdir()
+#' Main function to run the bot. This evaluates batch.size configurations. 
+#' Task, learner and the actual configuration are defined by the corresponding functions. 
+#' @param batch.size number of configurations to evaluate in parallel
+#' @param sample.learner.fun function to sample a learner from tunePair
+#' @param sample.task.fun sample a OML task
+#' @param sample.configuration given a lrn sample a configuration
+#' @param min.resources minimal resources to start benchmark (list with elements walltime and memory)
+#' @param max.resources maximum resources allowed for each evaluation (list with elements walltime and memory)
+#' @param lrn.ps.sets of available learners with matching parameter sets
+#' @param upload should the run be uploaded to OpenML
+#' @param path where should the registry be created, defaults to tempdir()
+#' @export
 runBot = function(batch.size, sample.learner.fun = sampleRandomLearner, 
   sample.task.fun = sampleSimpleTask, sample.configuration.fun = sampleRandomConfiguration, 
   min.resources = NULL, max.resources = NULL, lrn.ps.sets = simple.lrn.par.set, upload = FALSE,
@@ -46,8 +47,13 @@ runBot = function(batch.size, sample.learner.fun = sampleRandomLearner,
     upload = upload, path = path)
 }
 
-# Conversion from factor to numeric for xgboost
-convToNum = function(data) {
+#' .convToNum
+#' 
+#' Conversion from factor to numeric for xgboost
+#' 
+#' @param data 
+.convToNum = function(data) {
+  #FIXME: Do we still need this?
   char_i = names(Filter(function(x) x=="factor", sapply(data, class)))
   for (i in char_i) {
     data[,i] = as.numeric(ordered(data[, i]))

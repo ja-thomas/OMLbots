@@ -5,6 +5,8 @@ load_all()
 # Serial cluster
 setOMLConfig(apikey = "34ebc7dff3057d8e224e5beac53aea0e")
 max.resources = list(walltime = 3600*5, memory = 2000)
+lrn.par.set = getMultipleLearners()
+simple.lrn.par.set = getSimpleLearners()
 
 for(i in 1:1000) {
   try(runBot(500, path = paste0("/naslx/projects/ua341/di49ruw/test", i), 
