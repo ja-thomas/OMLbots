@@ -50,10 +50,10 @@ updateReferenceTable(run.tag = "referenceV1", local.db)
 # --------------------------------------------------------------------------------------------------------------------------------------
 # Create surrogate models
 local.db = initializeLocalDatabase(overwrite = FALSE)
-tbl.results = getRunTable(local.db = local.db, numRuns = 5000000)
+tbl.results = getRunTable(local.db = local.db, numRuns = 7000000)
 tbl.metaFeatures = getMetaFeaturesTable(local.db = local.db)
-tbl.hypPars = getHyperparTable(local.db = local.db, numRuns = 1000000)
-tbl.runTime = getRunTimeTable(local.db = local.db, numRuns = 250000)
+tbl.hypPars = getHyperparTable(local.db = local.db, numRuns = 2000000)
+tbl.runTime = getRunTimeTable(local.db = local.db, numRuns = 3500000)
 tbl.resultsReference = getReferenceTable(local.db = local.db)
 
 # get learner names
@@ -134,7 +134,7 @@ pdf("paretofronts_example.pdf", width = 10, height = 8)
 for(i in seq_along(learner.names)) {
   print(i)
   print(learner.names[i])
-  par.front = createParetoFront(learner.name = learner.names[i], lrn.par.set, surrogate.measures, surrogate.time, meta.features, n.points = 10000) 
+  par.front = createParetoFront(learner.name = learner.names[i], lrn.par.set, surrogates.measures = surrogate.measures, surrogates.time = surrogate.time, meta.features, n.points = 10000) 
   plotParetoFront(par.front)
 }
 dev.off()

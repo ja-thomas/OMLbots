@@ -28,7 +28,7 @@ getRunDf = function(run.tag, numRuns, excl.run.ids){
 
 #' @param tag Name of the tag of the benchmark study.
 #' @return [\code{data.frame}] Table with run.id, task.id, flow.id, flow.name, measure values.
-getRunTable = function(run.tag = "mlrRandomBot", numRuns = 200000, excl.run.ids = NULL, local.db = NULL) {
+getRunTable = function(run.tag = "mlrRandomBot", numRuns = 320000, excl.run.ids = NULL, local.db = NULL) {
   if(is.null(local.db)){
     results = getRunDf(run.tag = run.tag, numRuns = numRuns, excl.run.ids = excl.run.ids)
     
@@ -60,7 +60,7 @@ getRunTable = function(run.tag = "mlrRandomBot", numRuns = 200000, excl.run.ids 
 
 #' @param tag Name of the tag of the benchmark study.
 #' @return [\code{data.frame}] Table with run.id, task.id, flow.id, flow.name, measure values.
-getReferenceTable = function(run.tag = "referenceV1", numRuns = 200000, excl.run.ids = NULL, local.db = NULL) {
+getReferenceTable = function(run.tag = "referenceV1", numRuns = 320000, excl.run.ids = NULL, local.db = NULL) {
   if(is.null(local.db)){
     df = getRunTable(run.tag = run.tag, excl.run.ids = run.ids$run.id, numRuns = numRuns)
   } else {
@@ -76,7 +76,7 @@ getReferenceTable = function(run.tag = "referenceV1", numRuns = 200000, excl.run
 #' should be set to a value so that it downloads all available runs
 #' @param n maximum number of runs that should be downloaded
 #' @return [\code{data.frame}] Table with run.id, hyperparameter name & value.
-getHyperparTable = function(run.tag = "mlrRandomBot", numRuns = 200000, excl.run.ids = NULL, local.db = NULL, n = 200000) {
+getHyperparTable = function(run.tag = "mlrRandomBot", numRuns = 400000, excl.run.ids = NULL, local.db = NULL, n = 400000) {
   if(is.null(local.db)){
     runs = getRunDf(run.tag = run.tag, numRuns = numRuns, excl.run.ids = excl.run.ids)
     runs = runs[sample(1:nrow(runs), size = min(n,nrow(runs))),]
@@ -232,7 +232,7 @@ getRunTime = function(run.ids) {
 }
 
 #' Get runtime table from the database
-getRunTimeTable = function(local.db = NULL, numRuns = 200000) {
+getRunTimeTable = function(local.db = NULL, numRuns = 320000) {
   if(!is.null(local.db))
     collect(tbl(local.db, sql("SELECT * FROM [runtime.table]")), n = numRuns)
 }
