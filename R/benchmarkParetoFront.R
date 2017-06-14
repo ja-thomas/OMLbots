@@ -1,6 +1,6 @@
 benchmarkParetoFront = function(measure.name = "area.under.roc.curve", 
   learner.name, task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
-  tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrn, min.experiments = 100) {
+  tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrn, min.experiments = 100, n.points1 = 10000, n.points2 = 1000) {
   
   # Leave one (or several) dataset(s) out
   datasets = sort(unique(tbl.results$task.id))
@@ -23,8 +23,8 @@ benchmarkParetoFront = function(measure.name = "area.under.roc.curve",
     meta.features = subset(tbl.metaFeatures, task.id == excl) %>% select(., majority.class.size, minority.class.size, number.of.classes,
       number.of.features, number.of.instances, number.of.numeric.features, number.of.symbolic.features)
     
-    par.front = createParetoFront(learner.name = learner.name, lrn.par.set, surrogates.measures = surrogate.measures, surrogates.time = surrogate.time, meta.features, n.points = 10000) 
-    plotParetoFront(par.front, plotly = TRUE)
+    par.front = createParetoFront(learner.name = learner.name, lrn.par.set, surrogates.measures = surrogate.measures, surrogates.time = surrogate.time, meta.features, n.points = n.points1) 
+    # plotParetoFront(par.front, plotly = TRUE)
     
     # Compare this pareto front with
     # the real pareto front (created by a local surrogate model)
@@ -57,9 +57,9 @@ benchmarkParetoFront = function(measure.name = "area.under.roc.curve",
     def = convertPackageDefault(defaults, learner.name, meta.features)
 
     par.front1 = createParetoFront(learner.name = learner.name, lrn.par.set, surrogates.measures = surrogate.measures, 
-      surrogates.time = surrogate.time, meta.features, n.points = 1000, extra.points = rbind(def, par.front$non.dominated$hyp.pars))
-    plotParetoFront(par.front1, plotly = TRUE, log = TRUE, col = c("purple", rep("pink", nrow(par.front$non.dominated$hyp.pars))), cex = 1)
-    plotParetoFront(par.front1, plotly = FALSE, log = TRUE, col = c("purple", rep("pink", nrow(par.front$non.dominated$hyp.pars))), cex = 1)
+      surrogates.time = surrogate.time, meta.features, n.points = n.points2, extra.points = rbind(def, par.front$non.dominated$hyp.pars))
+    plotParetoFront(learner.name, par.front1, plotly = TRUE, log = TRUE, col = c("purple", rep("pink", nrow(par.front$non.dominated$hyp.pars))), cex = 1)
+    plotParetoFront(learner.name, par.front1, plotly = FALSE, log = TRUE, col = c("purple", rep("pink", nrow(par.front$non.dominated$hyp.pars))), cex = 1)
     
     # (visualization? with moving points...)
     # is it dominated by the pareto front?

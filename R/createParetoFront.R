@@ -47,12 +47,12 @@ createParetoFront = function(learner.name, lrn.par.set, surrogates.measures, sur
 #' @param log should the time axis be scaled on a log scale? Default is FALSE.
 #' @param col vector of colors for extra hyperparameters if they are available in par.front. Default is NULL.
 #' @param cex vector of point size for extra hyperparameters if they are available in par.front. Default is NULL.
-plotParetoFront = function(par.front, plotly = FALSE, log = FALSE, col = NULL, cex = NULL) {
+plotParetoFront = function(learner.name, par.front, plotly = FALSE, log = FALSE, col = NULL, cex = NULL) {
   
   if (!plotly) {
     plot(par.front$dominated$preds$measure, par.front$dominated$preds$time, cex = 0.1, 
       log = ifelse(log, "y", ""),
-      main = learner.names[i], xlab = "Performance", ylab = "Time in seconds",
+      main = learner.name, xlab = "Performance", ylab = "Time in seconds",
       xlim = range(c(par.front$non.dominated$preds$measure, par.front$dominated$preds$measure)),
       ylim = range(c(par.front$non.dominated$preds$time, par.front$dominated$preds$time)))
     points(par.front$non.dominated$preds$measure, par.front$non.dominated$preds$time, col = "red", cex = 0.7, pch = 16)
