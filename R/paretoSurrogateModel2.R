@@ -106,7 +106,7 @@ scaleRunTime = function(tbl.runTime) {
 }
 
 #' Replace NA values by -11 (numeric variables) or NA levels (factor variables)
-#' @param task.data
+#' @param task.data task data
 deleteNA = function(task.data) {
   for(i in 1:ncol(task.data)) {
     if(is.numeric(task.data[, i]))

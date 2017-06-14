@@ -1,5 +1,8 @@
-# this draws a random binary classif OMLTask from study 14 with 10 fold CV and without missing values
-# @return OML task
+#' sampleRandomTask
+#' 
+#' this draws a random binary classif OMLTask from study 14 with 10 fold CV and without missing values
+#' @return OML task
+#' @export
 sampleRandomTask = function() {
   
   tasks = listOMLTasks(number.of.classes = 2L, number.of.missing.values = 0, 
@@ -13,7 +16,11 @@ sampleRandomTask = function() {
   return(list(id = task$task.id, name = task$name))
 }
 
-# sample really simple and small datasets
+
+#' sampleSimpleTask
+#' 
+#' sample really simple and small datasets
+#' @export
 sampleSimpleTask = function() {
   
   tasks = listOMLTasks(number.of.classes = 2L, number.of.instances = c(100L, 500L), 

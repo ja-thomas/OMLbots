@@ -1,9 +1,11 @@
-# Create a learner-parameter set. 
-# @param learner learner object
-# @param param.set parameter set, that matches the learner
-# @param lrn.ps.sets a previously created lrn.ps.set
-# @param id name of the lrn.ps set to create
-# @param overwrite overwrite existing id, if id collision occurs
+#' @title makeLrnPsSets
+#' @description  Create a learner-parameter set. 
+#' @param learner learner object
+#' @param param.set parameter set, that matches the learner
+#' @param lrn.ps.sets a previously created lrn.ps.set
+#' @param id name of the lrn.ps set to create
+#' @param overwrite overwrite existing id, if id collision occurs
+#' @export
 makeLrnPsSets = function(learner, param.set, lrn.ps.sets = NULL, 
   id = paste0(learner$id, ".set"), overwrite = FALSE) {
   
@@ -34,6 +36,8 @@ makeLrnPsSets = function(learner, param.set, lrn.ps.sets = NULL,
   return(lrn.ps.sets)
 }
 
+#' print.LrnPsSet
+#' @export
 print.LrnPsSet = function(x, ...) {
   lrns = vcapply(x, function(l) l$learner$short.name)
   lrns = paste(lrns, collapse = ", ")

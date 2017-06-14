@@ -1,8 +1,11 @@
-# Gradually increase the maximum walltime and memory requirements
-# @param jobs job numbers
-# @param registry used batchtools registry
-# @param start.resources starting resources, if not specified use the default resources
-# @param max.resources maximum allowed resources. This should be a list with slots walltime and memory.
+#' exponentialBackOff
+#' 
+#' Gradually increase the maximum walltime and memory requirements
+#' @param jobs job numbers
+#' @param registry used batchtools registry
+#' @param start.resources starting resources, if not specified use the default resources
+#' @param max.resources maximum allowed resources. This should be a list with slots walltime and memory.
+#' @export
 exponentialBackOff = function(jobs, registry, start.resources = NULL, max.resources) {
   
   if (is.null(start.resources))
@@ -26,6 +29,5 @@ exponentialBackOff = function(jobs, registry, start.resources = NULL, max.resour
     resourceTable = resourceTable[job.id %in% time.exceeded | (job.id %in% memory.exceeded & memory < max.resources$memory)]
     resourceTable[job.id %in% memory.exceeded, memory := min(max.resources$memory, 2 * memory)]
     resourceTable[job.id %in% time.exceeded, walltime := min(max.resources$walltime, 2 * walltime)]
-    
   }
 }
