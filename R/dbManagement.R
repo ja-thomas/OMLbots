@@ -4,6 +4,7 @@
 #' @param path path of database
 #' @param overwrite overwrite existing database
 #' @return database
+#' @export
 initializeLocalDatabase = function(path = ".", overwrite = FALSE) {
   
   db = paste0(path, "/mlrRandomBotDatabase.db")
@@ -86,6 +87,7 @@ initializeLocalDatabase = function(path = ".", overwrite = FALSE) {
 #' Save run results to db
 #' @param run.tag 
 #' @param local.db 
+#' @export
 updateRunTable = function(run.tag, local.db){
   run.ids = local.db %>% tbl(sql("SELECT DISTINCT [run.id] FROM [run.table]")) %>% collect(n = Inf)
   df = getRunTable(run.tag = run.tag, excl.run.ids = run.ids$run.id)
@@ -98,7 +100,8 @@ updateRunTable = function(run.tag, local.db){
 #' 
 #' Save reference run results to db
 #' @param run.tag 
-#' @param local.db 
+#' @param local.db
+#' @export 
 updateReferenceTable = function(run.tag, local.db){
   run.ids = local.db %>% tbl(sql("SELECT DISTINCT [run.id] FROM [reference.table]")) %>% collect(n = Inf)
   df = getRunTable(run.tag = run.tag, excl.run.ids = run.ids$run.id)
@@ -112,6 +115,7 @@ updateReferenceTable = function(run.tag, local.db){
 #' Save hyperparameters for run to db
 #' @param run.tag 
 #' @param local.db 
+#' @export
 updateHyperparTable = function(run.tag, local.db){
   run.ids = local.db %>% tbl(sql("SELECT DISTINCT [run.id] FROM [hyperpar.table]")) %>% collect(n = Inf) 
   df = getHyperparTable(run.tag = run.tag, excl.run.ids = run.ids$run.id)
@@ -125,6 +129,7 @@ updateHyperparTable = function(run.tag, local.db){
 #' Save meta data for task to db
 #' @param task.tag 
 #' @param local.db 
+#' @export
 updateMetaTable = function(task.tag, local.db){
   task.ids = local.db %>% tbl(sql("SELECT DISTINCT [task.id] FROM [meta.table]")) %>% collect(n = Inf)
   df = getMetaFeaturesTable(task.tag = task.tag)
@@ -138,6 +143,7 @@ updateMetaTable = function(task.tag, local.db){
 #' 
 #' Save user times to db
 #' @param local.db 
+#' @export
 updateRunTimeTable = function(local.db){
   qry_sql = paste0("SELECT DISTINCT a.[run.id] FROM [run.table] As a ",
     "LEFT JOIN [runtime.table] As b ON a.[run.id] = b.[run.id] ",

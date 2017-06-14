@@ -1,13 +1,15 @@
-# This evaluates all configurations of a single learner and a matching task.
-# Configurations in par should be valid for task. 
-# @param lrn Learner
-# @param task OMLTask
-# @param par data.frame of configurations to evaluate
-# @param min.resources minimal used resources
-# @param max.resources maximum allowed resources for a single evaluation
-# @param upload should the run be uploaded
-evalConfigurations = function(lrn, task, par, min.resources, max.resources, 
-  upload, path) {
+#' @title evalConfigurations
+#' This evaluates all configurations of a single learner and a matching task.
+#' Configurations in par should be valid for task. 
+#' @param lrn Learner
+#' @param task OMLTask
+#' @param par data.frame of configurations to evaluate
+#' @param min.resources minimal used resources
+#' @param max.resources maximum allowed resources for a single evaluation
+#' @param upload should the run be uploaded
+#' 
+#' @export
+evalConfigurations = function(lrn, task, par, min.resources, max.resources, upload, path) {
   
   if(!dir.exists(path)){
     reg = makeExperimentRegistry(file.dir = path, 

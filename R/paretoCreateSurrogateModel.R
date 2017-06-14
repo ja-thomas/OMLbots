@@ -1,4 +1,6 @@
+#' @title makeSurrogateModel
 #' Create surrogate model for different tasks
+#'
 #' @param measure.name Name of the measure to optimize
 #' @param learner.name Name of learner
 #' @param task.ids [\code{numeric}] ids of the tasks
@@ -9,15 +11,22 @@
 #' @param surrogate.mlr.lrn model(s) that should be used as surrogate model
 #' @param min.experiments minimum number of experiments that should be available for a dataset, otherwise the dataset is excluded
 #' @param benchmark [\code{logical}] Should a benchmark experiment with different surrogate models be executed to 
+#' @param tbl.runTime 
+#' @param tbl.resultsReference 
+#' @param time 
+#' 
 #' evaluate the performance of the surrogate models? Default is FALSE.
+#' 
 #' @return surrogate model
+#' @export
 makeSurrogateModel = function(measure.name, learner.name, task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
   tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrn, min.experiments = 100, benchmark = FALSE, time = FALSE) {
+  
   param.set = lrn.par.set[[which(names(lrn.par.set) == paste0(substr(learner.name, 5, 100), ".set"))]]$param.set
   
   #train mlr model on full table for measure
   mlr.mod.measure = list()
-  task.data = makeBotTable2(measure.name, learner.name, tbl.results, tbl.hypPars, tbl.metaFeatures, tbl.runTime, tbl.resultsReference)
+  task.data = makeBotTable(measure.name, learner.name, tbl.results, tbl.hypPars, tbl.metaFeatures, tbl.runTime, tbl.resultsReference)
   # delete or Transform Missing values
   task.data[, names(param.set$pars)] = deleteNA(task.data[, names(param.set$pars), drop = FALSE])
   
@@ -55,14 +64,20 @@ makeSurrogateModel = function(measure.name, learner.name, task.ids, lrn.par.set,
   }
 }
 
+#' @title makeBotTable
 #' Merge results, hyperpars and features tables and prepare for mlr.task input
-#' @param measure.name.filter What measure to analyse
+#'
 #' @param learner.name What learner to analyse
 #' @param tbl.results df with getMlrRandomBotResults()
 #' @param tbl.hypPars df with getMlrRandomBotHyperpars()
+#' @param measure.name What measure to analyse
+#' @param tbl.runTime 
+#' @param tbl.resultsReference 
 #' @param tbl.metaFeatures df with getMlrRandomBotHyperpars()
+#'
 #' @return [\code{data.frame}] Complete table used for creating the surrogate model 
-makeBotTable2 = function(measure.name, learner.name, tbl.results, tbl.hypPars, tbl.metaFeatures, tbl.runTime, tbl.resultsReference){
+#' @export
+makeBotTable = function(measure.name, learner.name, tbl.results, tbl.hypPars, tbl.metaFeatures, tbl.runTime, tbl.resultsReference){
 
   measure.name.filter = measure.name
   learner.name.fiter = learner.name
@@ -99,6 +114,7 @@ makeBotTable2 = function(measure.name, learner.name, tbl.results, tbl.hypPars, t
 
 #' Scale the run time results with the sci.mark results
 #' @param tbl.runTime The runtime table
+#' @export
 scaleRunTime = function(tbl.runTime) {
   tbl.runTime$sci.mark = tbl.runTime$sci.mark / median(tbl.runTime$sci.mark, na.rm = T)
   tbl.runTime$run.time = tbl.runTime$run.time / tbl.runTime$sci.mark
@@ -107,6 +123,7 @@ scaleRunTime = function(tbl.runTime) {
 
 #' Replace NA values by -11 (numeric variables) or NA levels (factor variables)
 #' @param task.data task data
+#' @export
 deleteNA = function(task.data) {
   for(i in 1:ncol(task.data)) {
     if(is.numeric(task.data[, i]))

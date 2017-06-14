@@ -1,3 +1,21 @@
+#' @title benchmarkParetoFront
+#' Predicts the paretofront for an out-of-bag dataset and compares it to the real paretofront of the dataset.
+#'
+#' @param measure.name 
+#' @param learner.name 
+#' @param task.ids 
+#' @param lrn.par.set 
+#' @param tbl.results 
+#' @param tbl.hypPars 
+#' @param tbl.metaFeatures 
+#' @param tbl.runTime 
+#' @param tbl.resultsReference 
+#' @param surrogate.mlr.lrn mlr.learner used for creating the surrogate function
+#' @param min.experiments take experiments with a least min.experiments
+#' @param n.points1 Number of points for first paretofront (prediction)
+#' @param n.points2 Number of points for the real paretofront of the dataset
+#'
+#' @export
 benchmarkParetoFront = function(measure.name = "area.under.roc.curve", 
   learner.name, task.ids, lrn.par.set, tbl.results, tbl.hypPars, 
   tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrn, min.experiments = 100, n.points1 = 10000, n.points2 = 1000) {
@@ -10,11 +28,11 @@ benchmarkParetoFront = function(measure.name = "area.under.roc.curve",
     tbl.results.i = tbl.results[tbl.results$task.id != excl, ]
     
     # Create surrogate models
-    surrogate.measures = list(makeSurrogateModel(measure.name = "area.under.roc.curve", 
+    surrogate.measures = list(makeSurrogateModel(measure.name = measure.name, 
       learner.name = learner.name, task.ids, lrn.par.set, tbl.results.i, tbl.hypPars, 
       tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrn, min.experiments = 100))
     names(surrogate.measures) = learner.name
-    surrogate.time = list(makeSurrogateModel(measure.name = "area.under.roc.curve", 
+    surrogate.time = list(makeSurrogateModel(measure.name = measure.name, 
       learner.name = learner.name, task.ids, lrn.par.set, tbl.results.i, tbl.hypPars, 
       tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrn, min.experiments = 100, 
       time = TRUE))
@@ -31,11 +49,11 @@ benchmarkParetoFront = function(measure.name = "area.under.roc.curve",
     tbl.results.i = tbl.results[tbl.results$task.id == excl, ]
     
     # Create surrogate models for the real pareto front
-    surrogate.measures = list(makeSurrogateModel(measure.name = "area.under.roc.curve", 
+    surrogate.measures = list(makeSurrogateModel(measure.name = measure.name, 
       learner.name = learner.name, task.ids, lrn.par.set, tbl.results.i, tbl.hypPars, 
       tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrn, min.experiments = 100))
     names(surrogate.measures) = learner.name
-    surrogate.time = list(makeSurrogateModel(measure.name = "area.under.roc.curve", 
+    surrogate.time = list(makeSurrogateModel(measure.name = measure.name, 
       learner.name = learner.name, task.ids, lrn.par.set, tbl.results.i, tbl.hypPars, 
       tbl.metaFeatures, tbl.runTime, tbl.resultsReference, surrogate.mlr.lrn, min.experiments = 100, 
       time = TRUE))

@@ -1,14 +1,11 @@
-#' @param tag Name of the tag of the benchmark study.
-#' @return [\code{data.frame}] Table with number of experiments for each learner and each task. 
-getMlrRandomBotOverview = function(tag = "mlrRandomBot") {
-  df = listOMLRunEvaluations(tag = tag) %>% 
-    mutate(flow.version = c(stri_match_last(flow.name, regex = "[[:digit:]]+\\.*[[:digit:]]*")),
-      learner.name = stri_replace_last(flow.name, replacement = "", regex = "[([:digit:]]+\\.*[[:digit:]*)]"))
-  
-  return(as.data.frame.matrix(table(df$learner.name, df$data.name)))
-}
-
+#' @title getRunDf
 #' Small helper function to get a clean df from listOMLRuns
+#' 
+#' @param run.tag OpenML run tag
+#' @param numRuns number of runs
+#' @param excl.run.ids run ids to exclude
+#' 
+#' @export
 getRunDf = function(run.tag, numRuns, excl.run.ids){
   max.limit = 10000 #FIXME: fix this once OpenML offers new solution
   results = do.call("rbind", 
@@ -26,8 +23,16 @@ getRunDf = function(run.tag, numRuns, excl.run.ids){
   return(results)
 }
 
-#' @param tag Name of the tag of the benchmark study.
+#' @title getRunTable
+#' get the run table from OpenML and melt the measure values
+#' 
+#' @param run.tag 
+#' @param numRuns 
+#' @param excl.run.ids 
+#' @param local.db 
+#'
 #' @return [\code{data.frame}] Table with run.id, task.id, flow.id, flow.name, measure values.
+#' @export
 getRunTable = function(run.tag = "mlrRandomBot", numRuns = 320000, excl.run.ids = NULL, local.db = NULL) {
   if(is.null(local.db)){
     results = getRunDf(run.tag = run.tag, numRuns = numRuns, excl.run.ids = excl.run.ids)
@@ -58,8 +63,15 @@ getRunTable = function(run.tag = "mlrRandomBot", numRuns = 320000, excl.run.ids 
   return(df)
 }
 
-#' @param tag Name of the tag of the benchmark study.
+#' @title getReferenceTable
+#' contains the results for the featureless learner used for scaling 
+#' @param run.tag 
+#' @param numRuns 
+#' @param excl.run.ids 
+#' @param local.db 
+#' 
 #' @return [\code{data.frame}] Table with run.id, task.id, flow.id, flow.name, measure values.
+#' @export
 getReferenceTable = function(run.tag = "referenceV1", numRuns = 320000, excl.run.ids = NULL, local.db = NULL) {
   if(is.null(local.db)){
     df = getRunTable(run.tag = run.tag, excl.run.ids = run.ids$run.id, numRuns = numRuns)
@@ -70,12 +82,17 @@ getReferenceTable = function(run.tag = "referenceV1", numRuns = 320000, excl.run
 }
 
 
-#' @param tag Name of the tag of the benchmark study.
+#' @title getHyperparTable
+#' @description get the table with hyperparameters from OpenML
+#' 
 #' @param excl.run.ids ids that should not be downloaded
-#' @param numRuns maximum Number of runs that should be downloaded in the first step; 
-#' should be set to a value so that it downloads all available runs
+#' @param numRuns maximum Number of runs that should be downloaded in the first step; should be set to a value so that it downloads all available runs
+#' @param run.tag 
+#' @param local.db 
 #' @param n maximum number of runs that should be downloaded
+#'
 #' @return [\code{data.frame}] Table with run.id, hyperparameter name & value.
+#' @export
 getHyperparTable = function(run.tag = "mlrRandomBot", numRuns = 400000, excl.run.ids = NULL, local.db = NULL, n = 400000) {
   if(is.null(local.db)){
     runs = getRunDf(run.tag = run.tag, numRuns = numRuns, excl.run.ids = excl.run.ids)
@@ -121,8 +138,11 @@ getHyperparTable = function(run.tag = "mlrRandomBot", numRuns = 400000, excl.run
   return(res_total)
 }
 
+#' @title addDefaultValues
+#' If default values are not overwritten OpenML does not return values. This function adds values for the tuned hyperparameters so they can be used for the calculation of the pareto front.
 #' @param res Long table with hyperparameters generated in getHyperparTable
 #' @return [\code{data.frame}] Long Table with added values for the defaults.
+#' @export
 addDefaultValues = function(res) {
   learner.name = try(listOMLRunEvaluations(run.id = res$run.id[1])$learner.name)
   
@@ -178,8 +198,11 @@ addDefaultValues = function(res) {
 }
 
 
-#' @param tag Name of the tag of the benchmark datasets.
+#' @title getMetaFeaturesTable
+#' @param task.tag Name of the tag of the benchmark datasets.
+#' @param local.db
 #' @return [\code{data.frame}] Table with task.id, data.id, name, target.feature and metafeatures.
+#' @export
 getMetaFeaturesTable = function(task.tag = "study_14", local.db = NULL) {
   if(is.null(local.db)){
     df = listOMLTasks(tag = task.tag)
@@ -193,7 +216,11 @@ getMetaFeaturesTable = function(task.tag = "study_14", local.db = NULL) {
   return(df)
 }
 
-#' Scrape user time and scibench for a run. Only works for runs by OMLBot
+#' @title scrapeRunTime
+#' @description Scrape user time and scibench for a run. Only works for runs by OMLBot
+#'
+#' @param run.id 
+#' @export
 scrapeRunTime = function(run.id) {
   oml.url = "https://www.openml.org/r/"
   
@@ -224,14 +251,24 @@ scrapeRunTime = function(run.id) {
   return(df)
 }
 
+#' @title getRunTime
 #' Get user times for a vector of run ids
+#'
+#' @param run.ids 
+#' @export
 getRunTime = function(run.ids) {
   res = lapply(run.ids, function(x) scrapeRunTime(x))
   df = do.call(rbind, res)
   return(df)
 }
 
+#' @title getRunTimeTable
 #' Get runtime table from the database
+#'
+#' @param local.db 
+#' @param numRuns 
+#' 
+#' @export
 getRunTimeTable = function(local.db = NULL, numRuns = 320000) {
   if(!is.null(local.db))
     collect(tbl(local.db, sql("SELECT * FROM [runtime.table]")), n = numRuns)

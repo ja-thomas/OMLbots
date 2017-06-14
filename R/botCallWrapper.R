@@ -1,3 +1,4 @@
+#' @title runBot
 #' Main function to run the bot. This evaluates batch.size configurations. 
 #' Task, learner and the actual configuration are defined by the corresponding functions. 
 #' @param batch.size number of configurations to evaluate in parallel
@@ -29,13 +30,13 @@ runBot = function(batch.size, sample.learner.fun = sampleRandomLearner,
   print(par)
   
   if (getLearnerPackages(lrn$learner) == "ranger" & extra.tag != "referenceV1") {
+    #Avoid fails by adjusting mtry
     p = ncol(task$task$input$data.set$data) - 1
     par$mtry = ceiling(p * par$mtry)
   }
   
   if (getLearnerPackages(lrn$learner) == "xgboost") {
-    #task$task$input$data.set$data[cols] = data.frame(convToNum(task$task$input$data.set$data[, cols]))
-    
+    #Convert factors to numeric
     target = task$task$input$data.set$target.features
     cols = which(colnames(task$task$input$data.set$data) != target)
     task$task$input$data.set$data = data.frame(sapply(dummy.data.frame(task$task$input$data.set$data[,cols], sep = "_._"), as.numeric), 
@@ -43,20 +44,5 @@ runBot = function(batch.size, sample.learner.fun = sampleRandomLearner,
     colnames(task$task$input$data.set$data) = make.names(colnames(task$task$input$data.set$data))
   }
   
-  evalConfigurations(lrn$learner, task = task, par, min.resources, max.resources, 
-    upload = upload, path = path)
-}
-
-#' .convToNum
-#' 
-#' Conversion from factor to numeric for xgboost
-#' 
-#' @param data 
-.convToNum = function(data) {
-  #FIXME: Do we still need this?
-  char_i = names(Filter(function(x) x=="factor", sapply(data, class)))
-  for (i in char_i) {
-    data[,i] = as.numeric(ordered(data[, i]))
-  }
-  return(data)
+  evalConfigurations(lrn$learner, task = task, par, min.resources, max.resources, upload = upload, path = path)
 }

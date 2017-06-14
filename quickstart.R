@@ -23,8 +23,6 @@ for(i in 1:1000){
     lrn.ps.sets = lrn.par.set, upload = TRUE, extra.tag = "botV1"))
 }
 
-overview = getMlrRandomBotOverview("botV1")
-print(overview)
 # Geht nicht bei zu großen Ergebnissen; stattdessen mit limit und listOMLRuns 
 tag = "mlrRandomBot"
 numRuns = 160000

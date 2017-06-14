@@ -1,4 +1,15 @@
-# Create a pareto front for a given surrogate models for a measure and time of a learner
+
+#' @title createParetoFront
+#' @description Create a pareto front for a given surrogate model for a measure and time of a learner
+#' @param learner.name 
+#' @param lrn.par.set 
+#' @param surrogates.measures 
+#' @param surrogates.time 
+#' @param meta.features 
+#' @param n.points 
+#' @param extra.points 
+#'
+#' @export
 createParetoFront = function(learner.name, lrn.par.set, surrogates.measures, surrogates.time, meta.features, n.points = 100, extra.points = NULL) {
   
   param.set = lrn.par.set[[which(names(lrn.par.set) == paste0(substr(learner.name, 5, 100), ".set"))]]$param.set
@@ -41,12 +52,16 @@ createParetoFront = function(learner.name, lrn.par.set, surrogates.measures, sur
    dominated = list(preds = dominated.points, hyp.pars = dominated.hyp.pars), extra.points = list(preds = mat.extra, hyp.pars = extra.points)))
 }
 
-# Plot the pareto front that was created with createParetoFront
+#' @title plotParetoFront
+#' Plot the pareto front that was created with createParetoFront
 #' @param par.front pareto front object created with createParetoFront
 #' @param plotly should plotly be used? Default is FALSE.
 #' @param log should the time axis be scaled on a log scale? Default is FALSE.
 #' @param col vector of colors for extra hyperparameters if they are available in par.front. Default is NULL.
+#' @param learner.name 
 #' @param cex vector of point size for extra hyperparameters if they are available in par.front. Default is NULL.
+#' 
+#' @export
 plotParetoFront = function(learner.name, par.front, plotly = FALSE, log = FALSE, col = NULL, cex = NULL) {
   
   if (!plotly) {
@@ -102,10 +117,17 @@ plotParetoFront = function(learner.name, par.front, plotly = FALSE, log = FALSE,
   }
 }
 
-# Get a proposal for a hyperparameter setting for a given time
-#' @param surrogate_measure Name of the measure to optimize
+#' @title getTimeDependentHyperpar
+#' Get a proposal for a hyperparameter setting for a given time
+#' @param surrogate_measures 
+#' @param meta_features 
 #' @param surrogate_time Name of learner
+#' 
+#' @export
 getTimeDependentHyperpar = function(surrogate_measures, surrogate_time, meta_features) {
   # Not ready yet
   return(hyperpar)
 }
+
+
+
