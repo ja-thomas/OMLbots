@@ -101,6 +101,9 @@ plotParetoFront = function(learner.name, par.front, plotly = FALSE, log = FALSE,
     }
     text = unlist(apply(text, 1, function(x) text.func(x)))
     
+    d$z = rep(1, nrow(d))
+    # d$z = 1/c(rep(5, 982),  rep(6.5, 18), 15, rep(6.5, 25))
+    
     p = plot_ly(
       d, x = ~measure, y = ~time,
       type = "scatter",
@@ -108,8 +111,8 @@ plotParetoFront = function(learner.name, par.front, plotly = FALSE, log = FALSE,
       text = text,
       color = ~non.dominated,
       colors = c("black", "red", unique(col)),
-      sizes = c(1, 7),
-      size = rep(10, nrow(d))
+      sizes = c(10, 1), # c(20,2)
+      size = ~z 
     )
     if(log)
       p = layout(p, yaxis = list(type = "log"))
