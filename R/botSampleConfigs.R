@@ -48,7 +48,7 @@ sampleRandomTask = function() {
     data.tag = "study_14", estimation.procedure = "10-fold Crossvalidation")
   messagef("Found %i available OML tasks", nrow(tasks))
   task = tasks %>% 
-    filter(format == "ARFF", status == "active") %>% 
+    dplyr::filter(format == "ARFF", status == "active") %>% 
     sample_n(1) %>% 
     select(task.id, name)
   

@@ -26,6 +26,7 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources, uplo
     should.upload = upload, add.tags = attr(par, "additional.tags"), ...) {
 
     # Run mlr
+    setOMLConfig(apikey = "34ebc7dff3057d8e224e5beac53aea0e")
     mlr.par.set = list(...)
     mlr.par.set = mlr.par.set[!vlapply(mlr.par.set, is.na)]
     mlr.lrn = setHyperPars(mlr.lrn, par.vals = mlr.par.set)
@@ -49,11 +50,11 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources, uplo
     # exponentialBackOff(jobs = 1:nrow(par), registry = reg, start.resources = min.resources, max.resources = max.resources)    
     submitJobs(resources = max.resources)
   } else {
-    reg$cluster.functions = makeClusterFunctionsSocket(1)
+    reg$cluster.functions = makeClusterFunctionsSSH(list(Worker$new("localhost", ncpus = 4)), fs.latency = 10)
     submitJobs()    
   }
   waitForJobs(reg = reg)
-  unlink(path, recursive = TRUE)
+  #unlink(path, recursive = TRUE)
 }
 
 
