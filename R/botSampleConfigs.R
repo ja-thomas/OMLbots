@@ -66,7 +66,7 @@ sampleSimpleTask = function() {
     number.of.features = c(3L, 20L), number.of.missing.values = 0, estimation.procedure = "33% Holdout set")
   messagef("Found %i available OML tasks", nrow(tasks))
   task = tasks %>%
-    filter(format == "ARFF", status == "active") %>% 
+    dplyr::filter(format == "ARFF", status == "active") %>% 
     sample_n(1) %>% 
     select(task.id, name)
   

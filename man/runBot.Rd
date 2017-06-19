@@ -2,7 +2,8 @@
 % Please edit documentation in R/botCallWrapper.R
 \name{runBot}
 \alias{runBot}
-\title{Main function to run the bot. This evaluates batch.size configurations. 
+\title{runBot
+Main function to run the bot. This evaluates batch.size configurations. 
 Task, learner and the actual configuration are defined by the corresponding functions.}
 \usage{
 runBot(batch.size, sample.learner.fun = sampleRandomLearner,
@@ -31,8 +32,3 @@ runBot(batch.size, sample.learner.fun = sampleRandomLearner,
 
 \item{sample.configuration}{given a lrn sample a configuration}
 }
-\description{
-Main function to run the bot. This evaluates batch.size configurations. 
-Task, learner and the actual configuration are defined by the corresponding functions.
-}
-

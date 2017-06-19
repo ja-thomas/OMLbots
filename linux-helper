@@ -1,0 +1,89 @@
+#!/bin/bash
+
+## linux-helper: Helper for the multicore and SSH cluster functions of the BatchJobs R
+##   package.
+##
+## Requires the following Unix command line utilities:
+##
+##  * grep, wc, ps, kill, uptime, echo, cat, possibly setsid
+##
+## The following commands are implemented. First argument is always the command name.
+## For other arguments see below. Each command returns a character vector.
+##
+## number-of-cpus
+##  Return the number of PEs on worker.
+##
+## start-job NICE JOBFILE OUTFILE
+##   Start an Rscript process running doJobCollection on $JOBFILE and log
+##   the output in $OUTFILE.
+##   Returns: PID of sh process which spawned R. We use that as batch.id.
+##
+## kill-job PID
+##   Kill the R job with PID $PID. The PID is the PID of
+##   the sh process returned by start-job.
+##   First a TERM is sent, then 1 sec delay, then KILL.
+##
+##  status FILEDIR
+##   Return 4 numbers:
+##    - load average of last 1 min, as given by e.g. uptime
+##    - number of R processes by _all_ users
+##    - number of R processes by _all_ users which have a load of >= 50%
+##    - number of R processes by current user
+##      which match $FILEDIR/jobs in the cmd call of R
+##
+##  list-jobs FILEDIR
+##   Return the PIDs of running R jobs operating on $FILEDIR/jobs.
+
+### efficient [ -n `which [prog]` ]
+command_exists () {
+    hash "$1" 2> /dev/null;
+}
+
+CMD="$1"; shift
+export LC_ALL=C ### Avoid any localization issues.
+shopt -s nocasematch ### Case insensitive regular expressions
+
+case $CMD in
+    number-of-cpus)
+        if [[ `uname` =~ "Linux" ]]; then
+          cat /proc/cpuinfo | grep '^processor' | wc -l
+        else ## darwin
+          sysctl -n hw.ncpu
+        fi
+        ;;
+    start-job)
+	sudo chmod o+wt '/sys/fs/cgroup/cpu,cpuacct/user.slice'
+	sudo chmod o+wt '/sys/fs/cgroup/freezer/'
+	sudo chmod o+wt '/sys/fs/cgroup/memory/user.slice'
+	sudo chmod o+wt '/sys/fs/cgroup/cpuset/'
+        runexec --timelimit 1000  -- Rscript -e ".libPaths('/home/bot/R/x86_64-pc-linux-gnu-library/3.2'); batchtools::doJobCollection('$1')" > "$2" 2>&1 &
+        echo $!
+        ;;
+    kill-job)
+        kill -TERM $1 > /dev/null 2> /dev/null
+        sleep 1
+        kill -KILL $1 > /dev/null 2> /dev/null
+        exit 0
+        ;;
+    status)
+        # remove everyting till load average(s), then delete commas
+        LOAD=$(uptime | awk '{gsub(/.*:/,""); {gsub(/,/,"")}; print $1}')
+        JOBDIR="$1/jobs"
+        # print 3 columns for all processes
+        # use ww for unlimited width in ps for command output
+        # we count all R procs, all R50, and all where JOBDIR was in the call args
+        ps -e -ww -o pcpu= -o ucomm= -o command= | \
+        awk -v j=$JOBDIR -v sysload=$LOAD '
+          BEGIN {rprocs=0;rprocs_50=0;njobs=0}
+          $2 != "R" {next}
+          {rprocs++}
+          $1 > 50.0 {rprocs_50++}
+          $0 ~ j {njobs++}
+          END {print sysload " " rprocs " " rprocs_50 " " njobs}'
+        ;;
+    list-jobs)
+        JOBDIR="$1/jobs"
+        ps -e -ww -o pid= -o ucomm= -o command= | awk -v j=$JOBDIR '$2 == "R" && $0 ~ j { print $1 }'
+        ;;
+    *)
+esac

@@ -12,4 +12,3 @@ a learner parameter set
 \description{
 Expand the simple learner set by more learners.
 }
-
