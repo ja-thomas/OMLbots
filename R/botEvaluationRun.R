@@ -51,6 +51,7 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources, uplo
     submitJobs(resources = max.resources)
   } else {
     reg$cluster.functions = makeClusterFunctionsSSH(list(Worker$new("localhost", ncpus = 4)), fs.latency = 10)
+    #reg$cluster.functions = makeClusterFunctionsInteractive()
     submitJobs()    
   }
   waitForJobs(reg = reg)
