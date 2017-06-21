@@ -1,0 +1,83 @@
+JoinTables              Inner, Left, Right, Outer, Semi and Anti Join
+                        for Data Tables
+Tags                    Add or Remove Job Tags
+Worker                  Create a Linux-Worker
+addAlgorithm            Define Algorithms for Experiments
+addExperiments          Add Experiments to the Registry
+addProblem              Define Problems for Experiments
+batchExport             Export Objects to the Slaves
+batchMap                Map Operation for Batch Systems
+batchMapResults         Map Over Results to Create New Jobs
+batchReduce             Reduce Operation for Batch Systems
+batchtools-deprecated   Deprecated function in the batchtools package
+batchtools-package      batchtools: Tools for Computation on Batch
+                        Systems
+btlapply                Synchronous Apply Functions
+cfBrewTemplate          Cluster Functions Helper to Write Job
+                        Description Files
+cfHandleUnknownSubmitError
+                        Cluster Functions Helper to Handle Unknown
+                        Errors
+cfKillJob               Cluster Functions Helper to Kill Batch Jobs
+cfReadBrewTemplate      Cluster Functions Helper to Parse a Brew
+                        Template
+chunk                   Chunk Jobs for Sequential Execution
+chunkIds                Chunk Jobs for Sequential Execution
+clearRegistry           Remove All Jobs
+doJobCollection         Execute Jobs of a JobCollection
+estimateRuntimes        Estimate Remaining Runtimes
+execJob                 Execute a Single Jobs
+findJobs                Find and Filter Jobs
+getDefaultRegistry      Get and Set the Default Registry
+getErrorMessages        Retrieve Error Messages
+getJobTable             Query Job Information
+getStatus               Summarize the Computational Status
+grepLogs                Grep Log Files for a Pattern
+killJobs                Kill Jobs
+loadRegistry            Load a Registry from the File System
+loadResult              Load the Result of a Single Job
+makeClusterFunctions    ClusterFunctions Constructor
+makeClusterFunctionsDocker
+                        ClusterFunctions for Docker
+makeClusterFunctionsInteractive
+                        ClusterFunctions for Sequential Execution in
+                        the Running R Session
+makeClusterFunctionsLSF
+                        ClusterFunctions for LSF Systems
+makeClusterFunctionsMulticore
+                        ClusterFunctions for Parallel Multicore
+                        Execution
+makeClusterFunctionsOpenLava
+                        ClusterFunctions for OpenLava
+makeClusterFunctionsSGE
+                        ClusterFunctions for SGE Systems
+makeClusterFunctionsSSH
+                        ClusterFunctions for Remote SSH Execution
+makeClusterFunctionsSlurm
+                        ClusterFunctions for Slurm Systems
+makeClusterFunctionsSocket
+                        ClusterFunctions for Parallel Socket Execution
+makeClusterFunctionsTORQUE
+                        ClusterFunctions for OpenPBS/TORQUE Systems
+makeExperimentRegistry
+                        ExperimentRegistry Constructor
+makeJob                 Jobs and Experiments
+makeJobCollection       JobCollection Constructor
+makeRegistry            Registry Constructor
+makeSubmitJobResult     Create a SubmitJobResult
+reduceResults           Reduce Results
+reduceResultsList       Apply Functions on Results
+removeExperiments       Remove Experiments
+removeRegistry          Remove a Registry from the File System
+resetJobs               Reset the Computational State of Jobs
+runHook                 Trigger Evaluation of Custom Function
+runOSCommand            Run OS Commands on Local or Remote Machines
+saveRegistry            Store the Registy to the File System
+showLog                 Inspect Log Files
+submitJobs              Submit Jobs to the Batch Systems
+summarizeExperiments    Quick Summary over Experiments
+sweepRegistry           Check Consistency and Remove Obsolete
+                        Information
+syncRegistry            Synchronize the Registry
+testJob                 Run Jobs Interactively
+waitForJobs             Wait for Termination of Jobs

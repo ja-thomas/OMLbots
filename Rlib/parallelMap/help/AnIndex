@@ -1,0 +1,16 @@
+parallelExport	parallelExport
+parallelGetOptions	parallelGetOptions
+parallelGetRegisteredLevels	parallelGetRegisteredLevels
+parallelLapply	parallelLapply
+parallelLibrary	parallelLibrary
+parallelMap	parallelMap
+parallelRegisterLevels	parallelRegisterLevels
+parallelSapply	parallelLapply
+parallelSource	parallelSource
+parallelStart	parallelStart
+parallelStartBatchJobs	parallelStart
+parallelStartLocal	parallelStart
+parallelStartMPI	parallelStart
+parallelStartMulticore	parallelStart
+parallelStartSocket	parallelStart
+parallelStop	parallelStop

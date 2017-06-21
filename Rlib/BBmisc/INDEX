@@ -1,0 +1,125 @@
+%btwn%                  Check if some values are covered by the range
+                        of the values in a second vector.
+%nin%                   Simply a negated 'in' operator.
+addClasses              A wrapper to add to the class attribute.
+argsAsNamedList         Parses '...' arguments to a named list.
+asMatrixCols            Extracts a named element from a list of lists.
+asQuoted                Converts a string into a quoted expression.
+binPack                 Simple bin packing.
+cFactor                 Combine multiple factors and return a factor.
+capitalizeStrings       Capitalize strings in a vector
+catf                    Wrapper for cat and sprintf.
+checkArg                Check for a function argument.
+checkListElementClass   Check that a list contains only elements of a
+                        required type.
+chunk                   Chunk elements of vectors into blocks of nearly
+                        equal size.
+clipString              Shortens strings to a given length.
+coalesce                Returns first non-missing, non-null argument.
+collapse                Collapse vector to string.
+collapsef               Collapse vector to string.
+computeMode             Compute statistical mode of a vector (value
+                        that occurs most frequently).
+convertDataFrameCols    Converts columns in a data frame to characters,
+                        factors or numerics.
+convertInteger          Conversion for single integer.
+convertIntegers         Conversion for integer vector.
+convertListOfRowsToDataFrame
+                        Convert a list of row-vector of equal structure
+                        to a data.frame.
+convertMatrixType       Converts storage type of a matrix.
+convertRowsToList       Convert rows (columns) of data.frame or matrix
+                        to lists.
+convertToShortString    Converts any R object to a descriptive string
+                        so it can be used in messages.
+dapply                  Call 'lapply' on an object and return a
+                        data.frame.
+deprecated              Deprecated function. Do not use!
+do.call2                Execute a function call similar to 'do.call'.
+dropNamed               Drop named elements of an object.
+ensureVector            Blow up single scalars / objects to vectors /
+                        list by replication.
+explode                 Split up a string into substrings.
+extractSubList          Extracts a named element from a list of lists.
+filterNull              Filter a list for NULL values
+getAttributeNames       Helper function for determining the vector of
+                        attribute names of a given object.
+getClass1               Wrapper for 'class(x)[1]'.
+getFirst                Get the first/last element of a list/vector.
+getMaxIndex             Return index of maximal/minimal/best element in
+                        numerical vector.
+getMaxIndexOfRows       Find row- or columnwise the index of the
+                        maximal / minimal element in a matrix.
+getOperatingSystem      Functions to determine the operating system.
+getRelativePath         Construct a path relative to another
+getUnixTime             Current time in seconds.
+getUsedFactorLevels     Determines used factor levels.
+hasAttributes           Check if given object has certain attributes.
+insert                  Insert elements from one list/vector into
+                        another list/vector.
+is.error                Is return value of try an exception?
+isDirectory             Is one / are several files a directory?
+isEmptyDirectory        Is one / are several directories empty?
+isExpensiveExampleOk    Conditional checking for expensive examples.
+isFALSE                 A wrapper for 'identical(x, FALSE)'.
+isProperlyNamed         Are all elements of a list / vector uniquely
+                        named?
+isScalarNA              Checks whether an object is a scalar NA value.
+isScalarValue           Is given argument an atomic vector or factor of
+                        length 1?
+isSubset                Check subset relation on two vectors.
+isSuperset              Check superset relation on two vectors.
+isValidName             Can some strings be used for column or list
+                        element names without problems?
+itostr                  Convert Integers to Strings
+lib                     A wrapper for 'library'.
+load2                   Load RData file and return objects in it.
+lsort                   A wrapper for 'sort' to sort using the "C"
+                        collating rules.
+makeDataFrame           Initialize data.frame in a convenient way.
+makeFileCache           A caching wrapper around load2.
+makeProgressBar         Create a progress bar with estimated time.
+makeS3Obj               Simple constructor for S3 objects based on
+                        lists.
+makeSimpleFileLogger    Simple logger which outputs to a file.
+mapValues               Replace values in atomic vectors
+messagef                Wrapper for message and sprintf.
+namedList               Create named list, possibly initialized with a
+                        certain element.
+names2                  Replacement for names which always returns a
+                        vector.
+normalize               Normalizes numeric data to a given scale.
+optimizeSubInts         Naive multi-start version of 'optimize' for
+                        global optimization.
+pause                   Pause in interactive mode and continue on
+                        <Enter>.
+printHead               More meaningful 'head(df)' output.
+printStrToChar          Print 'str(x)' of an object to a string /
+                        character vector.
+printToChar             Prints object to a string / character vector.
+rangeVal                Calculate range statistic.
+requirePackages         Require some packages.
+rowLapply               Apply function to rows of a data frame.
+save2                   Save multiple objects to a file.
+seq_row                 Generate sequences along rows or cols.
+setAttribute            A wrapper for 'attr(x, which) = y'.
+setClasses              A wrapper for 'class(x) = classes'.
+setRowNames             Wrapper for 'rownames(x) = y', 'colnames(x) =
+                        y'.
+setValue                Set a list element to a new value.
+sortByCol               Sort the rows of a data.frame according to one
+                        or more columns.
+splitPath               Split a path into components
+splitTime               Split seconds into handy chunks of time.
+stopf                   Wrapper for stop and sprintf.
+strrepeat               Repeat and join a string
+suppressAll             Suppresses all output except for errors.
+symdiff                 Calculates symmetric set difference between two
+                        sets.
+system3                 Wrapper for system2 with better return type and
+                        errorhandling.
+toRangeStr              Convert a numerical vector into a range string.
+vlapply                 Apply a function with a predefined return value
+warningf                Wrapper for warning and sprintf.
+which.first             Find the index of first/last 'TRUE' value in a
+                        logical vector.

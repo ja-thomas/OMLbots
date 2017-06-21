@@ -1,0 +1,14 @@
+parallelExport          Export R objects for parallelization.
+parallelGetOptions      Retrieve the configured package options.
+parallelGetRegisteredLevels
+                        Get registered parallelization levels for all
+                        currently loaded packages.
+parallelLapply          Parallel versions of apply-family functions.
+parallelLibrary         Load packages for parallelization.
+parallelMap             Maps a function over lists or vectors in
+                        parallel.
+parallelRegisterLevels
+                        Register a parallelization level
+parallelSource          Source R files for parallelization.
+parallelStart           Parallelization setup for parallelMap.
+parallelStop            Stops parallelization.

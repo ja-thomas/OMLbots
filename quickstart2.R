@@ -1,6 +1,5 @@
-.libPaths("/home/bot/R/x86_64-pc-linux-gnu-library/3.2")
+.libPaths("./Rlib")
 devtools::load_all()
-devtools::load_all("../batchtools")
 
 # On LRZ
 # Serial cluster

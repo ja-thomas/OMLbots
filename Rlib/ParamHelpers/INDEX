@@ -1,0 +1,110 @@
+LearnerParam            Create a description object for a parameter of
+                        a machine learning algorithm.
+OptPath                 Create optimization path.
+Param                   Create a description object for a parameter.
+addOptPathEl            Add a new element to an optimization path.
+as.data.frame.OptPathDF
+                        Convert optimization path to data.frame.
+checkParamSet           Sanity check expressions of a parameter set.
+convertParamSetToIrace
+                        Converts a ParamSet object to a parameter
+                        object of the irace package.
+dfRowsToList            Convert a data.frame row to list of
+                        parameter-value-lists.
+discreteNameToValue     Convert encoding name(s) to discrete value(s).
+discreteValueToName     Convert discrete value(s) to encoding name(s).
+dropParams              Drop Params from ParamSet by ids.
+evaluateParamExpressions
+                        Evaluates all expressions within a parameter.
+filterParams            Get parameter subset of only certain
+                        parameters.
+generateDesign          Generates a statistical design for a parameter
+                        set.
+generateDesignOfDefaults
+                        Generates a design with the defaults of a
+                        parameter set.
+generateGridDesign      Generates a grid design for a parameter set.
+generateRandomDesign    Generates a random design for a parameter set.
+getDefaults             Return defaults of parameters in parameter set.
+getLower                Get lower / upper bounds and allowed discrete
+                        values for parameters.
+getOptPathBestIndex     Get index of the best element from optimization
+                        path.
+getOptPathCol           Get column from the optimization path.
+getOptPathCols          Get columns from the optimization path.
+getOptPathDOB           Get date-of-birth vector from the optimization
+                        path.
+getOptPathEOL           Get end-of-life vector from the optimization
+                        path.
+getOptPathEl            Get an element from the optimization path.
+getOptPathErrorMessages
+                        Get error-message vector from the optimization
+                        path.
+getOptPathExecTimes     Get exec-time vector from the optimization
+                        path.
+getOptPathLength        Get the length of the optimization path.
+getOptPathParetoFront   Get indices of pareto front of optimization
+                        path.
+getOptPathX             Get data.frame of input points (X-space)
+                        referring to the param set from the
+                        optimization path.
+getOptPathY             Get y-vector or y-matrix from the optimization
+                        path.
+getParamIds             Return ids of parameters in parameter set.
+getParamLengths         Return lengths of single parameters or
+                        parameters in parameter set.
+getParamNr              Return number of parameters in set.
+getParamSet             Get parameter set.
+getParamTypeCounts      Returns information on the number of parameters
+                        of a each type.
+getParamTypes           Returns type information for a parameter set.
+getRequirements         Return all require-expressions of a param set.
+getTypeStrings          Get parameter type-strings.
+hasExpression           Check if parameter values contain expressions.
+hasFiniteBoxConstraints
+                        Checks if a parameter or each parameter of a
+                        parameter set has ONLY finite lower and upper
+                        bounds.
+hasForbidden            Check parameter set for forbidden region.
+hasRequires             Check parameter / parameter set for
+                        requirements / dependencies.
+hasTrafo                Check parameter / parameter set for trafos.
+hasType                 Check whether parameter set contains a certain
+                        type.
+isEmpty                 Check whether parameter set is empty.
+isFeasible              Check if parameter value is valid.
+isForbidden             Check whether parameter setting lies in
+                        forbidden region of parameter set.
+isRequiresOk            Check if parameter requirements are met.
+isSpecialValue          Is a given value in the list of special values
+                        for a param?
+isType                  Check parameter / parameter set contain ONLY a
+                        certain type.
+isTypeString            Check if type string is of certain type.
+isVector                Check parameter / parameter set for vector
+                        params.
+makeParamSet            Construct a parameter set.
+paramValueToString      Convert a value to a string.
+plotEAF                 Plots attainment functions for data stored in
+                        multiple OptPaths.
+plotOptPath             Plot method for optimization paths.
+plotYTraces             Plots Y traces of multiple optimization paths
+removeMissingValues     Removes all scalar NAs from a parameter setting
+                        list.
+renderOptPathPlot       Function for plotting optimization paths.
+renderYTraces           Plots Y traces of multiple optimization paths
+repairPoint             Repairs values of numeric and integer
+                        parameters out side of constraints.
+sampleValue             Sample a random value from a parameter or a
+                        parameter set uniformly.
+sampleValues            Sample n random values from a parameter or a
+                        parameter set uniformly.
+setOptPathElDOB         Set the dates of birth of parameter values,
+                        in-place.
+setOptPathElEOL         Set the end of life dates of parameter values,
+                        in-place.
+setValueCNames          Set components names for vector names
+trafoOptPath            Transform optimization path.
+trafoValue              Transform a value.
+updateParVals           Insert par.vals to old ones with meeting
+                        requirements

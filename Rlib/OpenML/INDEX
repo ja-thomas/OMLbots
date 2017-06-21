@@ -1,0 +1,56 @@
+OMLDataSet              OMLDataSet.
+OMLDataSetDescription   Construct OMLDataSetDescription.
+clearOMLCache           Clear cache directories
+configuration           OpenML configuration.
+convertMlrLearnerToOMLFlow
+                        Converts an OMLFlow to an mlr learner.
+convertMlrTaskToOMLDataSet
+                        Converts a mlr task to an OpenML data set.
+convertOMLDataSetToMlr
+                        Convert an OpenML data set to mlr task.
+convertOMLFlowToMlr     Converts a flow to a mlr learner.
+convertOMLMlrRunToBMR   Convert 'OMLMlrRun's to a 'BenchmarkResult'.
+convertOMLRunToBMR      Convert an OpenML run set to a benchmark result
+                        for mlr.
+convertOMLTaskToMlr     Convert an OpenML task to mlr.
+deleteOMLObject         Delete an OpenML object.
+getCachedOMLDataSetStatus
+                        Check status of cached datasets.
+getOMLConfig            Get OpenML configuration.
+getOMLDataSet           Get an OpenML data set.
+getOMLDataSetQualities
+                        List available OpenML qualities with values for
+                        given data set.
+getOMLFlow              Download an OpenML flow.
+getOMLRun               Get an OpenML run.
+getOMLRunParList        Extract OMLRunParList from run
+getOMLSeedParList       Extract OMLSeedParList from run
+getOMLTask              Get an OpenML task.
+listOMLDataSetQualities
+                        List available OpenML qualities names.
+listOMLDataSets         List the first 5000 OpenML data sets.
+listOMLEstimationProcedures
+                        List available estimation procedures.
+listOMLEvaluationMeasures
+                        List available OpenML evaluation measures.
+listOMLFlows            List all registered OpenML flows.
+listOMLRunEvaluations   List run results of a task.
+listOMLRuns             List OpenML runs.
+listOMLTaskTypes        List available OpenML task types.
+listOMLTasks            List the first 5000 OpenML tasks.
+loadOMLConfig           Load OpenML configuration.
+makeOMLFlow             Construct OMLFlow.
+makeOMLRun              Construct OMLRun.
+makeOMLRunParList       Construct OMLRunParList.
+makeOMLSeedParList      Construct OMLSeedParList
+makeOMLTask             Construct OMLTask.
+populateOMLCache        Download a bunch of OpenML objects to cache.
+runTaskFlow             Reproduce the Run
+runTaskMlr              Run mlr learner on OpenML task.
+saveOMLConfig           Saves a list of OpenML configuration settings
+                        to file.
+setOMLConfig            Settter for configuration settings.
+tagOMLObject            Tagging of OpenML objects
+uploadOMLDataSet        Upload a data set to the OpenML server.
+uploadOMLFlow           Upload an OpenML.
+uploadOMLRun            Upload an OpenML run.

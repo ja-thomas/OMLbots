@@ -1,0 +1,24 @@
+% 
+% 1. Title: Postoperative Patient Data
+% 
+
+@relation postoperative-patient-data
+
+@attribute 'L-CORE' {high,low,mid}
+@attribute 'L-SURF' {high,low,mid}
+@attribute 'L-O2' {excellent,good}
+@attribute 'L-BP' {high,low,mid}
+@attribute 'SURF-STBL' {stable,unstable}
+@attribute 'CORE-STBL' {mod-stable,stable,unstable}
+@attribute 'BP-STBL' {mod-stable,stable,unstable}
+@attribute 'COMFORT' {05,07,10,15}
+@attribute 'decision' {A,I,S}
+
+@data
+mid,low,excellent,mid,stable,stable,stable,15,A
+mid,high,excellent,high,stable,stable,stable,10,S
+high,low,excellent,high,stable,stable,mod-stable,10,A
+mid,low,good,high,stable,unstable,mod-stable,15,A 
+mid,mid,excellent,high,stable,stable,stable,10,A
+high,low,good,mid,stable,stable,unstable,15,S
+mid,low,excellent,high,stable,stable,mod-stable,05,S

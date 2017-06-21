@@ -1,0 +1,4 @@
+base32_decode	base32_encode
+base32_encode	base32_encode
+base64_urldecode	base64_urlencode
+base64_urlencode	base64_urlencode

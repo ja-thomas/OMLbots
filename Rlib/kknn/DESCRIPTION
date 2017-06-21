@@ -1,0 +1,23 @@
+Package: kknn
+Title: Weighted k-Nearest Neighbors
+Version: 1.3.1
+Date: 2016-03-26
+Authors@R: c(
+    person("Klaus", "Schliep", email = "klaus.schliep@gmail.com", role = c("aut", "cre")),
+    person("Klaus", "Hechenbichler", role = "aut"),
+    person("Antoine", "Lizee", email = "antoine.lizee@gmail.com", role = "ctb"))
+Description: Weighted k-Nearest Neighbors for Classification, Regression and Clustering.
+Depends: R (>= 2.10)
+Imports: igraph (>= 1.0), Matrix, stats, graphics
+ByteCompile: TRUE
+License: GPL (>= 2)
+NeedsCompilation: yes
+URL: https://github.com/KlausVigo/kknn
+Repository: CRAN
+Packaged: 2016-03-26 18:35:26 UTC; klaus
+Author: Klaus Schliep [aut, cre],
+  Klaus Hechenbichler [aut],
+  Antoine Lizee [ctb]
+Maintainer: Klaus Schliep <klaus.schliep@gmail.com>
+Date/Publication: 2016-03-26 22:02:21
+Built: R 3.3.2; x86_64-pc-linux-gnu; 2017-06-21 20:59:40 UTC; unix

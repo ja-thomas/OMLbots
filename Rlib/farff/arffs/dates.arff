@@ -1,0 +1,9 @@
+@relation dates_test
+
+@attribute x1 date "yyyy-MM-dd"
+@ATTRIBUTE x2 DATE "yyyy-MM-dd HH:mm:ss"
+
+@data
+"2003-01-10", "2001-04-03 12:12:12"
+"2003-02-10", "2001-05-03 12:59:55"
+

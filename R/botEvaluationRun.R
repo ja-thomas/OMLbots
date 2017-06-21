@@ -50,7 +50,7 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources, uplo
     # exponentialBackOff(jobs = 1:nrow(par), registry = reg, start.resources = min.resources, max.resources = max.resources)    
     submitJobs(resources = max.resources)
   } else {
-    reg$cluster.functions = makeClusterFunctionsSSH(list(Worker$new("localhost", ncpus = 4)), fs.latency = 10)
+    reg$cluster.functions = makeClusterFunctionsSSH(list(Worker$new("localhost", ncpus = 16)), fs.latency = 10)
     #reg$cluster.functions = makeClusterFunctionsInteractive()
     submitJobs()    
   }

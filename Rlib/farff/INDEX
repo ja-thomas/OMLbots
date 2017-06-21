@@ -1,0 +1,2 @@
+readARFF                Read ARFF file into data.frame.
+writeARFF               Write ARFF data.frame to ARFF file.

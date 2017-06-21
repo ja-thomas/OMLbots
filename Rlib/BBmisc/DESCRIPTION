@@ -1,0 +1,33 @@
+Package: BBmisc
+Title: Miscellaneous Helper Functions for B. Bischl
+Description: Miscellaneous helper functions for and from B. Bischl and
+    some other guys, mainly for package development.
+Authors@R: c(person("Bernd", "Bischl", email = "bernd_bischl@gmx.net",
+    role = c("aut", "cre")), person("Michel", "Lang", email =
+    "michellang@gmail.com", role = "aut"), person("Jakob", "Bossek", email =
+    "j.bossek@gmail.com", role = "aut"), person("Daniel", "Horn",
+    email = "daniel.horn@tu-dortmund.de", role = "aut"), person("Jakob",
+    "Richter", email = "code@jakob-r.de", role = "aut"), person("Dirk", "Surmann",
+    email = "surmann@statistik.tu-dortmund.de", role = "aut"))
+URL: https://github.com/berndbischl/BBmisc
+BugReports: https://github.com/berndbischl/BBmisc/issues
+License: BSD_2_clause + file LICENSE
+Encoding: UTF-8
+Imports: utils, methods, stats, checkmate (>= 1.8.0)
+Suggests: testthat, microbenchmark, codetools
+LazyData: yes
+ByteCompile: yes
+Version: 1.11
+RoxygenNote: 6.0.1
+NeedsCompilation: yes
+Packaged: 2017-03-09 20:34:04 UTC; bischl
+Author: Bernd Bischl [aut, cre],
+  Michel Lang [aut],
+  Jakob Bossek [aut],
+  Daniel Horn [aut],
+  Jakob Richter [aut],
+  Dirk Surmann [aut]
+Maintainer: Bernd Bischl <bernd_bischl@gmx.net>
+Repository: CRAN
+Date/Publication: 2017-03-10 00:20:46
+Built: R 3.3.2; x86_64-pc-linux-gnu; 2017-06-21 20:49:06 UTC; unix

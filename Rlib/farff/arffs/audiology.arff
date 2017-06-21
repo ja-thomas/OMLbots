@@ -1,0 +1,81 @@
+@relation audiology
+@attribute age_gt_60 { f, t}
+@attribute air { mild, moderate, normal, profound, severe}
+@attribute airBoneGap { f, t}
+@attribute ar_c { absent, elevated, normal}
+@attribute ar_u { absent, elevated, normal}
+@attribute bone { mild, moderate, normal, unmeasured}
+@attribute boneAbnormal { f, t}
+@attribute bser { degraded, normal}
+@attribute history_buzzing { f, t}
+@attribute history_dizziness { f, t}
+@attribute history_fluctuating { f, t}
+@attribute history_fullness { f, t}
+@attribute history_heredity { f, t}
+@attribute history_nausea { f, t}
+@attribute history_noise { f, t}
+@attribute history_recruitment { f, t}
+@attribute history_ringing { f, t}
+@attribute history_roaring { f, t}
+@attribute history_vomiting { f, t}
+@attribute late_wave_poor { f, t}
+@attribute m_at_2k { f, t}
+@attribute m_cond_lt_1k { f, t}
+@attribute m_gt_1k { f, t}
+@attribute m_m_gt_2k { f, t}
+@attribute m_m_sn { f, t}
+@attribute m_m_sn_gt_1k { f, t}
+@attribute m_m_sn_gt_2k { f, t}
+@attribute m_m_sn_gt_500 { f, t}
+@attribute m_p_sn_gt_2k { f, t}
+@attribute m_s_gt_500 { f, t}
+@attribute m_s_sn { f, t}
+@attribute m_s_sn_gt_1k { f, t}
+@attribute m_s_sn_gt_2k { f, t}
+@attribute m_s_sn_gt_3k { f, t}
+@attribute m_s_sn_gt_4k { f, t}
+@attribute m_sn_2_3k { f, t}
+@attribute m_sn_gt_1k { f, t}
+@attribute m_sn_gt_2k { f, t}
+@attribute m_sn_gt_3k { f, t}
+@attribute m_sn_gt_4k { f, t}
+@attribute m_sn_gt_500 { f, t}
+@attribute m_sn_gt_6k { f, t}
+@attribute m_sn_lt_1k { f, t}
+@attribute m_sn_lt_2k { f, t}
+@attribute m_sn_lt_3k { f, t}
+@attribute middle_wave_poor { f, t}
+@attribute mod_gt_4k { f, t}
+@attribute mod_mixed { f, t}
+@attribute mod_s_mixed { f, t}
+@attribute mod_s_sn_gt_500 { f, t}
+@attribute mod_sn { f, t}
+@attribute mod_sn_gt_1k { f, t}
+@attribute mod_sn_gt_2k { f, t}
+@attribute mod_sn_gt_3k { f, t}
+@attribute mod_sn_gt_4k { f, t}
+@attribute mod_sn_gt_500 { f, t}
+@attribute notch_4k { f, t}
+@attribute notch_at_4k { f, t}
+@attribute o_ar_c { absent, elevated, normal}
+@attribute o_ar_u { absent, elevated, normal}
+@attribute s_sn_gt_1k { f, t}
+@attribute s_sn_gt_2k { f, t}
+@attribute s_sn_gt_4k { f, t}
+@attribute speech { good, normal, poor, unmeasured, very_good, very_poor}
+@attribute static_normal { f, t}
+@attribute tymp { a, ad, as, b, c}
+@attribute viith_nerve_signs { f, t}
+@attribute wave_V_delayed { f, t}
+@attribute waveform_ItoV_prolonged { f, t}
+@attribute class { acoustic_neuroma, bells_palsy, cochlear_age, cochlear_age_and_noise, cochlear_age_plus_poss_menieres, cochlear_noise_and_heredity, cochlear_poss_noise, cochlear_unknown, conductive_discontinuity, conductive_fixation, mixed_cochlear_age_fixation, mixed_cochlear_age_otitis_media, mixed_cochlear_age_s_om, mixed_cochlear_unk_discontinuity, mixed_cochlear_unk_fixation, mixed_cochlear_unk_ser_om, mixed_poss_central_om, mixed_poss_noise_om, normal_ear, otitis_media, poss_central, possible_brainstem_disorder, possible_menieres, retrocochlear_unknown}
+@data
+t,mild,f,normal,normal,unmeasured,f,?,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,normal,normal,f,f,f,good,t,a,f,f,f,cochlear_age
+t,mild,f,normal,normal,unmeasured,f,?,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,normal,normal,f,f,f,good,t,a,f,f,f,cochlear_age
+t,normal,f,normal,normal,unmeasured,f,?,f,f,f,f,f,f,t,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,f,f,f,f,normal,normal,f,f,f,good,t,a,f,f,f,cochlear_age_and_noise
+t,mild,f,normal,normal,unmeasured,f,?,f,f,f,f,f,f,t,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,f,f,f,f,f,t,normal,normal,f,f,f,unmeasured,t,a,f,f,f,cochlear_age_and_noise
+t,mild,f,normal,normal,unmeasured,f,?,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,normal,normal,f,f,f,normal,t,a,f,f,f,cochlear_age
+t,mild,f,normal,normal,unmeasured,f,?,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,normal,normal,f,f,f,very_good,t,a,f,f,f,cochlear_age
+t,mild,f,normal,normal,unmeasured,f,?,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,normal,normal,f,f,f,good,t,a,f,f,f,cochlear_age
+t,mild,f,normal,normal,unmeasured,f,?,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,normal,normal,f,f,f,good,t,a,f,f,f,cochlear_age
+f,normal,f,normal,normal,unmeasured,f,?,f,f,f,f,f,f,t,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,f,t,normal,normal,f,f,f,normal,t,a,f,f,f,cochlear_poss_noise

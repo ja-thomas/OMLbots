@@ -1,0 +1,42 @@
+Package: batchtools
+Title: Tools for Computation on Batch Systems
+Version: 0.9.3
+Authors@R: c(
+    person("Michel", "Lang", NULL, "michellang@gmail.com", role = c("cre", "aut")),
+    person("Bernd", "Bischl", NULL, "bernd_bischl@gmx.de", role = "aut"),
+    person("Dirk", "Surmann", NULL, "surmann@statistik.tu-dortmund.de", role = "ctb")
+    )
+Description: As a successor of the packages 'BatchJobs' and 'BatchExperiments',
+    this package provides a parallel implementation of the Map function for high
+    performance computing systems managed by schedulers 'IBM Spectrum LSF'
+    (<http://www-03.ibm.com/systems/spectrum-computing/products/lsf/>),
+    'OpenLava' (<http://www.openlava.org/>), 'Univa Grid Engine'/'Oracle Grid
+    Engine' (<http://www.univa.com/>), 'Slurm' (<http://slurm.schedmd.com/>),
+    'TORQUE/PBS'
+    (<http://www.adaptivecomputing.com/products/open-source/torque/>), or
+    'Docker Swarm' (<https://docs.docker.com/swarm/>).
+    A multicore and socket mode allow the parallelization on a local machines,
+    and multiple machines can be hooked up via SSH to create a makeshift
+    cluster. Moreover, the package provides an abstraction mechanism to define
+    large-scale computer experiments in a well-organized and reproducible way.
+License: LGPL-3
+URL: https://github.com/mllg/batchtools
+BugReports: https://github.com/mllg/batchtools/issues
+NeedsCompilation: yes
+ByteCompile: yes
+Depends: R (>= 3.0.0), data.table (>= 1.9.8)
+Imports: backports (>= 1.0.4), base64url (>= 1.1), brew, checkmate (>=
+        1.8.2), digest (>= 0.6.9), parallel, progress (>= 1.1.1), R6,
+        rappdirs, stats, stringi, utils
+Suggests: debugme, e1071, knitr, parallelMap, ranger, rmarkdown, rpart,
+        snow, testthat
+VignetteBuilder: knitr
+RoxygenNote: 6.0.1
+Packaged: 2017-04-21 20:49:07 UTC; michel
+Author: Michel Lang [cre, aut],
+  Bernd Bischl [aut],
+  Dirk Surmann [ctb]
+Maintainer: Michel Lang <michellang@gmail.com>
+Repository: CRAN
+Date/Publication: 2017-04-21 22:50:18 UTC
+Built: R 3.3.2; x86_64-pc-linux-gnu; 2017-06-21 20:48:38 UTC; unix

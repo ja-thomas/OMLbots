@@ -1,0 +1,12 @@
+@relation test
+
+@attribute x1 numeric
+@attribute x2 integer
+@attribute x3 string
+@attribute x4 date "yyyy-MM-dd"
+@ATTRIBUTE x5 DATE "yyyy-MM-dd HH:mm:ss"
+
+@data
+1, 1, "a" ,"2003-01-10", "2001-04-03 12:12:12"
+2, 2, "b" , "2003-02-10", "2001-05-03 12:59:55"
+

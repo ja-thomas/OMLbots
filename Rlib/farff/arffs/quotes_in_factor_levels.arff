@@ -1,0 +1,13 @@
+
+@relation test
+
+@attribute x1 {'\'B1of3\'','\'B2of3\'','\'B3of3\''}
+@attribute x2 {"\"B1of3\"","\"B2of3\"","\"B3of3\""}
+
+@data
+
+'\'B1of3\'',"\"B1of3\""
+'\'B3of3\'',"\"B1of3\""
+
+
+

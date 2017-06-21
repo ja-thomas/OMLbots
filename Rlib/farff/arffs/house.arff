@@ -1,0 +1,40 @@
+% This database was designed on the basis of data provided by US Census
+% Bureau [http://www.census.gov] (under Lookup Access
+% [http://www.census.gov/cdrom/lookup]: Summary Tape File 1). The data
+% were collected as part of the 1990 US census. These are mostly counts
+% cumulated at different survey levels. For the purpose of this data set
+% a level State-Place was used. Data from all states was obtained. Most
+% of the counts were changed into appropriate proportions.  There are 4
+% different data sets obtained from this database: House(8H) House(8L)
+% House(16H) House(16L) These are all concerned with predicting the
+% median price of the house in the region based on demographic
+% composition and a state of housing market in the region. A number in
+% the name signifies the number of attributes of the data set. A
+% following letter denotes a very rough approximation to the difficulty
+% of the task. For Low task difficulty, more correlated attributes were
+% chosen as signified by univariate smooth fit of that input on the
+% target. Tasks with High difficulty have had their attributes chosen to
+% make the modelling more difficult due to higher variance or lower
+% correlation of the inputs to the target.
+% 
+% Original source: DELVE repository of data. 
+% Source: collection of regression datasets by Luis Torgo (ltorgo@ncc.up.pt) at
+% http://www.ncc.up.pt/~ltorgo/Regression/DataSets.html
+% Characteristics: 22784 cases, 9 continuous attributes.
+
+@relation house_8L.arff
+@attribute 'P3' numeric
+@attribute 'P6p4' numeric
+@attribute 'P11p3' numeric
+@attribute 'P16p2' numeric
+@attribute 'P19p2' numeric
+@attribute 'H5p2' numeric
+@attribute 'H15p1' numeric
+@attribute 'H40p4' numeric
+@attribute 'price' numeric
+
+@data
+7074.0000000, 0.0049639, 0.5074781, 0.5797286, 0.0366129, 0.0202439, 6.6187845, 0.7740586, 130600.0000000
+597.0000000, 0.0038710, 0.4800000, 0.6951424, 0.0033501, 0.1707317, 7.1639344, 0.1428571, 40500.0000000
+1931.0000000, 0.0023202, 0.4777473, 0.6835836, 0.0000000, 0.1176471, 6.1858476, 0.6875000, 28700.0000000
+164.0000000, 0.0000000, 0.4925054, 0.7804878, 0.0000000, 0.1000000, 6.6198347, 1.0000000, 28500.0000000

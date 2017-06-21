@@ -1,0 +1,2 @@
+base32_encode           Encode to base32 or Decode from base32
+base64_urlencode        Encode to base64 or Decode from base64

@@ -1,0 +1,26 @@
+Package: parallelMap
+Title: Unified Interface to Parallelization Back-Ends
+Description: Unified parallelization framework for multiple back-end,
+  designed for internal package and interactive usage.
+    The main operation is a parallel "map" over lists.
+    Supports local, multicore, mpi and BatchJobs mode.
+    Allows "tagging" of the parallel operation
+    with a level name that can be later selected by the user to
+    switch on parallel execution for exactly this operation.
+Author: Bernd Bischl <bernd_bischl@gmx.net>, Michel Lang
+    <michellang@gmail.com>
+Maintainer: Bernd Bischl <bernd_bischl@gmx.net>
+URL: https://github.com/berndbischl/parallelMap
+BugReports: https://github.com/berndbischl/parallelMap/issues
+License: BSD_2_clause + file LICENSE
+Depends: R (>= 3.0.0)
+Imports: BBmisc (>= 1.8), checkmate (>= 1.5.1), parallel
+Suggests: testthat, Rmpi, BatchJobs (>= 1.5)
+LazyData: yes
+ByteCompile: yes
+Version: 1.3
+NeedsCompilation: no
+Packaged: 2015-06-09 22:06:23 UTC; bischl
+Repository: CRAN
+Date/Publication: 2015-06-10 00:58:31
+Built: R 3.3.2; ; 2017-06-21 20:49:12 UTC; unix

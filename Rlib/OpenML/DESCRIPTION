@@ -1,0 +1,37 @@
+Package: OpenML
+Title: Exploring Machine Learning Better, Together
+Description: 'OpenML.org' is an online machine learning platform where 
+    researchers can easily download and upload data sets, share machine learning 
+    tasks and experiments and organize them online to work and collaborate more 
+    effectively.
+    We provide an R interface to the OpenML REST API in order to download and 
+    upload data sets, tasks, flows and runs, see <http://www.openml.org/guide> 
+    for more information.
+Author: Giuseppe Casalicchio <giuseppe.casalicchio@stat.uni-muenchen.de>,
+    Bernd Bischl <bernd_bischl@gmx.net>,
+    Dominik Kirchhoff <dom.kirchhoff@gmail.com>,
+    Michel Lang <michellang@gmail.com>,
+    Benjamin Hofner <benjamin.hofner@fau.de>,
+    Jakob Bossek <j.bossek@gmail.com>,
+    Pascal Kerschke <kerschke@uni-muenster.de>,
+    Joaquin Vanschoren <joaquin.vanschoren@gmail.com>
+Maintainer: Giuseppe Casalicchio <giuseppe.casalicchio@stat.uni-muenchen.de>
+License: BSD_2_clause + file LICENSE
+URL: https://github.com/openml/openml-r
+BugReports: https://github.com/openml/openml-r/issues
+Depends: R (>= 3.0.2), mlr (>= 2.11)
+Suggests: testthat, xml2, randomForest, rpart, RWeka, farff, knitr,
+        rmarkdown, R.rsp
+Imports: backports (>= 1.0.3), BBmisc (>= 1.11), checkmate (>= 1.8.2),
+        ParamHelpers (>= 1.10), data.table, digest, httr, stringi, XML,
+        jsonlite, memoise (>= 1.0.0), stats, curl
+LazyData: yes
+ByteCompile: yes
+Version: 1.3
+RoxygenNote: 6.0.1
+VignetteBuilder: R.rsp
+NeedsCompilation: no
+Packaged: 2017-03-30 09:26:23 UTC; Admin2
+Repository: CRAN
+Date/Publication: 2017-03-30 11:28:29 UTC
+Built: R 3.3.2; ; 2017-06-21 20:49:47 UTC; unix

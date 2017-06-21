@@ -1,0 +1,38 @@
+#!/bin/bash
+<%
+backend = resources$pm.backend %??% "local"
+ncpus = resources$ncpus %??% 1L
+walltime = asInt(resources$walltime, lower = 1L, upper = 172800L)
+memory = asInt(resources$memory, lower = 100L, upper = 64000L)
+
+if (backend == "mpi") {
+  cmd = "mpirun -np 1 Rscript"
+  mincpus = 2L
+} else {
+  cmd = "Rscript"
+  mincpus = 1L
+}
+
+# relative paths are not handled well by Slurm
+log.file = normalizePath(log.file, winslash = "/", mustWork = FALSE)
+-%>
+
+#SBATCH --job-name=<%= job.hash %>
+#SBATCH --output=<%= log.file %>
+#SBATCH --error=<%= log.file %>
+#SBATCH --time=<%= ceiling(walltime / 60L)%>
+#SBATCH --ntasks=<%= if (backend == "mpi") ncpus else 1L %>
+#SBATCH --mincpus=<%= mincpus %>
+#SBATCH --cpus-per-task=<%= if (backend == "mpi") 1L else ncpus %>
+#SBATCH --mem-per-cpu=<%= memory %>
+#SBATCH --partition=all
+
+mkdir /tmp/${USER}-${SLURM_JOBID}
+export TMPDIR=/tmp/${USER}-${SLURM_JOBID}
+
+## Export value of DEBUGME environemnt var to slave
+export DEBUGME=<%= Sys.getenv("DEBUGME") %>
+
+source /etc/profile
+<%= cmd %> -e 'batchtools::doJobCollection("<%= uri %>")'
+rm -rf /tmp/${USER}-${SLURM_JOBID}

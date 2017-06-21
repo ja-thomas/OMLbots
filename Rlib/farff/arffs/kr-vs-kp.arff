@@ -1,0 +1,50 @@
+% 1. Title: Chess End-Game -- King+Rook versus King+Pawn on a7
+
+@relation kr-vs-kp
+@attribute 'bkblk' {'t','f'}
+@attribute 'bknwy' {'t','f'}
+@attribute 'bkon8' {'t','f'}
+@attribute 'bkona' {'t','f'}
+@attribute 'bkspr' {'t','f'}
+@attribute 'bkxbq' {'t','f'}
+@attribute 'bkxcr' {'t','f'}
+@attribute 'bkxwp' {'t','f'}
+@attribute 'blxwp' {'t','f'}
+@attribute 'bxqsq' {'t','f'}
+@attribute 'cntxt' {'t','f'}
+@attribute 'dsopp' {'t','f'}
+@attribute 'dwipd' {'g','l'}
+@attribute 'hdchk' {'t','f'}
+@attribute 'katri' {'b','n','w'}
+@attribute 'mulch' {'t','f'}
+@attribute 'qxmsq' {'t','f'}
+@attribute 'r2ar8' {'t','f'}
+@attribute 'reskd' {'t','f'}
+@attribute 'reskr' {'t','f'}
+@attribute 'rimmx' {'t','f'}
+@attribute 'rkxwp' {'t','f'}
+@attribute 'rxmsq' {'t','f'}
+@attribute 'simpl' {'t','f'}
+@attribute 'skach' {'t','f'}
+@attribute 'skewr' {'t','f'}
+@attribute 'skrxp' {'t','f'}
+@attribute 'spcop' {'t','f'}
+@attribute 'stlmt' {'t','f'}
+@attribute 'thrsk' {'t','f'}
+@attribute 'wkcti' {'t','f'}
+@attribute 'wkna8' {'t','f'}
+@attribute 'wknck' {'t','f'}
+@attribute 'wkovl' {'t','f'}
+@attribute 'wkpos' {'t','f'}
+@attribute 'wtoeg' {'n','t','f'}
+@attribute 'class' {'won','nowin'}
+@data
+'f','f','f','f','f','f','f','f','f','f','f','f','l','f','n','f','f','t','f','f','f','f','f','f','f','t','f','f','f','f','f','f','f','t','t','n','won'
+'f','f','f','f','t','f','f','f','f','f','f','f','l','f','n','f','f','t','f','f','f','f','f','f','f','t','f','f','f','f','f','f','f','t','t','n','won'
+'f','f','f','f','t','f','t','f','f','f','f','f','l','f','n','f','f','t','f','f','f','f','f','f','f','t','f','f','f','f','f','f','f','t','t','n','won'
+'f','f','f','f','f','f','f','f','t','f','f','f','l','f','n','f','f','t','f','f','f','t','f','f','f','t','f','f','f','f','f','f','f','t','t','n','won'
+'f','f','f','f','f','f','f','f','f','f','f','f','l','f','n','f','f','t','f','f','f','f','f','t','f','t','f','f','f','f','f','f','f','t','t','n','won'
+'f','f','f','f','f','f','f','f','f','f','f','f','l','f','n','f','f','t','f','f','f','f','f','t','f','t','f','f','f','t','f','f','f','t','t','n','won'
+%
+%
+%

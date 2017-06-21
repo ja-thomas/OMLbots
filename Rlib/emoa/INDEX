@@ -1,0 +1,29 @@
+UF1                     Functions from the CEC 2009 EMOA competition.
+cec2007                 CEC 2007 multiobjective optimization
+                        competition results
+coalesce                Return first non null argument.
+crowding_distance       Crowding Distance
+dominated_hypervolume   Dominated Hypervolume calculation
+emoa-package            The EMOA package
+emoa_console_logger     console logger
+emoa_control            Basic EMOA control parameters.
+emoa_logger             generic logger factory
+emoa_null_logger        null logger
+hypervolume_indicator   Binary quality indicators
+inbounds                Clip value to a given range
+is_dominated            Pareto dominance checks.
+nds_hv_selection        Selection strategies
+nds_rank                Nondominated sorting ranks
+nondominated_points     Nondominated points
+normalize_points        Scale point cloud
+pm_control              Polynomial muation (PM) control parameters
+pm_operator             Polynomial mutation operator
+sbx_control             Simulated binary crossover (SBX) control
+                        parameters
+sbx_operator            Simulated binary crossover operator
+steady_state_emoa_control
+                        Steady state EMOA parameters
+sympart                 Functions from the CEC 2007 EMOA competition.
+unary_r2_indicator      Unary R2 indicator
+which_points_on_edge    Determine which points are on the edge of a
+                        Pareto-front approximation.
