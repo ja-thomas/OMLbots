@@ -40,3 +40,4 @@ makeSurrogateModel(measure.name, learner.name, task.ids, lrn.par.set,
 \value{
 surrogate model
 }
+

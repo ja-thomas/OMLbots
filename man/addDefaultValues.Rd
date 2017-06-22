@@ -13,3 +13,4 @@ addDefaultValues(res)
 \value{
 [\code{data.frame}] Long Table with added values for the defaults.
 }
+

@@ -20,3 +20,4 @@ getReferenceTable(run.tag = "referenceV1", numRuns = 320000,
 \value{
 [\code{data.frame}] Table with run.id, task.id, flow.id, flow.name, measure values.
 }
+

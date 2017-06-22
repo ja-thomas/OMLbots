@@ -4,12 +4,14 @@ devtools::load_all()
 # On LRZ
 # Serial cluster
 setOMLConfig(apikey = "34ebc7dff3057d8e224e5beac53aea0e")
-#max.resources = list(walltime = 3600*5, memory = 2000)
-#lrn.par.set = getMultipleLearners()
-simple.lrn.par.set = getSimpleLearners()
+lrn.par.set = getMultipleLearners()
 i = sample(1:1e7, 1)
+bot.nr = 1
 
-runBot(10, path = paste0("test", i), 
-      sample.learner.fun = sampleRandomLearner, sample.task.fun = sampleSimpleTask, 
-      sample.configuration.fun = sampleRandomConfiguration,   
-      lrn.ps.sets = simple.lrn.par.set, upload = TRUE, extra.tag = "botV1")
+for(i in 1:20){
+  runBot(10000, path = paste0("test", i), 
+         sample.learner.fun = sampleRandomLearner, sample.task.fun = sampleRandomAzureTask(bot.nr), 
+         sample.configuration.fun = sampleRandomConfiguration,   
+         lrn.ps.sets = lrn.par.set, upload = TRUE, extra.tag = c("botV1", paste0("AzureBot", bot.nr)))
+}
+

@@ -26,3 +26,4 @@ makeBotTable(measure.name, learner.name, tbl.results, tbl.hypPars,
 \value{
 [\code{data.frame}] Complete table used for creating the surrogate model
 }
+

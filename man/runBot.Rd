@@ -32,3 +32,4 @@ runBot(batch.size, sample.learner.fun = sampleRandomLearner,
 
 \item{sample.configuration}{given a lrn sample a configuration}
 }
+

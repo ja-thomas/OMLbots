@@ -17,3 +17,4 @@ data.frame where each row is one valid configuration
 \description{
 Samples size random Configuration for a given parameter set
 }
+

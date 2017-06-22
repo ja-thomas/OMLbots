@@ -12,3 +12,4 @@ deleteNA(task.data)
 \description{
 Replace NA values by -11 (numeric variables) or NA levels (factor variables)
 }
+

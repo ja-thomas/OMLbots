@@ -21,3 +21,4 @@ plotParetoFront(learner.name, par.front, plotly = FALSE, log = FALSE,
 
 \item{cex}{vector of point size for extra hyperparameters if they are available in par.front. Default is NULL.}
 }
+

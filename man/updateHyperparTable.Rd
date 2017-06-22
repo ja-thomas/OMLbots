@@ -7,10 +7,11 @@
 updateHyperparTable(run.tag, local.db)
 }
 \arguments{
-\item{run.tag}{}
+\item{run.tag}{tag of run}
 
-\item{local.db}{}
+\item{local.db}{local db object}
 }
 \description{
 Save hyperparameters for run to db
 }
+

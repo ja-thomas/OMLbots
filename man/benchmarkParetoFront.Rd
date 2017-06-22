@@ -37,3 +37,4 @@ benchmarkParetoFront(measure.name = "area.under.roc.curve", learner.name,
 
 \item{n.points2}{Number of points for the real paretofront of the dataset}
 }
+

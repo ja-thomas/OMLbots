@@ -12,3 +12,4 @@ a learner parameter set
 \description{
 Define some simple learners with parameter sets to be explored by the bot
 }
+

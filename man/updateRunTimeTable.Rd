@@ -7,8 +7,9 @@
 updateRunTimeTable(local.db)
 }
 \arguments{
-\item{local.db}{}
+\item{local.db}{local db object}
 }
 \description{
 Save user times to db
 }
+

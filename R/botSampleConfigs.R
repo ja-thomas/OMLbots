@@ -55,6 +55,26 @@ sampleRandomTask = function() {
   return(list(id = task$task.id, name = task$name))
 }
 
+#' sampleRandomAzureTask
+#' 
+#' this draws a random binary classif OMLTask from study 14 with 10 fold CV and without missing values
+#' @param bot.nr number of the bot that is runnning
+#' @return OML task
+#' @export
+sampleRandomAzureTask = function(bot.nr) {
+  
+  tasks = listOMLTasks(number.of.classes = 2L, number.of.missing.values = 0, 
+                       data.tag = "study_14", estimation.procedure = "10-fold Crossvalidation")
+  task.chunk = chunk(tasks$task.id, 3)[[bot.nr]]
+  messagef("Found %i available OML tasks", nrow(tasks))
+  task = tasks %>% 
+    dplyr::filter(format == "ARFF", status == "active", task.id %in% task.chunk) %>% 
+    sample_n(1) %>% 
+    select(task.id, name)
+  
+  return(list(id = task$task.id, name = task$name))
+}
+
 
 #' sampleSimpleTask
 #' 

@@ -200,7 +200,7 @@ addDefaultValues = function(res) {
 
 #' @title getMetaFeaturesTable
 #' @param task.tag Name of the tag of the benchmark datasets.
-#' @param local.db
+#' @param local.db local db object
 #' @return [\code{data.frame}] Table with task.id, data.id, name, target.feature and metafeatures.
 #' @export
 getMetaFeaturesTable = function(task.tag = "study_14", local.db = NULL) {

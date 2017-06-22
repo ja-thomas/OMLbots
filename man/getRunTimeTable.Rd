@@ -12,3 +12,4 @@ getRunTimeTable(local.db = NULL, numRuns = 320000)
 
 \item{numRuns}{}
 }
+

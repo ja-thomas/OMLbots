@@ -24,3 +24,4 @@ getHyperparTable(run.tag = "mlrRandomBot", numRuns = 4e+05,
 \description{
 get the table with hyperparameters from OpenML
 }
+

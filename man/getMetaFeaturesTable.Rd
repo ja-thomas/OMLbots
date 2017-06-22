@@ -8,7 +8,10 @@ getMetaFeaturesTable(task.tag = "study_14", local.db = NULL)
 }
 \arguments{
 \item{task.tag}{Name of the tag of the benchmark datasets.}
+
+\item{local.db}{local db object}
 }
 \value{
 [\code{data.frame}] Table with task.id, data.id, name, target.feature and metafeatures.
 }
+

@@ -7,10 +7,11 @@
 updateMetaTable(task.tag, local.db)
 }
 \arguments{
-\item{task.tag}{}
+\item{task.tag}{tag of task}
 
-\item{local.db}{}
+\item{local.db}{local db object}
 }
 \description{
 Save meta data for task to db
 }
+

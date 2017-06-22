@@ -99,8 +99,8 @@ updateRunTable = function(run.tag, local.db){
 #' updateReferenceTable
 #' 
 #' Save reference run results to db
-#' @param run.tag 
-#' @param local.db
+#' @param run.tag tag of run
+#' @param local.db local db object
 #' @export 
 updateReferenceTable = function(run.tag, local.db){
   run.ids = local.db %>% tbl(sql("SELECT DISTINCT [run.id] FROM [reference.table]")) %>% collect(n = Inf)
@@ -113,8 +113,8 @@ updateReferenceTable = function(run.tag, local.db){
 #' updateHyperparTable
 #' 
 #' Save hyperparameters for run to db
-#' @param run.tag 
-#' @param local.db 
+#' @param run.tag tag of run
+#' @param local.db local db object
 #' @export
 updateHyperparTable = function(run.tag, local.db){
   run.ids = local.db %>% tbl(sql("SELECT DISTINCT [run.id] FROM [hyperpar.table]")) %>% collect(n = Inf) 
@@ -127,8 +127,8 @@ updateHyperparTable = function(run.tag, local.db){
 #' updateMetaTable
 #' 
 #' Save meta data for task to db
-#' @param task.tag 
-#' @param local.db 
+#' @param task.tag tag of task
+#' @param local.db local db object
 #' @export
 updateMetaTable = function(task.tag, local.db){
   task.ids = local.db %>% tbl(sql("SELECT DISTINCT [task.id] FROM [meta.table]")) %>% collect(n = Inf)
@@ -142,7 +142,7 @@ updateMetaTable = function(task.tag, local.db){
 #' updateRunTimeTable
 #' 
 #' Save user times to db
-#' @param local.db 
+#' @param local.db local db object
 #' @export
 updateRunTimeTable = function(local.db){
   qry_sql = paste0("SELECT DISTINCT a.[run.id] FROM [run.table] As a ",
