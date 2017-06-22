@@ -16,7 +16,7 @@ runBot = function(batch.size, sample.learner.fun = sampleRandomLearner,
   min.resources = NULL, max.resources = NULL, lrn.ps.sets = simple.lrn.par.set, upload = FALSE,
   path = NA, extra.tag = "botV1") {
   
-  task = sample.task.fun()
+  task = sample.task.fun
   task$task = getOMLTask(task$id)
   messagef("Selected OML task: %s (id %s)", task$name, task$id)
   
