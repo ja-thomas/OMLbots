@@ -15,3 +15,7 @@ for(i in 1:20){
          lrn.ps.sets = lrn.par.set, upload = TRUE, extra.tag = c("botV1", paste0("AzureBot", bot.nr)))
 }
 
+data = lapply(1:5, function(x) listOMLRuns(tag = paste0("AzureBot", x)))
+dt = do.call(rbind, data)
+setDT(dt)
+dt[,.N,by=tags]
