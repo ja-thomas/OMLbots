@@ -18,4 +18,4 @@ for(i in 1:20){
 data = lapply(1:5, function(x) listOMLRuns(tag = paste0("AzureBot", x)))
 dt = do.call(rbind, data)
 setDT(dt)
-dt[,.N,by=tags]
+dt[,.N,by=tags] #FIXME: xgboost seems to crash the bot on Azure. Might be some parallelization issue.
