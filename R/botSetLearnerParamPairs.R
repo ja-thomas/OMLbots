@@ -27,7 +27,7 @@ getSimpleLearners = function(){
 #' @return a learner parameter set
 #' @export
 getMultipleLearners = function(){
-  simple.lrn.par.set = getSimpleLearners()
+  lrn.par.set = getSimpleLearners()
   
   # increase to a general param set
   # lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.kknn", predict.type = "prob"), 
