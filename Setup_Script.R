@@ -28,3 +28,5 @@
 
 system("python -m pip install --user benchexec")
 file.copy("./linux-helper", "./Rlib/batchtools/bin/linux-helper", overwrite = TRUE)
+system("sudo chmod o+wt '/sys/fs/cgroup/cpu,cpuacct/user.slice/user-1002.slice'")
+system("sudo chmod o+wt '/sys/fs/cgroup/memory/user.slice/user-1002.slice'")
