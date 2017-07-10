@@ -18,7 +18,7 @@ listFullOMLRuns = function(tag = NULL){
                   nr.results = stringr::str_extract(err, "[0-9]{5,}")
                   message(paste0("Adjusting function to get ", nr.results, " results."))
                   
-                  ls = lapply(seq(0, as.numeric(nr.results)/max.limit), function(i) callOMLRuns(i))
+                  ls = lapply(seq(0, as.numeric(nr.results)/max.limit), function(i) try(callOMLRuns(i)))
                   results = do.call("rbind", ls)
                   return(results)
                 })
@@ -26,7 +26,7 @@ listFullOMLRuns = function(tag = NULL){
   return(df)
 }
 
-cl <- makeCluster(getOption("cl.cores", 16))
+cl <- makeCluster(getOption("cl.cores", 20))
 clusterExport(cl, "listFullOMLRuns")
 clusterEvalQ(cl, library(OpenML))
 data = parLapply(cl, 1:25, function(x) listFullOMLRuns(tag = paste0("AzureBot", x)))
