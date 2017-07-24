@@ -1,6 +1,6 @@
 ######################################################### Regression #########################################################
 
-options(java.parameters = "- Xmx1024m") # Should avoid java gc overhead
+options(java.parameters = "- Xmx4096m") # Should avoid java gc overhead
 library(OpenML)
 
 saveOMLConfig(apikey = "6df93acdb13899f48fd6bd689b0dd7cf", arff.reader = "RWeka", overwrite=TRUE)
@@ -65,24 +65,53 @@ reg = reg[which(reg$name != "lmpavw"), ]
 
 
 # Delete datasets with more than 50 categories in one variable
-more2 = logical(nrow(reg))
-for(j in 1:nrow(reg)){
+# fail to download some of the biggest (~20) datasets
+more2 = !logical(nrow(reg))
+for(j in 217:220){
   print(j)
-  task = try(getOMLTask(task.id = reg$task.id[j], verbosity=0))
+  task = getOMLTask(task.id = reg$task.id[j], verbosity=0)
   classen = sapply(task$input$data.set$data, class)
   indiz = which(classen == "character" | classen == "factor")
-  if(any(apply(as.data.frame(task$input$data.set$data[, indiz]), 2, function(x) length(unique(x))) > 50))
-    more2[j] = TRUE
+  if(!any(apply(as.data.frame(task$input$data.set$data[, indiz]), 2, function(x) length(unique(x))) > 50))
+    more2[j] = FALSE
 }
 reg = reg[more2 == FALSE ,]
 
+reg[order(reg$number.of.instances), c("number.of.instances", "number.of.features", "task.id")]
+
 # Delete equal datasets
-raus = c(4993, 5013, 5023, 2280, 2313)
+raus = c(12723:12729, 4993, 5009, 5013, 5023, 2280, 2313, 12714)
 reg = reg[!(reg$task.id %in% raus),]
 
 # Split into small and big datasets
 reg_small = reg[which(reg$number.of.instances < 1000 & reg$number.of.features < 1000),]
 reg_big = reg[which(!(reg$number.of.instances < 1000 & reg$number.of.features < 1000)),]
 
-save(reg, reg_small, reg_big, file = "/home/probst/Paper/Exploration_of_Hyperparameters/OMLbots/regression_datasets/regression_datasets.RData")
+save(reg, file = "/home/probst/Paper/Exploration_of_Hyperparameters/OMLbots/regression_datasets/regression_datasets.RData")
 
+load("/home/probst/Paper/Exploration_of_Hyperparameters/OMLbots/regression_datasets/regression_datasets.RData")
+
+# Manual selection
+for(i in 1:191) {
+  print(paste(i, "#######################################################################################################"))
+  print(paste("#######################################################################################################"))
+  task = getOMLTask(task.id = reg$task.id[i], verbosity=0)
+  print(head(task$input$data.set$data))
+  print(head(task$input$data.set$desc$description))
+  print(task$input$data.set$target.features)
+  print(unique(task$input$data.set$data[,task$input$data.set$target.features]))
+  print(dim(task$input$data.set$data))
+}
+
+# Criteria: No Regression (classification or survival); repeated datasets (e.g. ozone); 
+# unclear variable names and/or description
+
+ok = c(1, 3, 4, 7, 8, 9, 11, 12, 14, 16, 18, 19, 22, 25, 27, 28, 29, 33, 34, 35, 38, 39, 40,
+  41, 42, 43, 46, 47, 48, 50, 51, 52, 53, 54, 56, 58, 59, 60, 62, 63, 64, 65, 67, 68, 71, 
+  72, 76, 77, 78, 79, 81, 82, 84, 85, 86, 87, 89, 91, 92, 97, 98, 100, 101, 103, 104, 105, 106, 107, 
+  108, 109, 111, 112, 113, 114, 117, 118, 119, 121, 122, 126, 127, 128, 130, 132, 133, 134, 135, 136, 
+  138, 139, 141, 142, 145, 146, 147, 148, 149, 150, 151, 154, 156, 159, 183)
+
+reg = reg[ok, ]
+
+save(reg, file = "/home/probst/Paper/Exploration_of_Hyperparameters/OMLbots/regression_datasets/regression_datasets_manual.RData")
