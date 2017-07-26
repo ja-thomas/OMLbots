@@ -87,9 +87,8 @@ reg = reg[!(reg$task.id %in% raus),]
 reg_small = reg[which(reg$number.of.instances < 1000 & reg$number.of.features < 1000),]
 reg_big = reg[which(!(reg$number.of.instances < 1000 & reg$number.of.features < 1000)),]
 
-save(reg, file = "/home/probst/Paper/Exploration_of_Hyperparameters/OMLbots/regression_datasets/regression_datasets.RData")
-
-load("/home/probst/Paper/Exploration_of_Hyperparameters/OMLbots/regression_datasets/regression_datasets.RData")
+save(reg, file = "./regression_datasets/regression_datasets.RData")
+load("./regression_datasets/regression_datasets.RData")
 
 # Manual selection
 for(i in 1:191) {
@@ -110,8 +109,21 @@ ok = c(1, 3, 4, 7, 8, 9, 11, 12, 14, 16, 18, 19, 22, 25, 27, 28, 29, 33, 34, 35,
   41, 42, 43, 46, 47, 48, 50, 51, 52, 53, 54, 56, 58, 59, 60, 62, 63, 64, 65, 67, 68, 71, 
   72, 76, 77, 78, 79, 81, 82, 84, 85, 86, 87, 89, 91, 92, 97, 98, 100, 101, 103, 104, 105, 106, 107, 
   108, 109, 111, 112, 113, 114, 117, 118, 119, 121, 122, 126, 127, 128, 130, 132, 133, 134, 135, 136, 
-  138, 139, 141, 142, 145, 146, 147, 148, 149, 150, 151, 154, 156, 159, 183)
+  138, 139, 141, 142, 145, 146, 147, 148, 149, 150, 151, 154, 156, 159)
 
 reg = reg[ok, ]
 
-save(reg, file = "/home/probst/Paper/Exploration_of_Hyperparameters/OMLbots/regression_datasets/regression_datasets_manual.RData")
+save(reg, file = "./regression_datasets/regression_datasets_manual.RData")
+load("./regression_datasets/regression_datasets_manual.RData")
+
+# Estimation of time for training a RF on each dataset
+time = numeric(nrow(reg))
+for(i in 1:nrow(reg)) {
+  print(i)
+  task = getOMLTask(task.id = reg$task.id[i], verbosity=0)
+  task = convertOMLTaskToMlr(task)$mlr.task
+  lrn = makeLearner("regr.ranger", num.threads = 6, num.trees = 60)
+  time[i] = system.time(train(lrn, task))[3]
+}
+# Longest one takes 4 seconds
+
