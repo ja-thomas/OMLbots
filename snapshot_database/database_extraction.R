@@ -1,98 +1,85 @@
-library(dplyr)
-
-openml = src_mysql("openml")
-openml
-
-runs = tbl(openml, "run")
-runeval = tbl(openml, "run_evaluated")
-runfile = tbl(openml, "runfile")
-run_tag = tbl(openml, "run_tag")
-
-evaluation = tbl(openml, "evaluation")
-glimpse(evaluation)
-evaluation %>%
-  group_by(evaluation_engine_id) %>%
-  summarise(avg_delay = mean(value))
-
-math_function = tbl(openml, "math_function")
-
-head(runs)
-
-
+############################################################################
 library(RMySQL)
+library(dplyr)
 
 mydb = dbConnect(MySQL(), user = "root", dbname='openml')
 dbListTables(mydb)
-dbListFields(mydb, 'math_function')
-run_evals = dbSendQuery(mydb, "select * from run_evaluated")
-runs = fetch(run_tags, n=-1)
-head(runs)
-# 
 
+############################# evaluation_results ###########################
+
+# evaluation table
 evaluation =  dbSendQuery(mydb, "select * from evaluation")
-evals = fetch(evaluation, n=-1)
-head(evals)
-# source müsste die run_id sein...
-
-aucs = evals[evals$function_id == 4,]
-head(aucs)
-dim(aucs)
-dim(runs)
+evaluation = fetch(evaluation, n=-1)
+head(evaluation)
+# only AUC and runtime
 # id of math_function identifies the measure in evaluation (function_id)
+evaluation = evaluation[evaluation$function_id %in% c(4, 63),]
+# 6301439 evaluations
+colnames(evaluation)[1] = "rid"
+evaluation = evaluation[, c("rid", "function_id", "value")]
 
-evaluation_engine =  dbSendQuery(mydb, "select * from evaluation_engine")
-evaluation_engine_ = fetch(evaluation_engine, n=-1)
-head(evals)
-
+# run table
 run =  dbSendQuery(mydb, "select * from run")
-run_ = fetch(run, n=-1)
-head(run_)
-uploader = table(run_$uploader)
-uploader[uploader > 100000]
-run_ = run_[run_$uploader == 2702,]
-# uploader id 2702 ist der OpenML Bot
-table(run_$task_id)
+run = fetch(run, n=-1)
+head(run)
+table(unique(evaluation$source) %in% unique(run$rid))
+# ok!
+run = run[, c("rid", "uploader", "setup", "task_id")]
 
-run_ids = unique(evals$source)
-mean(run_$rid %in% run_ids)
-# passt nicht...
+# Join tables to evaluation_results
+evaluation_results = inner_join(run, evaluation, by = "rid")
+head(evaluation_results)
+# only runs of the open_ml bot
+evaluation_results = evaluation_results[evaluation_results$uploader == 2702,]
+head(evaluation_results)
 
-# mit data.table oder dplyr arbeiten
+############################# meta_features ################################
+
+# data quality table
+data_quality =  dbSendQuery(mydb, "select * from data_quality")
+data_quality = fetch(data_quality, n=-1)
+head(data_quality)
+data_quality = data_quality[, c("data", "quality", "value")]
+table(data_quality$data)
+
+# input data table
+input_data =  dbSendQuery(mydb, "select * from input_data")
+input_data = fetch(input_data, n=-1)
+head(input_data)
+input_data = input_data[, c("run", "data")]
+colnames(input_data)[1] = "rid"
+
+# Add the data id to the evaluation results as identifier
+evaluation_results = inner_join(evaluation_results, input_data, "rid")
+head(evaluation_results)
+
+# Only keep relevant informations of relevant datasets
+meta_features_names = c("MajorityClassSize", "MajorityClassPercentage", "NumberOfClasses", 
+  "NumberOfInstances", "NumberOfFeatures", "NumberOfNumericFeatures", "NumberOfSymbolicFeatures")
+meta_features = data_quality[data_quality$quality %in% meta_features_names, ]
+meta_features = meta_features[meta_features$data %in% unique(evaluation_results$data), ]
+head(meta_features)
+
+############################# hyperparameters ################################
+
+input_setting = dbSendQuery(mydb, "select * from input_setting")
+input_setting = fetch(input_setting, n=-1)
+head(input_setting)
+input_setting = input_setting[input_setting$setup %in% unique(evaluation_results$setup),]
+
+input =  dbSendQuery(mydb, "select * from input")
+input = fetch(input, n=-1)
+head(input)
+colnames(input)[1] = "input_id"
+input = input[, c("input_id", "fullName", "name")]
+
+hyperparameters = inner_join(input_setting, input, by = "input_id")
+head(hyperparameters)
+hyperparameters = hyperparameters[!(hyperparameters$name %in% c("nthread", "num.threads", "openml.kind", "openml.normal.kind", "openml.seed", "s", "verbose", "xval")), ]
+hyperparameters$fullName = gsub("\\(.*","",hyperparameters$fullName)
+table(hyperparameters$name)
 
 
+# Add default values
 
 
-
-
-
-
-# Anhang
-src_sqlite("/home/probst/Paper/Exploration_of_Hyperparameters/OMLbots/snapshot_database/ExpDB_SNAPSHOT.sql", create = FALSE)
-src_mysql("/home/probst/Paper/Exploration_of_Hyperparameters/OMLbots/snapshot_database/ExpDB_SNAPSHOT.sql")
-?src_sql
-
-
-library(RODBC)
-myconn <-odbcConnect("/home/probst/Paper/Exploration_of_Hyperparameters/OMLbots/snapshot_database/ExpDB_SNAPSHOT.sql", uid="", pwd="")
-?odbcConnect
-
-
-odbcDataSources()
-
-library(ProjectTemplate)
-sql.reader("ExpDB_SNAPSHOT.sql", "/home/probst/Paper/Exploration_of_Hyperparameters/OMLbots/snapshot_database", "openml_db")
-
-library(dbConnect)
-dbGrace=dbConnect(MySQL(),user="root",
-  host="localhost",
-  dbname="openml_expdb",
-  password="",
-  unix.sock="/home/probst/Paper/Exploration_of_Hyperparameters/OMLbots/snapshot_database/ExpDB_SNAPSHOT.sql")
-
-odbcDataSources()
-
-
-require(RMySQL)
-drv <- dbDriver("MySQL")
-con <- dbConnect(drv, username = "root")
-dbListTables(con)
