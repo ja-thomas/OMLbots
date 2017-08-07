@@ -182,8 +182,7 @@ runtime
 meta_features
 hyperparameters
 reference
-
-save(evaluation_results, runtime, scimark, meta_features, hyperparameters, reference, file = "results.RData")
+# old tables
 tbl.results
 tbl.metaFeatures
 tbl.hypPars
