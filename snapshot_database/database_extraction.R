@@ -175,13 +175,33 @@ runtime[, delete_columns] = NULL
 colnames(runtime)[2] = "runtime"
 delete_columns = c("uploader", "function_id")
 evaluation_results[, delete_columns] = NULL
+reference[, delete_columns] = NULL
 
 # Fit data to our current functions
-evaluation_results
-runtime
-meta_features
-hyperparameters
-reference
+head(evaluation_results)
+head(runtime)
+head(meta_features)
+head(hyperparameters)
+head(reference)
+
+# rename certain columns
+colnames(evaluation_results)[1] = "run_id"
+colnames(reference)[1] = "run_id"
+colnames(runtime)[1] = "run_id"
+
+colnames(evaluation_results)[5] = "data_id"
+colnames(reference)[5] = "data_id"
+colnames(meta_features)[1] = "data_id"
+
+colnames(evaluation_results)[4] = "area.under.roc.curve"
+colnames(reference)[4] = "area.under.roc.curve"
+
+# rename the tables
+tbl.results = evaluation_results
+tbl.metaFeatures = meta_features
+tbl.hypPars = hyperparameters
+tbl.runTime = runtime
+tbl.resultsReference = reference
 
 # save tables in sql database
 overwrite = TRUE
@@ -191,18 +211,13 @@ if (file.exists(db) & overwrite) {
 } 
 src = src_sqlite(db, create = !file.exists(db))
 
-copy_to(src, evaluation_results, temporary = FALSE)
-copy_to(src, runtime, temporary = FALSE)
-copy_to(src, meta_features, temporary = FALSE)
-copy_to(src, hyperparameters, temporary = FALSE)
-copy_to(src, reference, temporary = FALSE)
+copy_to(src, tbl.results, temporary = FALSE)
+copy_to(src, tbl.runTime, temporary = FALSE)
+copy_to(src, tbl.metaFeatures, temporary = FALSE)
+copy_to(src, tbl.hypPars, temporary = FALSE)
+copy_to(src, tbl.resultsReference, temporary = FALSE)
 
 
 
 # old tables
-tbl.results
-tbl.metaFeatures
-tbl.hypPars
-tbl.runTime
-tbl.resultsReference
 
