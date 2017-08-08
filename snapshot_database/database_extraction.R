@@ -3,7 +3,7 @@ library(RMySQL)
 library(dplyr)
 library(tidyr)
 
-mydb = dbConnect(MySQL(), user = "root", dbname='openml')
+mydb = dbConnect(MySQL(), user = "root", dbname='openml', password = "TSVMurnau")
 dbListTables(mydb)
 
 ############################# evaluation_results ###########################
@@ -182,6 +182,23 @@ runtime
 meta_features
 hyperparameters
 reference
+
+# save tables in sql database
+overwrite = TRUE
+db = paste0("./mlrRandomBotDatabaseSnapshot.db")
+if (file.exists(db) & overwrite) {
+  unlink(db, force = TRUE)
+} 
+src = src_sqlite(db, create = !file.exists(db))
+
+copy_to(src, evaluation_results, temporary = FALSE)
+copy_to(src, runtime, temporary = FALSE)
+copy_to(src, meta_features, temporary = FALSE)
+copy_to(src, hyperparameters, temporary = FALSE)
+copy_to(src, reference, temporary = FALSE)
+
+
+
 # old tables
 tbl.results
 tbl.metaFeatures
