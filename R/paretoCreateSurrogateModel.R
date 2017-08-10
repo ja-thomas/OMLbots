@@ -27,6 +27,7 @@ makeSurrogateModel = function(measure.name, learner.name, task.ids, lrn.par.set,
   #train mlr model on full table for measure
   mlr.mod.measure = list()
   task.data = makeBotTable(measure.name, learner.name, tbl.results, tbl.metaFeatures, tbl.hypPars, tbl.runTime, tbl.resultsReference, param.set)
+  task.data = data.frame(task.data)
   # delete or Transform Missing values
   task.data[, names(param.set$pars)] = deleteNA(task.data[, names(param.set$pars), drop = FALSE])
   
@@ -139,7 +140,7 @@ makeBotTable = function(measure.name, learner.name, tbl.results, tbl.metaFeature
 conversion_function = function(x, param_type) {
   if(param_type %in% c("integer", "numeric", "numericvector")) 
     x = as.numeric(x)
-  if(param_type %in% c("character", "logical", "factor"))
+  if(param_type %in% c("character", "logical", "factor", "discrete"))
     x = as.factor(x)
   return(x)
 }
