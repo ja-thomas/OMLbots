@@ -36,30 +36,21 @@ table(results$uploader)
 
 # Database extraction
 
-local.db = initializeLocalDatabase(overwrite = FALSE)
-run.tag = "botV1"
-updateLocalDatabase()
-updateRunTable(run.tag = run.tag, local.db) # geht das gescheit?
-updateHyperparTable(run.tag = run.tag, local.db)
-updateMetaTable(task.tag = "study_14", local.db)
-updateRunTimeTable(local.db)
-updateReferenceTable(run.tag = "referenceV1", local.db)
+path = paste0("/home/probst/Paper/Exploration_of_Hyperparameters/OMLbots", "/mlrRandomBotDatabaseSnapshot.db")
+local.db = src_sqlite(path, create = FALSE)
 
-# --------------------------------------------------------------------------------------------------------------------------------------
-# Create surrogate models
-local.db = initializeLocalDatabase(overwrite = FALSE)
-tbl.results = getRunTable(local.db = local.db, numRuns = 7000000)
-tbl.metaFeatures = getMetaFeaturesTable(local.db = local.db)
-tbl.hypPars = getHyperparTable(local.db = local.db, numRuns = 2000000)
-tbl.runTime = getRunTimeTable(local.db = local.db, numRuns = 3500000)
-tbl.resultsReference = getReferenceTable(local.db = local.db)
+tbl.results = collect(tbl(local.db, sql("SELECT * FROM [tbl.results]")), n = Inf)
+tbl.metaFeatures = collect(tbl(local.db, sql("SELECT * FROM [tbl.metaFeatures]")), n = Inf)
+tbl.hypPars = collect(tbl(local.db, sql("SELECT * FROM [tbl.hypPars]")), n = Inf)
+tbl.runTime = collect(tbl(local.db, sql("SELECT * FROM [tbl.runTime]")), n = Inf)
+tbl.resultsReference = collect(tbl(local.db, sql("SELECT * FROM [tbl.resultsReference]")), n = Inf)
 
 # get learner names
 library(stringi)
 learner.names = paste0("mlr.", names(lrn.par.set))
 learner.names = stri_sub(learner.names, 1, -5)
 # get task.ids
-task.ids = unique(tbl.results$task.id)
+task.ids = unique(tbl.results$task_id)
 # set surrogate model
 surrogate.mlr.lrn = makeLearner("regr.ranger", par.vals = list(num.trees = 2000, num.threads = 10))
 
