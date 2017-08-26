@@ -56,7 +56,7 @@ case $CMD in
 	sudo chmod o+wt '/sys/fs/cgroup/freezer/'
 	sudo chmod o+wt '/sys/fs/cgroup/memory/user.slice'
 	sudo chmod o+wt '/sys/fs/cgroup/cpuset/'
-        runexec --output "$2" -- Rscript -e ".libPaths('/home/bot/Desktop/OMLbots/Rlib'); batchtools::doJobCollection('$1')" >> "$2"  2>&1 &
+        runexec --memlimit 3400000000 --timelimit 18000 --output "$2" -- Rscript -e ".libPaths('/home/bot/Desktop/OMLbots/Rlib'); batchtools::doJobCollection('$1')" >> "$2"  2>&1 &
         echo $!
         ;;
     kill-job)
