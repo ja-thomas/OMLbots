@@ -26,13 +26,10 @@ makeSurrogateModel = function(measure.name, learner.name, task.ids, lrn.par.set,
   
   #train mlr model on full table for measure
   mlr.mod.measure = list()
-  task.data = makeBotTable(measure.name, learner.name, tbl.results, tbl.metaFeatures, tbl.hypPars, tbl.runTime, tbl.resultsReference, param.set)
+  task.data = makeBotTable(measure.name, learner.name, task.ids, tbl.results, tbl.metaFeatures, tbl.hypPars, tbl.runTime, tbl.resultsReference, param.set)
   task.data = data.frame(task.data)
   # delete or Transform Missing values
   task.data[, names(param.set$pars)] = deleteNA(task.data[, names(param.set$pars), drop = FALSE])
-  
-  bigger = names(table(task.data$task_id))[which(table(task.data$task_id) > min.experiments)]
-  task.data = task.data[task.data$task_id %in% bigger,]
   
   # get specific task ids
   if(!is.null(task.ids)) {
@@ -74,7 +71,7 @@ makeSurrogateModel = function(measure.name, learner.name, task.ids, lrn.par.set,
 #'
 #' @return [\code{data.frame}] Complete table used for creating the surrogate model 
 #' @export
-makeBotTable = function(measure.name, learner.name, tbl.results, tbl.metaFeatures, tbl.hypPars, tbl.runTime, tbl.resultsReference, param.set) {
+makeBotTable = function(measure.name, learner.name, task.ids, tbl.results, tbl.metaFeatures, tbl.hypPars, tbl.runTime, tbl.resultsReference, param.set) {
 
   # This is not used at the moment  
   measure.name.filter = measure.name
@@ -130,6 +127,9 @@ makeBotTable = function(measure.name, learner.name, tbl.results, tbl.metaFeature
   bot.table$measure.value = bot.table$measure.value - bot.table$avg + 0.5
   bot.table = bot.table %>%  select(., -avg)
   
+  # select only runs on the specific task.ids
+  bot.table =  subset(bot.table, task_id %in% task.ids)
+  
   return(bot.table)
 }
 
@@ -169,4 +169,16 @@ deleteNA = function(task.data) {
       task.data[, i] = as.factor(task.data[, i])
   }
   task.data
+}
+
+#' Get relevant datasets
+#' @param tbl.results 
+#' @param tbl.hypPars 
+#' @param min.experiments 
+calculateTaskIds = function(tbl.results, tbl.hypPars, min.experiments = 200) {
+  whole.table = inner_join(tbl.results, tbl.hypPars, by = "setup") %>% select(., task_id, fullName)
+  cross.table = table(whole.table$task_id, whole.table$fullName)
+  bigger = rowSums(cross.table > min.experiments)
+  task.ids = names(bigger)[bigger == 6] 
+  return(task.ids)
 }
