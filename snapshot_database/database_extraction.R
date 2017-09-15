@@ -218,6 +218,3 @@ copy_to(src, tbl.hypPars, temporary = FALSE)
 copy_to(src, tbl.resultsReference, temporary = FALSE)
 
 
-
-# old tables
-
