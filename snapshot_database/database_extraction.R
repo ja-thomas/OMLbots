@@ -3,7 +3,7 @@ library(RMySQL)
 library(dplyr)
 library(tidyr)
 
-mydb = dbConnect(MySQL(), user = "root", dbname='openml', password = "TSVMurnau")
+mydb = dbConnect(MySQL(), user = "root", dbname='openml', password = "")
 dbListTables(mydb)
 
 ############################# evaluation_results ###########################
