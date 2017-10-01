@@ -49,11 +49,11 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources, uplo
     # exponentialBackOff(jobs = 1:nrow(par), registry = reg, start.resources = min.resources, max.resources = max.resources)    
     submitJobs(resources = max.resources)
   } else {
-    reg$cluster.functions = makeClusterFunctionsSocket(1)
+    reg$cluster.functions = makeClusterFunctionsSocket(3)
     submitJobs()    
   }
   waitForJobs(reg = reg)
-  unlink(path, recursive = TRUE)
+  #unlink(path, recursive = TRUE)
 }
 
 
