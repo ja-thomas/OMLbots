@@ -5,14 +5,15 @@ setOMLConfig(apikey = "34ebc7dff3057d8e224e5beac53aea0e")
 
 lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.xgboost", predict.type = "prob"), 
   param.set = makeParamSet(
+    makeDiscreteParam("booster", values = c("gbtree"), default = "gbtree"),
     makeIntegerParam("nrounds", lower = 1, upper = 5000, default = 100L), 
     makeNumericParam("eta", lower = -10, upper = 0, trafo = function(x) 2^x, default = log(0.3)/log(2)), #(log(0.3)/log(2))
-    makeNumericParam("subsample",lower = 0.1, upper = 1, default = 1),
-    makeDiscreteParam("booster", values = c("gbtree", "gblinear"), default = "gbtree"),
+    makeNumericParam("gamma", lower = -10, upper = 10, trafo = function(x) 2^x, default = 0),
     makeIntegerParam("max_depth", lower = 1, upper = 15, requires = quote(booster == "gbtree"), default = 6L),
     makeNumericParam("min_child_weight", lower = 0, upper = 7, requires = quote(booster == "gbtree"), trafo = function(x) 2^x, default = 0),
-    makeNumericParam("colsample_bytree", lower = 0, upper = 1, requires = quote(booster == "gbtree"), default = 1),
-    makeNumericParam("colsample_bylevel", lower = 0, upper = 1, requires = quote(booster == "gbtree"), default = 1),
+    makeNumericParam("subsample",lower = 0.1, upper = 1, default = 1),
+    makeNumericParam("colsample_bytree", lower = 0.2, upper = 1, requires = quote(booster == "gbtree"), default = 1),
+    makeNumericParam("colsample_bylevel", lower = 0.2, upper = 1, requires = quote(booster == "gbtree"), default = 1),
     makeNumericParam("lambda", lower = -10, upper = 10, trafo = function(x) 2^x, default = 0),
     makeNumericParam("alpha", lower = -10, upper = 10, trafo = function(x) 2^x, default = 0)))
 
@@ -36,7 +37,7 @@ getXGboostDefault = function(size, par.set) { # run.id 7937366
   return(des)
 }
 
-runBot(1, path = paste0("xgboost_runs_def"), 
+runBot(10000, path = paste0("xgboost_runs_def2"), 
     sample.learner.fun = sampleRandomLearner, sample.task.fun = sampleTask, 
     sample.configuration.fun = sampleRandomConfiguration, 
     lrn.ps.sets = lrn.par.set, upload = TRUE, extra.tag = "botV1")
