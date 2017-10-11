@@ -49,7 +49,8 @@ getMultipleLearners = function(){
       makeLogicalParam("replace"),
       makeNumericParam("sample.fraction", lower = 0.1, upper = 1),
       makeNumericParam("mtry", lower = 0, upper = 1),
-      makeLogicalParam(id = "respect.unordered.factors")),
+      makeLogicalParam(id = "respect.unordered.factors"),
+      makeNumericParam("min.node.size", lower = 0, upper = 1)),
     lrn.ps.sets = lrn.par.set)
   
   lrn.par.set = makeLrnPsSets(learner = makeLearner("classif.xgboost", predict.type = "prob"), 

@@ -50,7 +50,7 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources, uplo
     submitJobs(resources = max.resources)
   } else {
     reg$cluster.functions = makeClusterFunctionsSocket(1)
-    submitJobs()    
+    submitJobs()
   }
   waitForJobs(reg = reg)
   unlink(path, recursive = TRUE)
