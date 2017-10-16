@@ -217,4 +217,6 @@ copy_to(src, tbl.metaFeatures, temporary = FALSE)
 copy_to(src, tbl.hypPars, temporary = FALSE)
 copy_to(src, tbl.resultsReference, temporary = FALSE)
 
+save(tbl.results, tbl.runTime, tbl.metaFeatures, tbl.hypPars, 
+  tbl.resultsReference, file = "./snapshot_database/mlrRandomBotResults.RData")
 
