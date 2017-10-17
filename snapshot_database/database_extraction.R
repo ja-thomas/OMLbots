@@ -220,3 +220,34 @@ copy_to(src, tbl.resultsReference, temporary = FALSE)
 save(tbl.results, tbl.runTime, tbl.metaFeatures, tbl.hypPars, 
   tbl.resultsReference, file = "./snapshot_database/mlrRandomBotResults.RData")
 
+
+# Save it in other formats
+load("./snapshot_database/mlrRandomBotResults.RData")
+
+algos = unique(tbl.hypPars$fullName)
+algos = algos[c(2, 3, 1, 4, 5, 6)]
+meta_features = unique(tbl.metaFeatures$quality)
+tbl.metaFeatures.wide = spread(tbl.metaFeatures, quality, value)
+
+
+results = list()
+for(i in seq_along(algos)) {
+  print(i)
+  results_i = tbl.hypPars[tbl.hypPars$fullName == algos[i],]
+  hyp_pars = unique(results_i$name)
+  results_i = spread(results_i, name, value)
+  results_i = merge(results_i, tbl.results, by = "setup")
+  results_i = merge(results_i, tbl.metaFeatures.wide, by = "data_id")
+  results_i = merge(results_i, tbl.runTime, by = "run_id")
+  results_i = results_i[, c("task_id", hyp_pars, "area.under.roc.curve", "runtime", "scimark", meta_features)]
+  results[[i]] = results_i
+}
+names(results) = algos
+save(results, file = "./snapshot_database/mlrRandomBotResultsTables.RData")
+
+library(readr)
+for(i in seq_along(algos)) {
+  print(i)
+  write_csv(results[[i]], path = paste0("./snapshot_database/mlrRandomBotResults_", algos[[i]], ".csv"))
+}
+
