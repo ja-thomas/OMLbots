@@ -57,7 +57,7 @@ for(j in seq_along(results)) {
       if(type %in% c("numeric", "numericvector", "integer"))
         error = try(hist(as.numeric(results[[j]][task_ids == uni_tasks[h], pars[i]]), xlab = "", ylab = "", main = paste("task_id" ,uni_tasks[h])))
       else
-        barplot(table(results[[j]][, pars[i]]), xlab = pars[i], ylab = "", main = paste("tskid" ,uni_tasks[h]))
+        error = try(barplot(table(results[[j]][task_ids == uni_tasks[h], pars[i]]), xlab = pars[i], ylab = "", main = paste("tskid" ,uni_tasks[h])))
       if(class(error) == "try-error"){
         plot.new()
         text(x = 0.5, y = 0.5, paste("id" ,uni_tasks[h]), cex = 1, col = "black")
