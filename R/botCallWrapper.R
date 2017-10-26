@@ -33,6 +33,8 @@ runBot = function(batch.size, sample.learner.fun = sampleRandomLearner,
     #Avoid fails by adjusting mtry
     p = ncol(task$task$input$data.set$data) - 1
     par$mtry = ceiling(p * par$mtry)
+    n = nrow(task$task$input$data.set$data)
+    par$min.node.size = round(2^(log(n, 2) * par$min.node.size))
   }
   
   if (getLearnerPackages(lrn$learner) == "xgboost") {
