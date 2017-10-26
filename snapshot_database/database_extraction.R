@@ -8,22 +8,22 @@ dbListTables(mydb)
 
 ############################# evaluation_results ###########################
 
-# evaluation table
-evaluation =  dbSendQuery(mydb, "select * from evaluation where function_id in (4, 59, 63)") # AUC, scimark, runtime
-evaluation = fetch(evaluation, n=-1)
-head(evaluation)
-table(evaluation$function_id)
-# only AUC, scimark and runtime
-# id of math_function identifies the measure in evaluation (function_id)
-# evaluation = evaluation[evaluation$function_id %in% c(4, 59, 63),] #  4, 59 und 63 werden benötigt
-colnames(evaluation)[1] = "rid"
-evaluation = evaluation[, c("rid", "function_id", "value")]
-
-# math_function table
+# math_function table to get ids for the specific measures
 math_function =  dbSendQuery(mydb, "select * from math_function")
 math_function = fetch(math_function, n=-1)
 head(math_function)
 math_function$name
+# 4 AUC, 45 accuracy, 54 root mean squared error, 59 scimark_benchmark, 63 usercpu_time_millis
+
+# evaluation table
+evaluation =  dbSendQuery(mydb, "select * from evaluation where function_id in (4, 45, 54, 59, 63)") # AUC, acc, rmse, scimark, runtime
+evaluation = fetch(evaluation, n=-1)
+head(evaluation)
+table(evaluation$function_id)
+# id of math_function identifies the measure in evaluation (function_id)
+# evaluation = evaluation[evaluation$function_id %in% c(4, 59, 63),] #  4, 59 und 63 werden benötigt
+colnames(evaluation)[1] = "rid"
+evaluation = evaluation[, c("rid", "function_id", "value")]
 
 # run table
 run =  dbSendQuery(mydb, "select * from run")
@@ -41,6 +41,28 @@ evaluation_results = evaluation_results[evaluation_results$uploader == 2702,]
 head(evaluation_results)
 table(evaluation_results$function_id) 
 # Around 2886153 results
+
+# delete missing scimark run
+table_run_ids = table(evaluation_results$rid)
+bad_run = names(table_run_ids)[table_run_ids == 4]
+evaluation_results = evaluation_results[!(evaluation_results$rid %in% bad_run),]
+
+# runtime
+runtime = evaluation_results[evaluation_results$function_id == 63, ]
+evaluation_results = evaluation_results[evaluation_results$function_id != 63, ]
+delete_columns = c("uploader", "setup", "task_id", "function_id", "data")
+runtime[, delete_columns] = NULL
+colnames(runtime)[2] = "runtime"
+
+# scimark benchmark
+scimark =  evaluation_results[evaluation_results$function_id == 59, ]
+evaluation_results =  evaluation_results[evaluation_results$function_id != 59, ]
+
+# From long to wide
+evaluation_results = spread(evaluation_results, function_id, value)
+colnames(evaluation_results)[5:7] = c("auc", "accuracy", "brier")
+# brier score calculation
+evaluation_results$brier = (evaluation_results$brier)^2
 
 ############################# meta_features ################################
 
@@ -157,29 +179,23 @@ reference = evaluation_results[evaluation_results$setup %in% data_wide$setup, ]
 evaluation_results = evaluation_results[!(evaluation_results$setup %in% data_wide$setup), ]
 hyperparameters = hyperparameters[!(hyperparameters$setup %in% data_wide$setup), ]
 
-# runtime
-runtime = evaluation_results[evaluation_results$function_id == 63, ]
-evaluation_results = evaluation_results[evaluation_results$function_id != 63, ]
+gc()
 
-# scimark benchmark
-scimark =  evaluation_results[evaluation_results$function_id == 59, ]
-evaluation_results =  evaluation_results[evaluation_results$function_id != 59, ]
-
-delete_runtime = runtime$rid[!(runtime$rid %in% scimark$rid)]
-runtime = runtime[runtime$rid != 2414382, ]
-all(runtime$rid == scimark$rid)
-runtime = data.frame(runtime, scimark = scimark$value)
-rm(scimark)
-delete_columns = c("uploader", "setup", "task_id", "function_id", "data")
-runtime[, delete_columns] = NULL
-colnames(runtime)[2] = "runtime"
 delete_columns = c("uploader", "function_id")
 evaluation_results[, delete_columns] = NULL
 reference[, delete_columns] = NULL
 
+# rid should be the same for all tables
+all(evaluation_results$rid %in% runtime$rid)
+all(runtime$rid %in% evaluation_results$rid)
+runtime = runtime[runtime$rid %in% evaluation_results$rid, ]
+scimark = scimark[scimark$rid %in% evaluation_results$rid, ]
+
+
 # Fit data to our current functions
 head(evaluation_results)
 head(runtime)
+head(scimark)
 head(meta_features)
 head(hyperparameters)
 head(reference)
@@ -188,20 +204,19 @@ head(reference)
 colnames(evaluation_results)[1] = "run_id"
 colnames(reference)[1] = "run_id"
 colnames(runtime)[1] = "run_id"
+colnames(scimark)[1] = "run_id"
 
-colnames(evaluation_results)[5] = "data_id"
-colnames(reference)[5] = "data_id"
+colnames(evaluation_results)[7] = "data_id"
+colnames(reference)[7] = "data_id"
 colnames(meta_features)[1] = "data_id"
 
-colnames(evaluation_results)[4] = "area.under.roc.curve"
-colnames(reference)[4] = "area.under.roc.curve"
-
 # rename the tables
-tbl.results = evaluation_results
-tbl.metaFeatures = meta_features
-tbl.hypPars = hyperparameters
-tbl.runTime = runtime
-tbl.resultsReference = reference
+assign("tbl.results", evaluation_results)
+assign("tbl.runTime", runtime)
+assign("tbl.scimark", scimark)
+assign("tbl.metaFeatures", meta_features)
+assign("tbl.hypPars", hyperparameters)
+assign("tbl.resultsReference", reference)
 
 # save tables in sql database
 overwrite = TRUE
@@ -213,11 +228,12 @@ src = src_sqlite(db, create = !file.exists(db))
 
 copy_to(src, tbl.results, temporary = FALSE)
 copy_to(src, tbl.runTime, temporary = FALSE)
+copy_to(src, tbl.scimark, temporary = FALSE)
 copy_to(src, tbl.metaFeatures, temporary = FALSE)
 copy_to(src, tbl.hypPars, temporary = FALSE)
 copy_to(src, tbl.resultsReference, temporary = FALSE)
 
-save(tbl.results, tbl.runTime, tbl.metaFeatures, tbl.hypPars, 
+save(tbl.results, tbl.runTime, tbl.scimark, tbl.metaFeatures, tbl.hypPars, 
   tbl.resultsReference, file = "./snapshot_database/mlrRandomBotResults.RData")
 
 
@@ -229,7 +245,6 @@ algos = algos[c(2, 3, 1, 4, 5, 6)]
 meta_features = unique(tbl.metaFeatures$quality)
 tbl.metaFeatures.wide = spread(tbl.metaFeatures, quality, value)
 
-
 results = list()
 for(i in seq_along(algos)) {
   print(i)
@@ -239,7 +254,8 @@ for(i in seq_along(algos)) {
   results_i = merge(results_i, tbl.results, by = "setup")
   results_i = merge(results_i, tbl.metaFeatures.wide, by = "data_id")
   results_i = merge(results_i, tbl.runTime, by = "run_id")
-  results_i = results_i[, c("task_id", hyp_pars, "area.under.roc.curve", "runtime", "scimark", meta_features)]
+  results_i = merge(results_i, tbl.scimark, by = "run_id")
+  results_i = results_i[, c("task_id", hyp_pars, "auc", "accuracy", "brier", "runtime", "scimark", meta_features)]
   results[[i]] = results_i
 }
 names(results) = algos

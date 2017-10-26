@@ -1,0 +1,27 @@
+# Requirements
+# mysql must be installed
+
+# Open Console
+su root
+cd /
+# (mkdir databases)
+cd /databases
+# remove old file
+rm ExpDB_SNAPSHOT.sql.gz
+# download and extract it
+wget https://www.openml.org/downloads/ExpDB_SNAPSHOT.sql.gz
+gunzip ExpDB_SNAPSHOT.sql.gz
+
+# Create a database with mysql:
+mysql
+show databases;
+DROP DATABASE openml;
+CREATE DATABASE openml;
+exit
+# Put the dump into this database:
+mysql openml < ExpDB_SNAPSHOT_11_09_2017.sql
+#Use it:
+#USE openml
+
+# Use the R script to get the relevant tables
+Rscript database_extraction.R
