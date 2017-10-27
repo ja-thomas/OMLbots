@@ -2,6 +2,7 @@
 library(RMySQL)
 library(dplyr)
 library(tidyr)
+library(OpenML)
 
 mydb = dbConnect(MySQL(), user = "root", dbname='openml', password = "")
 dbListTables(mydb)
@@ -20,6 +21,7 @@ evaluation =  dbSendQuery(mydb, "select * from evaluation where function_id in (
 evaluation = fetch(evaluation, n=-1)
 head(evaluation)
 table(evaluation$function_id)
+# for some runs no runtime/scimark available!
 # id of math_function identifies the measure in evaluation (function_id)
 # evaluation = evaluation[evaluation$function_id %in% c(4, 59, 63),] #  4, 59 und 63 werden benötigt
 colnames(evaluation)[1] = "rid"
@@ -32,14 +34,15 @@ head(run)
 table(unique(evaluation$source) %in% unique(run$rid))
 # ok!
 run = run[, c("rid", "uploader", "setup", "task_id")]
+table(run$setup)
+
+# only runs of the open_ml bot
+run = run[run$uploader == 2702, ]
 
 # Join tables to evaluation_results
 evaluation_results = inner_join(run, evaluation, by = "rid")
 head(evaluation_results)
-# only runs of the open_ml bot
-evaluation_results = evaluation_results[evaluation_results$uploader == 2702,]
-head(evaluation_results)
-table(evaluation_results$function_id) 
+table(evaluation_results$function_id)
 # Around 2886153 results
 
 # delete missing scimark run
@@ -57,6 +60,9 @@ colnames(runtime)[2] = "runtime"
 # scimark benchmark
 scimark =  evaluation_results[evaluation_results$function_id == 59, ]
 evaluation_results =  evaluation_results[evaluation_results$function_id != 59, ]
+delete_columns = c("uploader", "setup", "task_id", "function_id", "data")
+scimark[, delete_columns] = NULL
+colnames(scimark)[2] = "scimark"
 
 # From long to wide
 evaluation_results = spread(evaluation_results, function_id, value)
@@ -122,6 +128,12 @@ new_hypers_rpart = gather(data_wide, name, value = value, cp, maxdepth, minbucke
 hyperparameters = rbind(hyperparameters[hyperparameters$fullName != "mlr.classif.rpart",], new_hypers_rpart)
 
 # kknn
+evaluation_results$setup %in% asdf
+  
+hyp_kknn = hyperparameters[hyperparameters$fullName == "mlr.classif.kknn",]
+sum(run$setup %in% hyp_kknn$setup)
+sum(evaluation_results$setup %in% hyp_kknn$setup)
+
 missing = evaluation_results[!(evaluation_results$setup %in% unique(hyperparameters$setup)), ]
 head(evaluation_results$setup)
 tabelle = table(hyperparameters[hyperparameters$fullName == "mlr.classif.kknn",]$value)
@@ -155,7 +167,8 @@ data_wide = spread(new_hypers_ranger, name, value)
 data_wide$num.trees[is.na(data_wide$num.trees)] = 500
 data_wide$replace[is.na(data_wide$replace)] = TRUE
 data_wide$respect.unordered.factors[is.na(data_wide$respect.unordered.factors)] = FALSE
-new_hypers_ranger = gather(data_wide, name, value = value, mtry, num.trees, replace, respect.unordered.factors, sample.fraction)
+data_wide$min.node.size[is.na(data_wide$min.node.size)] = 1
+new_hypers_ranger = gather(data_wide, name, value = value, mtry, num.trees, replace, respect.unordered.factors, sample.fraction, min.node.size)
 hyperparameters = rbind(hyperparameters[hyperparameters$fullName != "mlr.classif.ranger",], new_hypers_ranger)
 
 #xgboost
@@ -167,6 +180,7 @@ nas = is.na(data_wide[data_wide$booster == "gbtree",]$max_depth)
 data_wide[data_wide$booster == "gbtree",]$max_depth[nas] = 6
 new_hypers_xgboost = gather(data_wide, name, value = value, alpha, booster, colsample_bylevel, colsample_bytree, eta, lambda, 
   max_depth, min_child_weight, nrounds, subsample)
+new_hypers_xgboost$gamma = NULL
 hyperparameters = rbind(hyperparameters[hyperparameters$fullName != "mlr.classif.xgboost",], new_hypers_xgboost)
 
 # Reference table
