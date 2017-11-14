@@ -48,8 +48,9 @@ evalConfigurations = function(lrn, task, par, min.resources, max.resources, uplo
     reg$cluster.functions = makeClusterFunctionsSlurm("slurm_lmulrz.tmpl", clusters = "serial")
     # exponentialBackOff(jobs = 1:nrow(par), registry = reg, start.resources = min.resources, max.resources = max.resources)    
     submitJobs(resources = max.resources)
+    waitForJobs()
   } else {
-    reg$cluster.functions = makeClusterFunctionsSocket(1)
+    reg$cluster.functions = makeClusterFunctionsSocket(2)
     submitJobs()
   }
   waitForJobs(reg = reg)
