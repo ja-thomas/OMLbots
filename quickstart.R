@@ -15,6 +15,14 @@ for(i in 1:10000) {
     lrn.ps.sets = lrn.par.set, upload = TRUE, extra.tag = "botV1"))
 }
 
+# second account
+for(i in 1:10000) {
+  try(runBot(20, path = paste0("/home/hpc/pr74di/di49ruw2/files/test", i), 
+    sample.learner.fun = sampleRandomLearner, sample.task.fun = sampleRandomTask, 
+    sample.configuration.fun = sampleRandomConfiguration, max.resources = max.resources,  
+    lrn.ps.sets = lrn.par.set, upload = TRUE, extra.tag = "botV1"))
+}
+
 # Locally
 for(i in 1:1000){
   try(runBot(100, path = paste0("test", i), 
