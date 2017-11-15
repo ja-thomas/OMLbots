@@ -1,0 +1,42 @@
+
+#!/bin/bash
+<%
+## Set some sane defaults
+if (is.null(resources$ntasks))
+    resources$ntasks = 1L
+if (is.null(resources$ncpus))
+  resources$ncpus = 1L
+
+## Check variables
+resources$walltime = checkmate::asInt(resources$walltime, lower = 1L)
+resources$memory = checkmate::asInt(resources$memory, lower = 100L)
+resources$ntasks = checkmate::asInt(resources$ntasks, lower = 1L)
+resources$ncpus = checkmate::asInt(resources$ncpus, lower = 1L)
+
+if (resources$ntasks == 1L) {
+  cmd = "Rscript"
+  mincpus = 1L
+  if(is.null(clusters)) {
+  clusters = "serial"
+  }
+} else {
+  cmd = "mpirun -np 1 Rscript"
+  mincpus = 2L
+  if(is.null(clusters)) {
+  clusters = "mpp2"
+  }
+}
+-%>
+
+#SBATCH --job-name=<%= job.hash %>
+#SBATCH --output=<%= log.file %>
+#SBATCH --error=<%= log.file %>
+#SBATCH --time=<%= ceiling(resources$walltime / 60L)%>
+#SBATCH --ntasks=<%= resources$ntasks %>
+#SBATCH --mincpus=<%= mincpus %>
+#SBATCH --cpus-per-task=<%= resources$ncpus %>
+#SBATCH --mem-per-cpu=<%= resources$memory %>
+#SBATCH --clusters=<%= clusters %>
+
+
+<%= cmd %> -e 'batchtools::doJobCollection("<%= uri %>")' 
