@@ -2,28 +2,49 @@
 <%
 ## Set some sane defaults
 if (is.null(resources$ntasks))
-    resources$ntasks = 1L
+  resources$ntasks = 1L
 if (is.null(resources$ncpus))
   resources$ncpus = 1L
+if (is.null(resources$nodes))
+  resources$nodes = ceiling(resources$ncpus / 28)
+
 
 ## Check variables
 resources$walltime = checkmate::asInt(resources$walltime, lower = 1L)
 resources$memory = checkmate::asInt(resources$memory, lower = 100L)
 resources$ntasks = checkmate::asInt(resources$ntasks, lower = 1L)
 resources$ncpus = checkmate::asInt(resources$ncpus, lower = 1L)
+resources$nodes = checkmate::asInt(resources$nodes, lower = 0L)
 
-if (resources$ntasks == 1L) {
+## serial mode
+if (resources$ntasks == 1L & resources$ncpus == 1L) {
   cmd = "Rscript"
   mincpus = 1L
-  if(is.null(clusters)) {
-  clusters = "serial"
+  if (is.null(resources$clusters)) {
+    resources$clusters = "serial"
   }
+  if (is.null(resources$partition)) {
+    resources$partition = "serial_mpp2"
+  }
+  paste0("#SBATCH --mem-per-cpu", resources$memory, "\n")
+## shared memory mode
+} else if(resources$ncpus > 1) {
+  cmd = "Rscript"
+  if (is.null(resources$clusters)) {
+    resources$clusters = "mpp2"
+  }
+  paste0("#SBATCH --nodes=", resources$nodes, "\n")
+  paste0("#SBATCH --cpus-per-task=", resources$ncpus, "\n")
+  paste0("#SBATCH --mem=", resources$memory, "\n")
+## distributed memory mode
 } else {
   cmd = "mpirun -np 1 Rscript"
   mincpus = 2L
-  if(is.null(clusters)) {
-  clusters = "mpp2"
+  if (is.null(resources$clusters)) {
+    resources$clusters = "mpp2"
   }
+  paste0("#SBATCH --mem-per-cpu", resources$memory, "\n")
+  paste0("#SBATCH --ntasks", resources$ntasks, "\n")
 }
 -%>
 
@@ -31,11 +52,12 @@ if (resources$ntasks == 1L) {
 #SBATCH --output=<%= log.file %>
 #SBATCH --error=<%= log.file %>
 #SBATCH --time=<%= ceiling(resources$walltime / 60L)%>
-#SBATCH --ntasks=<%= resources$ntasks %>
-#SBATCH --mincpus=<%= mincpus %>
-#SBATCH --cpus-per-task=<%= resources$ncpus %>
-#SBATCH --mem-per-cpu=<%= resources$memory %>
-#SBATCH --clusters=<%= clusters %>
+#SBATCH --clusters=<%= resources$clusters %>
+<%=
+## set partition if required
+if(!is.null(resources$partition)){
+paste0("#SBATCH --partition=", resources$partition, "\n")
+}
+-%>
 
-
-<%= cmd %> -e 'batchtools::doJobCollection("<%= uri %>")'  
+<%= cmd %> -e 'batchtools::doJobCollection("<%= uri %>")'
