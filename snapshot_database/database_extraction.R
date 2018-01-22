@@ -128,8 +128,6 @@ new_hypers_rpart = gather(data_wide, name, value = value, cp, maxdepth, minbucke
 hyperparameters = rbind(hyperparameters[hyperparameters$fullName != "mlr.classif.rpart",], new_hypers_rpart)
 
 # kknn
-evaluation_results$setup %in% asdf
-  
 hyp_kknn = hyperparameters[hyperparameters$fullName == "mlr.classif.kknn",]
 sum(run$setup %in% hyp_kknn$setup)
 sum(evaluation_results$setup %in% hyp_kknn$setup)
@@ -278,6 +276,19 @@ save(results, file = "./snapshot_database/mlrRandomBotResultsTables.RData")
 library(readr)
 for(i in seq_along(algos)) {
   print(i)
-  write_csv(results[[i]], path = paste0("./snapshot_database/mlrRandomBotResults_", algos[[i]], ".csv"))
+  write_csv(results[[i]], path = paste0("./snapshot_database/OpenML_RBot_", algos[[i]], ".csv"))
 }
 
+
+library(readr)
+a = read_csv("./snapshot_database/OpenML_RBot_ranger.csv")
+head(a)
+
+# Number of results per dataset and algorithm
+levs = levels(as.factor(results[[2]]$task_id))
+nr_results = data.frame(t(as.numeric(table(factor(results[[1]]$task_id, levels = levs)))))
+for(i in 2:6)
+  nr_results = rbind(nr_results, table(factor(results[[i]]$task_id, levels = levs)))
+colnames(nr_results) = levs
+
+save(nr_results, file = "./snapshot_database/nr_results.RData")
