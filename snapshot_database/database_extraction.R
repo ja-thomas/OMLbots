@@ -4,7 +4,7 @@ library(dplyr)
 library(tidyr)
 library(OpenML)
 
-mydb = dbConnect(MySQL(), user = "root", dbname='openml', password = "")
+mydb = dbConnect(MySQL(), user = "root", dbname='openml_new', password = "TSVMurnau")
 dbListTables(mydb)
 
 ############################# evaluation_results ###########################
@@ -281,3 +281,103 @@ for(i in seq_along(algos)) {
   write_csv(results[[i]], path = paste0("./snapshot_database/mlrRandomBotResults_", algos[[i]], ".csv"))
 }
 
+# Subset of tables: Maximum of 500000 results per learner
+library(dplyr)
+library(tidyr)
+library(OpenML)
+
+calculateDataIds = function(tbl.results, tbl.hypPars, min.experiments = 200) {
+  whole.table = inner_join(tbl.results, tbl.hypPars, by = "setup") %>% select(., data_id, fullName)
+  cross.table = table(whole.table$data_id, whole.table$fullName)
+  bigger = rowSums(cross.table > min.experiments)
+  data.ids = names(bigger)[bigger == 6] 
+  return(data.ids)
+}
+
+# Exclude dataset which does not provide results for many learners
+data.ids = calculateDataIds(tbl.results, tbl.hypPars, min.experiments = 200)
+# Only results for OpenML100 datasets
+tasks = listOMLTasks(number.of.classes = 2L, tag = "OpenML100", estimation.procedure = "10-fold Crossvalidation", number.of.missing.values = 0)
+data.ids = data.ids[data.ids %in% tasks$data.id]
+
+run.ids = numeric()
+algos = unique(tbl.hypPars$fullName)
+algos = algos[c(2, 3, 1, 4, 5, 6)]
+set.seed(123)
+for(i in seq_along(algos)) {
+  print(i)
+  results_i = tbl.hypPars[tbl.hypPars$fullName == algos[i],]
+  hyp_pars = unique(results_i$name)
+  results_i = spread(results_i, name, value)
+  results_i = merge(results_i, tbl.results, by = "setup", all.x = T, all.y = F)
+  results_i = results_i[results_i$data_id %in% data.ids,]
+  if(i == 5) {
+    results_i = results_i[results_i$min.node.size != 1, ]
+  }
+  
+  kumi = sort(table(results_i$data_id))
+  
+  kumi_val = numeric(length(kumi))
+  kumi_val[1] = kumi[1] * length(kumi)
+  for(j in 2:length(kumi)) {
+    kumi_val[j] = cumsum(kumi)[j-1] + kumi[j]*(length(kumi)-j + 1)
+  }
+  maximo = max(kumi[kumi_val < 500000])
+  good_ids = names(kumi[kumi <= maximo])
+  bad_ids = names(kumi[kumi > maximo])
+  
+  rest = 500000 - max(kumi_val[kumi_val < 500000])
+  
+  if (i != 3){
+    extra_nr = floor(rest/length(bad_ids))
+    # fill up to 500000
+    rest2 = rest - extra_nr * length(bad_ids)
+    extra_ids = sample(c(rep(1, rest2), rep(0, length(bad_ids)- rest2)))
+  } 
+  run.ids = c(run.ids, results_i$run_id[results_i$data_id %in% good_ids])
+  for(j in seq_along(bad_ids)) {
+    print(paste(i,j))
+    setup_bad = sample(results_i$run_id[results_i$data_id %in% bad_ids[j]], maximo + extra_nr + extra_ids[j], replace = F)
+    run.ids = c(run.ids, setup_bad)
+  }
+  print(length(run.ids))
+}
+tbl.results = tbl.results[tbl.results$run_id %in% run.ids,]
+tbl.hypPars = tbl.hypPars[tbl.hypPars$setup %in% unique(tbl.results$setup),]
+tbl.runTime = tbl.runTime[tbl.runTime$run_id %in% run.ids,]
+tbl.scimark = tbl.scimark[tbl.scimark$run_id %in% run.ids,]
+tbl.metaFeatures = tbl.metaFeatures[tbl.metaFeatures$data_id %in% data.ids,]
+tbl.resultsReference = tbl.resultsReference[tbl.resultsReference$data_id %in% data.ids,]
+
+save(tbl.results, tbl.runTime, tbl.scimark, tbl.metaFeatures, tbl.hypPars, 
+  tbl.resultsReference, file = "./snapshot_database/mlrRandomBotResultsFinal.RData")
+
+# Save it in other formats
+load("./snapshot_database/mlrRandomBotResultsFinal.RData")
+
+algos = unique(tbl.hypPars$fullName)
+algos = algos[c(2, 3, 1, 4, 5, 6)]
+meta_features = unique(tbl.metaFeatures$quality)
+tbl.metaFeatures.wide = spread(tbl.metaFeatures, quality, value)
+
+results = list()
+for(i in seq_along(algos)) {
+  print(i)
+  results_i = tbl.hypPars[tbl.hypPars$fullName == algos[i],]
+  hyp_pars = unique(results_i$name)
+  results_i = spread(results_i, name, value)
+  results_i = merge(results_i, tbl.results, by = "setup")
+  results_i = merge(results_i, tbl.metaFeatures.wide, by = "data_id")
+  results_i = merge(results_i, tbl.runTime, by = "run_id")
+  results_i = merge(results_i, tbl.scimark, by = "run_id")
+  results_i = results_i[, c("task_id", hyp_pars, "auc", "accuracy", "brier", "runtime", "scimark", meta_features)]
+  results[[i]] = results_i
+}
+names(results) = algos
+save(results, file = "./snapshot_database/mlrRandomBotResultsFinalTables.RData")
+
+library(readr)
+for(i in seq_along(algos)) {
+  print(i)
+  write_csv(results[[i]], path = paste0("./snapshot_database/mlrRandomBotResultsFinal_", algos[[i]], ".csv"))
+}
