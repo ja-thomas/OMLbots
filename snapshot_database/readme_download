@@ -23,6 +23,6 @@ exit
 mysql openml < ExpDB_SNAPSHOT.sql
 #Use it:
 #USE openml
-
+cd /home/probst/Paper/Exploration_of_Hyperparameters/OMLbots/snapshot_database
 # Use the R script to get the relevant tables
 Rscript database_extraction.R

@@ -3,120 +3,46 @@ library(RMySQL)
 library(dplyr)
 library(tidyr)
 library(OpenML)
+library(data.table)
 
-mydb = dbConnect(MySQL(), user = "root", dbname='openml_new', password = "TSVMurnau")
+mydb = dbConnect(MySQL(), user = "root", dbname='openml_new', password = "") # pw as usual
 dbListTables(mydb)
 
 ############################# evaluation_results ###########################
-
-# math_function table to get ids for the specific measures
-math_function =  dbSendQuery(mydb, "select * from math_function")
-math_function = fetch(math_function, n=-1)
-head(math_function)
-math_function$name
+# run.uploader only our bot
 # 4 AUC, 45 accuracy, 54 root mean squared error, 59 scimark_benchmark, 63 usercpu_time_millis
-
-# evaluation table
-evaluation =  dbSendQuery(mydb, "select * from evaluation where function_id in (4, 45, 54, 59, 63)") # AUC, acc, rmse, scimark, runtime
-evaluation = fetch(evaluation, n=-1)
-head(evaluation)
-table(evaluation$function_id)
-# for some runs no runtime/scimark available!
-# id of math_function identifies the measure in evaluation (function_id)
-# evaluation = evaluation[evaluation$function_id %in% c(4, 59, 63),] #  4, 59 und 63 werden benötigt
-colnames(evaluation)[1] = "rid"
-evaluation = evaluation[, c("rid", "function_id", "value")]
-
-# run table
-run =  dbSendQuery(mydb, "select * from run")
-run = fetch(run, n=-1)
-head(run)
-table(unique(evaluation$source) %in% unique(run$rid))
-# ok!
-run = run[, c("rid", "uploader", "setup", "task_id")]
-table(run$setup)
-
-# only runs of the open_ml bot
-run = run[run$uploader == 2702, ]
-
-# Join tables to evaluation_results
-evaluation_results = inner_join(run, evaluation, by = "rid")
-head(evaluation_results)
-table(evaluation_results$function_id)
-# Around 2886153 results
-
-# delete missing scimark run
-table_run_ids = table(evaluation_results$rid)
-bad_run = names(table_run_ids)[table_run_ids == 4]
-evaluation_results = evaluation_results[!(evaluation_results$rid %in% bad_run),]
-
-# runtime
-runtime = evaluation_results[evaluation_results$function_id == 63, ]
-evaluation_results = evaluation_results[evaluation_results$function_id != 63, ]
-delete_columns = c("uploader", "setup", "task_id", "function_id", "data")
-runtime[, delete_columns] = NULL
-colnames(runtime)[2] = "runtime"
-
-# scimark benchmark
-scimark =  evaluation_results[evaluation_results$function_id == 59, ]
-evaluation_results =  evaluation_results[evaluation_results$function_id != 59, ]
-delete_columns = c("uploader", "setup", "task_id", "function_id", "data")
-scimark[, delete_columns] = NULL
-colnames(scimark)[2] = "scimark"
+sql.exp = "SELECT eval.source AS rid, eval.function_id, eval.value, run.task_id, run.setup, i.data 
+  FROM evaluation As eval 
+    INNER JOIN run ON eval.source = run.rid
+    INNER JOIN input_data AS i ON eval.source = i.run
+  WHERE eval.function_id in (4, 45, 54, 59, 63) AND run.uploader = 2702"
+evaluation_results = dbGetQuery(mydb, sql.exp) # AUC, acc, rmse, scimark, runtime
 
 # From long to wide
 evaluation_results = spread(evaluation_results, function_id, value)
-colnames(evaluation_results)[5:7] = c("auc", "accuracy", "brier")
-# brier score calculation
-evaluation_results$brier = (evaluation_results$brier)^2
+setnames(evaluation_results, c("4", "45", "54", "59", "63"), c("auc", "accuracy", "rmse", "scimark", "runtime"))
+evaluation_results$brier = (evaluation_results$rmse)^2
 
 ############################# meta_features ################################
-
 # data quality table
-data_quality =  dbSendQuery(mydb, "select * from data_quality")
-data_quality = fetch(data_quality, n=-1)
-head(data_quality)
-data_quality = data_quality[, c("data", "quality", "value")]
-table(data_quality$data)
-
-# input data table
-input_data =  dbSendQuery(mydb, "select * from input_data")
-input_data = fetch(input_data, n=-1)
-head(input_data)
-input_data = input_data[, c("run", "data")]
-colnames(input_data)[1] = "rid"
-
-# Add the data id to the evaluation results as identifier
-evaluation_results = inner_join(evaluation_results, input_data, "rid")
-head(evaluation_results)
-
-# Only keep relevant informations of relevant datasets
-meta_features_names = c("MajorityClassSize", "MajorityClassPercentage", "NumberOfClasses", 
-  "NumberOfInstances", "NumberOfFeatures", "NumberOfNumericFeatures", "NumberOfSymbolicFeatures")
-meta_features = data_quality[data_quality$quality %in% meta_features_names, ]
-meta_features = meta_features[meta_features$data %in% unique(evaluation_results$data), ]
-head(meta_features)
+sql.exp = "SELECT d.data, d.quality, d.value
+  FROM data_quality AS d
+  WHERE d.quality in ('MajorityClassSize', 'MajorityClassPercentage', 'NumberOfClasses', 
+  'NumberOfInstances', 'NumberOfFeatures', 'NumberOfNumericFeatures', 'NumberOfSymbolicFeatures')"
+data_quality =  dbGetQuery(mydb, sql.exp)
 
 ############################# hyperparameters ################################
+sql.exp = "SELECT DISTINCT iset.setup, iset.value, i.fullName, i.name
+  FROM input_setting As iset
+    INNER JOIN input As i ON iset.input_id = i.id
+    INNER JOIN run ON run.setup = iset.setup
+  WHERE run.uploader = 2702 AND i.fullName LIKE 'mlr.classif.xgboost%' 
+  LIMIT 1000000"
+hyperparameters = dbGetQuery(mydb, sql.exp)
 
-input_setting = dbSendQuery(mydb, "select * from input_setting")
-input_setting = fetch(input_setting, n=-1)
-head(input_setting)
-input_setting = input_setting[input_setting$setup %in% unique(evaluation_results$setup),]
-
-input =  dbSendQuery(mydb, "select * from input")
-input = fetch(input, n=-1)
-head(input)
-colnames(input)[1] = "input_id"
-input = input[, c("input_id", "fullName", "name")]
-
-hyperparameters = inner_join(input_setting, input, by = "input_id")
-head(hyperparameters)
 hyperparameters = hyperparameters[!(hyperparameters$name %in% c("nthread", "num.threads", "openml.kind", "openml.normal.kind", "openml.seed", "s", "verbose", "xval")), ]
 hyperparameters$fullName = gsub("\\(.*","",hyperparameters$fullName)
-table(hyperparameters$name)
-hyperparameters$input = NULL
-hyperparameters$input_id = NULL
+
 
 ############################# Add default values ################################
 # rpart
@@ -128,8 +54,6 @@ new_hypers_rpart = gather(data_wide, name, value = value, cp, maxdepth, minbucke
 hyperparameters = rbind(hyperparameters[hyperparameters$fullName != "mlr.classif.rpart",], new_hypers_rpart)
 
 # kknn
-evaluation_results$setup %in% asdf
-  
 hyp_kknn = hyperparameters[hyperparameters$fullName == "mlr.classif.kknn",]
 sum(run$setup %in% hyp_kknn$setup)
 sum(evaluation_results$setup %in% hyp_kknn$setup)
@@ -248,11 +172,11 @@ copy_to(src, tbl.hypPars, temporary = FALSE)
 copy_to(src, tbl.resultsReference, temporary = FALSE)
 
 save(tbl.results, tbl.runTime, tbl.scimark, tbl.metaFeatures, tbl.hypPars, 
-  tbl.resultsReference, file = "./snapshot_database/mlrRandomBotResults.RData")
+  tbl.resultsReference, file = "./snapshot_database/OpenMLRandomBotResults.RData")
 
 
 # Save it in other formats
-load("./snapshot_database/mlrRandomBotResults.RData")
+load("./snapshot_database/OpenMLRandomBotResults.RData")
 
 algos = unique(tbl.hypPars$fullName)
 algos = algos[c(2, 3, 1, 4, 5, 6)]
@@ -273,12 +197,12 @@ for(i in seq_along(algos)) {
   results[[i]] = results_i
 }
 names(results) = algos
-save(results, file = "./snapshot_database/mlrRandomBotResultsTables.RData")
+save(results, file = "./snapshot_database/OpenMLRandomBotResultsTables.RData")
 
 library(readr)
 for(i in seq_along(algos)) {
   print(i)
-  write_csv(results[[i]], path = paste0("./snapshot_database/mlrRandomBotResults_", algos[[i]], ".csv"))
+  write_csv(results[[i]], path = paste0("./snapshot_database/OpenML_RBot_", algos[[i]], ".csv"))
 }
 
 # Subset of tables: Maximum of 500000 results per learner
@@ -350,10 +274,10 @@ tbl.metaFeatures = tbl.metaFeatures[tbl.metaFeatures$data_id %in% data.ids,]
 tbl.resultsReference = tbl.resultsReference[tbl.resultsReference$data_id %in% data.ids,]
 
 save(tbl.results, tbl.runTime, tbl.scimark, tbl.metaFeatures, tbl.hypPars, 
-  tbl.resultsReference, file = "./snapshot_database/mlrRandomBotResultsFinal.RData")
+  tbl.resultsReference, file = "./snapshot_database/OpenMLRandomBotResultsFinal.RData")
 
 # Save it in other formats
-load("./snapshot_database/mlrRandomBotResultsFinal.RData")
+load("./snapshot_database/OpenMLRandomBotResultsFinal.RData")
 
 algos = unique(tbl.hypPars$fullName)
 algos = algos[c(2, 3, 1, 4, 5, 6)]
@@ -370,14 +294,26 @@ for(i in seq_along(algos)) {
   results_i = merge(results_i, tbl.metaFeatures.wide, by = "data_id")
   results_i = merge(results_i, tbl.runTime, by = "run_id")
   results_i = merge(results_i, tbl.scimark, by = "run_id")
-  results_i = results_i[, c("task_id", hyp_pars, "auc", "accuracy", "brier", "runtime", "scimark", meta_features)]
+  results_i = results_i[, c("data_id", hyp_pars, "auc", "accuracy", "brier", "runtime", "scimark", meta_features)]
   results[[i]] = results_i
 }
 names(results) = algos
-save(results, file = "./snapshot_database/mlrRandomBotResultsFinalTables.RData")
+save(results, file = "./snapshot_database/OpenMLRandomBotResultsFinalTables.RData")
 
 library(readr)
 for(i in seq_along(algos)) {
   print(i)
-  write_csv(results[[i]], path = paste0("./snapshot_database/mlrRandomBotResultsFinal_", algos[[i]], ".csv"))
+  write_csv(results[[i]], path = paste0("./snapshot_database/OpenMLRandomBotResultsFinal_", algos[[i]], ".csv"))
 }
+
+load("./snapshot_database/OpenMLRandomBotResultsFinalTables.RData")
+
+# Number of results per dataset and algorithm
+levs = levels(as.factor(results[[2]]$data_id))
+nr_results = data.frame(t(as.numeric(table(factor(results[[1]]$data_id, levels = levs)))))
+for(i in 2:6)
+  nr_results = rbind(nr_results, table(factor(results[[i]]$data_id, levels = levs)))
+colnames(nr_results) = levs
+
+save(nr_results, file = "./snapshot_database/nr_results.RData")
+
