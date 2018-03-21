@@ -273,6 +273,22 @@ tbl.scimark = tbl.scimark[tbl.scimark$run_id %in% run.ids,]
 tbl.metaFeatures = tbl.metaFeatures[tbl.metaFeatures$data_id %in% data.ids,]
 tbl.resultsReference = tbl.resultsReference[tbl.resultsReference$data_id %in% data.ids,]
 
+# exclude senseless data of kknn
+hypPars.kknn = tbl.hypPars[tbl.hypPars$fullName == "mlr.classif.kknn",]
+results.kknn = tbl.results[tbl.results$setup %in% hypPars.kknn$setup,]
+resi.kknn = merge(results.kknn, hypPars.kknn, by = "setup")
+dups = resi.kknn[duplicated(resi.kknn[, c("data_id", "value")]),]
+no_dups = resi.kknn[!duplicated(resi.kknn[, c("data_id", "value")]),]
+
+tbl.results = tbl.results[!(tbl.results$run_id %in% dups$run_id), ]
+tbl.hypPars = tbl.hypPars[(tbl.hypPars$setup %in% tbl.results$setup), ]
+tbl.runTime = tbl.runTime[!(tbl.runTime$run_id %in% dups$run_id), ]
+tbl.scimark = tbl.scimark[!(tbl.scimark$run_id %in% dups$run_id), ]
+
+# delete duplicates of reference results
+head(tbl.resultsReference)
+tbl.resultsReference = tbl.resultsReference[!duplicated(tbl.resultsReference[, c("data_id")]),]
+
 save(tbl.results, tbl.runTime, tbl.scimark, tbl.metaFeatures, tbl.hypPars, 
   tbl.resultsReference, file = "./snapshot_database/OpenMLRandomBotResultsFinal.RData")
 
