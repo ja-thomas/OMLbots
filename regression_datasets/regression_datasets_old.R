@@ -63,11 +63,11 @@ reg = reg[order(as.numeric(reg$number.of.features) * as.numeric(reg$number.of.in
 # Only 1 Feature = Target is senseless
 reg = reg[which(reg$name != "lmpavw"), ]
 
-
+# Is this useful???
 # Delete datasets with more than 50 categories in one variable
 # fail to download some of the biggest (~20) datasets
 more2 = !logical(nrow(reg))
-for(j in 217:220){
+for(j in 1:nrow(reg)){
   print(j)
   task = getOMLTask(task.id = reg$task.id[j], verbosity=0)
   classen = sapply(task$input$data.set$data, class)
@@ -91,7 +91,7 @@ save(reg, file = "./regression_datasets/regression_datasets.RData")
 load("./regression_datasets/regression_datasets.RData")
 
 # Manual selection
-for(i in 1:191) {
+for(i in 1:nrow(reg)) {
   print(paste(i, "#######################################################################################################"))
   print(paste("#######################################################################################################"))
   task = getOMLTask(task.id = reg$task.id[i], verbosity=0)
@@ -127,3 +127,4 @@ for(i in 1:nrow(reg)) {
 }
 # Longest one takes 4 seconds
 
+reg = reg[reg$number.of.instances >= 500, ]
