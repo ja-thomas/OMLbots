@@ -16,6 +16,6 @@ ID: 2702
 
 General Tag: **mlrRandomBot**
 
-Tag for the normal runs: **botV1**
+Extra-Tag for the normal runs: **botV1**
 
-Tag for the reference runs (random forest default): **referenceV1**
+Extra-Tag for the reference runs (random forest default): **referenceV1**
