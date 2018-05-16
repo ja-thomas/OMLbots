@@ -1,3 +1,4 @@
+
 #!/bin/bash
 <%
 ## Set some sane defaults
@@ -38,4 +39,4 @@ if (resources$ntasks == 1L) {
 #SBATCH --clusters=<%= clusters %>
 
 
-<%= cmd %> -e 'batchtools::doJobCollection("<%= uri %>")'  
+<%= cmd %> -e 'batchtools::doJobCollection("<%= uri %>")'
