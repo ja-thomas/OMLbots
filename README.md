@@ -12,4 +12,10 @@ Name: **OpenML_Bot R**
 
 ID: 2702
 
-Tag: **mlrRandomBot**
+## Tags
+
+General Tag: **mlrRandomBot**
+
+Tag for the normal runs: **botV1**
+
+Tag for the reference runs (random forest default): **referenceV1**
