@@ -35,7 +35,7 @@ This dataset is described soon in a paper.
 Alternatively all results can be downloaded via the nightly database snapshot.
 The snapshot can be downloaded from: https://docs.openml.org/developers/
 
-After having set up the SQL database (see [here](https://github.com/ja-thomas/OMLbots/blob/master/snapshot_database/readme_download) for an example how to do it), the data can be extracted with this code: https://github.com/ja-thomas/OMLbots/blob/master/snapshot_database/database_extraction.R
+After having set up the SQL database (see [here](https://github.com/ja-thomas/OMLbots/blob/master/snapshot_database/readme_download) for an example how to do it via a terminal in linux), the data can be extracted with this code: https://github.com/ja-thomas/OMLbots/blob/master/snapshot_database/database_extraction.R
 
 ### Using the R-API
 
