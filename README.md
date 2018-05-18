@@ -12,7 +12,7 @@ Name: **OpenML_Bot R**
 
 ID: 2702
 
-## Tags
+### Tags
 
 General Tag: **mlrRandomBot**
 
