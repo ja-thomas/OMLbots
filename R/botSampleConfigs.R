@@ -45,7 +45,7 @@ sampleRandomLearner = function(lrn.ps.sets) {
 sampleRandomTask = function() {
   
   tasks = listOMLTasks(number.of.classes = 2L, number.of.missing.values = 0, 
-    data.tag = "study_14", estimation.procedure = "10-fold Crossvalidation")
+    data.tag = "OpenML100", estimation.procedure = "10-fold Crossvalidation")
   messagef("Found %i available OML tasks", nrow(tasks))
   task = tasks %>% 
     filter(format == "ARFF", status == "active") %>% 

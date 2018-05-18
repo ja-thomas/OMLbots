@@ -35,7 +35,6 @@ reg = reg[logic,]
 doppelt = names(sort(table(reg$name)[table(reg$name) > 1]))
 doppelt = reg[reg$name %in% doppelt, ]
 doppelt = doppelt[order(doppelt$name), ]
-doppelt[, c(1,3,5,7,9,10,11,14,15)]
 
 raus = c(4892, 4883, 4876, 5025, 12715, 4874)
 
@@ -102,7 +101,7 @@ for(i in 1:nrow(reg)) {
   print(dim(task$input$data.set$data))
 }
 
-# Criteria: No Regression (classification or survival); repeated datasets (e.g. ozone); 
+# Criteria: Only Regression (classification or survival); repeated datasets (e.g. ozone); 
 # unclear variable names and/or description
 
 ok = c(1, 3, 4, 7, 8, 9, 11, 12, 14, 16, 18, 19, 22, 25, 27, 28, 29, 33, 34, 35, 38, 39, 40,
@@ -121,6 +120,7 @@ time = numeric(nrow(reg))
 for(i in 1:nrow(reg)) {
   print(i)
   task = getOMLTask(task.id = reg$task.id[i], verbosity=0)
+
   task = convertOMLTaskToMlr(task)$mlr.task
   lrn = makeLearner("regr.ranger", num.threads = 6, num.trees = 60)
   time[i] = system.time(train(lrn, task))[3]
