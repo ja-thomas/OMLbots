@@ -4,6 +4,8 @@ Bot that executes (random) experiments on OpenML datasets and uploads the result
 
 The main function of the bot can be executed via `runBot`. 
 
+To add a new algorithm it has to be included in the file `R/botSetLearnerParamPairs.R` with its hyperparameter ranges.
+
 See executed runs on the openml.org page: https://www.openml.org/u/2702
 
 ## OpenML Identification
